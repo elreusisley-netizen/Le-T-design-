@@ -1,0 +1,2036 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>RASSTOCK</title>
+<meta name="theme-color" content="#F1F5F9" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="RASSTOCK" />
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7GkOtAAAH9klEQVR42u3WQREAIQwEwTjIEw/49wcm+GzorVaQK2quem0APlROACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACACAArgAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgAgAK4AIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAgAAAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAAAgAAAIAIAAACAAAAgCAAAAgAAAIAAACAIAAACAAPHLMAuflCgACYAKAACAAJgAIAAJgAoAAIAAmAAgAAmACgAAgACYACAACYAKAAAiAmQAgAAJgJgAIgACYCQACIABmAoAACICZACAAAmAmAAiAAJgJAAIgAGYCIACuIABmAiAACICZAAgAAmAmAAKAAJgJgAAgAGYCIAAIgJkACAACYCYAAoAAmAmAACAAJgAIAAJgAoAAIAAmAAgAAmACgAAgACYACAACYAKAACAAJgAIgACYCQACIABmAoAACICZACAAAmAmAAiAAJgJAAIgAGYCgAAIgJkAIAACYCYACIAAmAmAACAAZgIgAAiAmQAIAAJgJgACgACYCYAAIABmAiAACICZAAgAAmAmAAKAAJgAeLwCgACYACAACIAJAAJAfgB8FxAABAAQAAQAEAAEABAABAAQAAQAEAAEABAABAAQAAQAEAAEABAAARAAQAAEQAAAARAAAQAEQAAEABAAARAAQAAEQAAAARAAAQAEQAAEABAAARAAEAAEQABAABAAAQABQAAEAAQAARAAEAAEQABAABAAQAAQAEAAEABAABAAQAAQAEAAEABAABAAQAAQAEAAEABAABAAQAAEQAAAARAAAQAEQADM/CIgAAJgJgAIgACYCQACIABmAoAACICZACAAAmAmAALgBAJgJgACgACYCYAAIABmAiAACICZAAgAAmAmAAKAAJgJgAAgAGYCIAAIgJkACAACYAKAACAAJgAIAAJgAoAAIAAmAAgAAmACgAAgACYACAACYAKAAAiAmQAgAAJgJgAIgACYCQACIABmAoAACICZACAAAmAmAAiAAJgJAAIgAGYCgAAIgJkACAACYCYAAoAAmAmAACAAZgIgAAiAmQAIAAJgJgACgACYCYAAIABmAiAACICZAAgAAmACgAAgACYACAACYAKAACAAJgAIAAJgAoAAIAAmAAgAAmACgAAIgJkAIAACYCYACIAAmAkAAiAAZgKAAAiAmQAgAOAXQQAQABAAAUAAQAAEQABcAQRAAAQAEAABEABAAARAAAABEAABAARAAAQAEAABEABAAARAAAABEAABAAQAAQAEAAEABAABAAQAAQAEAAEABAABAAQAAQAEAAEABAABAAQAAQABEAAEAARAABAAEAABQABAAAQAAQABEAAEAARAAAQAEAABEABAAARAAAABEAABAARAAAQAEAABEABAAARAAAABEAABAATAdxEAQAAQAGY9bzMBEAAEwEwABAABMBMAAUAATAAQAATABAABQABMABAABMAEAAFAAEwAEAAEwAQAAUAATAAQAAEwEwAEQADMBAABEAAzAUAABMBMABAAATATAARAAMwEAAEQADMBQAAEwEwAEAABMBMAAUAAzARAABAAMwEQAATATAAEAAEwEwABQADMBEAAEAAzARAABMBMAAQAATATAAFAAEwAEAAEwAQAAUAATAAQAATABAABQABMABAABMAEAAFAAEwAEAABMBMABEAAzAQAARAAMwFAAATATAAQAAEwEwAEQADMBAABEAAzAUAABMBMAATACQTATAAEAAEwEwABQADMBEAAEAAzARAABMBMAAQAATATAAFAAMwEQAAQADMBEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAEwBUABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAABMAVAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAABAAAAQAAAEAQAAAEAAABAAAAQBAAAAQAAAEAAABAEAAAAQAAAEAQAAAEAAABAAAAQBAAACIcwEDC4hAOUWc8gAAAABJRU5ErkJggg==" />
+<style>
+body{margin:0;background:#F1F5F9;color:#0F172A;-webkit-tap-highlight-color:transparent;
+     font-family:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",sans-serif}
+#root{padding-bottom:env(safe-area-inset-bottom)}
+#etat{margin:1.5rem;padding:1rem;border-radius:12px;background:#fff;color:#475569;
+      font-size:14px;line-height:1.5;white-space:pre-wrap}
+#etat.ko{background:#FEF2F2;color:#991B1B}
+*,*::before,*::after{box-sizing:border-box;border:0 solid #E2E8F0}
+html{-webkit-text-size-adjust:100%}
+button,input,textarea,select{font:inherit;color:inherit;background:none;margin:0}
+button{cursor:pointer}
+input,textarea{border-radius:0}
+h1,h2,h3,p,pre{margin:0}
+ul,ol{margin:0;padding:0}
+svg{display:block}
+[hidden]{display:none}
+.-mx-5{margin-left:-1.25rem;margin-right:-1.25rem}
+.-translate-x-1\/2{transform:translateX(-50%)}
+.-translate-y-1\/2{transform:translateY(-50%)}
+.absolute{position:absolute}
+.active\:bg-blue-700:active{background-color:#1D4ED8}
+.active\:bg-slate-100:active{background-color:#F1F5F9}
+.active\:bg-slate-200:active{background-color:#E2E8F0}
+.active\:bg-slate-50:active{background-color:#F8FAFC}
+.active\:opacity-60:active{opacity:.6}
+.active\:scale-95:active{transform:scale(0.95)}
+.active\:text-white:active{color:#FFFFFF}
+.antialiased{-webkit-font-smoothing:antialiased}
+.backdrop-blur{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.bg-amber-50{background-color:#FFFBEB}
+.bg-blue-700{background-color:#1D4ED8}
+.bg-red-50{background-color:#FEF2F2}
+.bg-red-600{background-color:#DC2626}
+.bg-slate-100{background-color:#F1F5F9}
+.bg-slate-900{background-color:#0F172A}
+.bg-white{background-color:#FFFFFF}
+.block{display:block}
+.border-0{border-width:0}
+.border-dashed{border-style:dashed;border-width:1px}
+.border-slate-100{border-color:#F1F5F9}
+.border-slate-200{border-color:#E2E8F0}
+.border-slate-300{border-color:#CBD5E1}
+.border-t{border-top-width:1px;border-top-style:solid}
+.border{border-width:1px;border-style:solid}
+.bottom-0{bottom:0}
+.bottom-20{bottom:5rem}
+.bottom-32{bottom:8rem}
+.cursor-pointer{cursor:pointer}
+.divide-slate-100>*+*{border-color:#F1F5F9}
+.divide-y>*+*{border-top-width:1px;border-top-style:solid}
+.fixed{position:fixed}
+.flex-1{flex:1 1 0%}
+.flex-col{flex-direction:column}
+.flex-wrap{flex-wrap:wrap}
+.flex{display:flex}
+.focus\:outline-none:focus{outline:none}
+.focus\:ring-2:focus{outline:2px solid var(--rc,#2563EB);outline-offset:-2px}
+.focus\:ring-blue-600:focus{--rc:#2563EB}
+.font-medium{font-weight:500}
+.font-normal{font-weight:400}
+.font-semibold{font-weight:600}
+.gap-1{gap:0.25rem}
+.gap-2\.5{gap:0.625rem}
+.gap-2{gap:0.5rem}
+.gap-3{gap:0.75rem}
+.gap-4{gap:1rem}
+.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid{display:grid}
+.h-10{height:2.5rem}
+.h-14{height:3.5rem}
+.h-3\.5{height:0.875rem}
+.h-4{height:1rem}
+.h-5{height:1.25rem}
+.h-7{height:1.75rem}
+.h-8{height:2rem}
+.hidden{display:none}
+.inset-0{top:0;right:0;bottom:0;left:0}
+.items-baseline{align-items:baseline}
+.items-center{align-items:center}
+.items-end{align-items:flex-end}
+.items-start{align-items:flex-start}
+.justify-between{justify-content:space-between}
+.justify-center{justify-content:center}
+.leading-none{line-height:1}
+.leading-relaxed{line-height:1.625}
+.left-0{left:0}
+.left-1\/2{left:50%}
+.left-3{left:0.75rem}
+.max-h-24{max-height:6rem}
+.max-h-screen{max-height:88vh}
+.max-w-2xl{max-width:42rem}
+.max-w-sm{max-width:24rem}
+.mb-1\.5{margin-bottom:0.375rem}
+.mb-1{margin-bottom:0.25rem}
+.mb-2{margin-bottom:0.5rem}
+.mb-3{margin-bottom:0.75rem}
+.mb-4{margin-bottom:1rem}
+.mb-6{margin-bottom:1.5rem}
+.mb-8{margin-bottom:2rem}
+.min-h-screen{min-height:88vh}
+.min-w-0{min-width:0px}
+.ml-1{margin-left:0.25rem}
+.ml-2{margin-left:0.5rem}
+.mr-2{margin-right:0.5rem}
+.mt-0\.5{margin-top:0.125rem}
+.mt-1\.5{margin-top:0.375rem}
+.mt-1{margin-top:0.25rem}
+.mt-2{margin-top:0.5rem}
+.mt-3{margin-top:0.75rem}
+.mt-4{margin-top:1rem}
+.mt-5{margin-top:1.25rem}
+.mt-6{margin-top:1.5rem}
+.mx-4{margin-left:1rem;margin-right:1rem}
+.mx-auto{margin-left:auto;margin-right:auto}
+.overflow-hidden{overflow:hidden}
+.overflow-x-auto{overflow-x:auto}
+.overflow-y-auto{overflow-y:auto}
+.overscroll-contain{overscroll-behavior:contain}
+.p-1\.5{padding:0.375rem}
+.p-1{padding:0.25rem}
+.p-2\.5{padding:0.625rem}
+.p-2{padding:0.5rem}
+.p-3{padding:0.75rem}
+.p-4{padding:1rem}
+.p-5{padding:1.25rem}
+.p-6{padding:1.5rem}
+.p-8{padding:2rem}
+.pb-1{padding-bottom:0.25rem}
+.pb-24{padding-bottom:6rem}
+.pb-2{padding-bottom:0.5rem}
+.pb-4{padding-bottom:1rem}
+.pb-8{padding-bottom:2rem}
+.pl-9{padding-left:2.25rem}
+.placeholder\:text-slate-300::placeholder{color:#CBD5E1}
+.placeholder\:text-slate-400::placeholder{color:#94A3B8}
+.pointer-events-none{pointer-events:none}
+.pr-3{padding-right:0.75rem}
+.pt-20{padding-top:5rem}
+.pt-2{padding-top:0.5rem}
+.pt-3{padding-top:0.75rem}
+.pt-4{padding-top:1rem}
+.pt-6{padding-top:1.5rem}
+.px-1{padding-left:0.25rem;padding-right:0.25rem}
+.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}
+.px-2{padding-left:0.5rem;padding-right:0.5rem}
+.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}
+.px-3{padding-left:0.75rem;padding-right:0.75rem}
+.px-4{padding-left:1rem;padding-right:1rem}
+.px-5{padding-left:1.25rem;padding-right:1.25rem}
+.px-6{padding-left:1.5rem;padding-right:1.5rem}
+.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}
+.py-12{padding-top:3rem;padding-bottom:3rem}
+.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}
+.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}
+.py-2{padding-top:0.5rem;padding-bottom:0.5rem}
+.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}
+.py-3{padding-top:0.75rem;padding-bottom:0.75rem}
+.py-8{padding-top:2rem;padding-bottom:2rem}
+.relative{position:relative}
+.right-0{right:0}
+.ring-1{outline:1px solid var(--rc,#E2E8F0);outline-offset:-1px}
+.ring-red-300{--rc:#FCA5A5}
+.ring-slate-200{--rc:#E2E8F0}
+.ring-slate-300{--rc:#CBD5E1}
+.rotate-180{transform:rotate(180deg)}
+.rounded-2xl{border-radius:1rem}
+.rounded-full{border-radius:9999px}
+.rounded-lg{border-radius:0.5rem}
+.rounded-t-3xl{border-radius:1.5rem 1.5rem 0 0}
+.rounded-xl{border-radius:0.75rem}
+.shadow-lg{box-shadow:0 10px 25px -5px rgba(15,23,42,.18)}
+.shadow-sm{box-shadow:0 1px 2px 0 rgba(15,23,42,.06)}
+.shrink-0{flex-shrink:0}
+.space-y-0\.5>*+*{margin-top:0.125rem}
+.space-y-1>*+*{margin-top:0.25rem}
+.space-y-1\.5>*+*{margin-top:0.375rem}
+.space-y-2>*+*{margin-top:0.5rem}
+.space-y-3>*+*{margin-top:0.75rem}
+.space-y-4>*+*{margin-top:1rem}
+.sticky{position:sticky}
+.tabular-nums{font-variant-numeric:tabular-nums}
+.text-2xl{font-size:1.5rem;line-height:2rem}
+.text-amber-700{color:#B45309}
+.text-amber-900{color:#78350F}
+.text-base{font-size:1rem;line-height:1.5rem}
+.text-blue-700{color:#1D4ED8}
+.text-center{text-align:center}
+.text-emerald-700{color:#047857}
+.text-left{text-align:left}
+.text-lg{font-size:1.125rem;line-height:1.75rem}
+.text-red-400{color:#F87171}
+.text-red-600{color:#DC2626}
+.text-red-700{color:#B91C1C}
+.text-red-800{color:#991B1B}
+.text-right{text-align:right}
+.text-slate-200{color:#E2E8F0}
+.text-slate-300{color:#CBD5E1}
+.text-slate-400{color:#94A3B8}
+.text-slate-500{color:#64748B}
+.text-slate-600{color:#475569}
+.text-slate-700{color:#334155}
+.text-slate-900{color:#0F172A}
+.text-sm{font-size:0.875rem;line-height:1.25rem}
+.text-white{color:#FFFFFF}
+.text-xs{font-size:0.75rem;line-height:1rem}
+.top-1\/2{top:50%}
+.tracking-tight{letter-spacing:-0.015em}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w-10{width:2.5rem}
+.w-11\/12{width:91.666667%}
+.w-14{width:3.5rem}
+.w-16{width:4rem}
+.w-24{width:6rem}
+.w-3\.5{width:0.875rem}
+.w-4{width:1rem}
+.w-5{width:1.25rem}
+.w-7{width:1.75rem}
+.w-8{width:2rem}
+.w-full{width:100%}
+.z-30{z-index:30}
+.z-40{z-index:40}
+.z-50{z-index:50}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<pre id="etat">Démarrage…</pre>
+
+<script>
+function demarrer() {
+
+const { useState, useEffect, useMemo, useRef } = React;
+function mkIcon(d, extra) {
+    return function Icone({ className = "", strokeWidth = 2 }) {
+        return React.createElement("svg", {
+            className, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+            strokeWidth, strokeLinecap: "round", strokeLinejoin: "round",
+            dangerouslySetInnerHTML: { __html: d + (extra || "") },
+        });
+    };
+}
+const Plus = mkIcon('<path d="M12 5v14M5 12h14"/>');
+const X = mkIcon('<path d="M18 6 6 18M6 6l12 12"/>');
+const ChevronDown = mkIcon('<path d="m6 9 6 6 6-6"/>');
+const ChevronRight = mkIcon('<path d="m9 18 6-6-6-6"/>');
+const Search = mkIcon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>');
+const Undo2 = mkIcon('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>');
+const Package = mkIcon('<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>');
+const Trash2 = mkIcon('<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>');
+const Download = mkIcon('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>');
+const RotateCcw = mkIcon('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>');
+const Check = mkIcon('<path d="M20 6 9 17l-5-5"/>');
+const Truck = mkIcon('<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>');
+const Settings2 = mkIcon('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>');
+const Pencil = mkIcon('<path d="M21.17 2.83a3 3 0 0 0-4.24 0L3 16.76V21h4.24L21.17 7.07a3 3 0 0 0 0-4.24Z"/>');
+const Sparkles = mkIcon('<path d="m12 3-1.9 5.8L4 10.7l6.1 1.9L12 18.4l1.9-5.8 6.1-1.9-6.1-1.9Z"/>');
+/* ---------------------------------------------------------------
+   Prototype — outil de stock, commandes et ventes
+   Modèle : Produit -> Variante (taille/coloris) -> Article (exemplaire)
+   Statuts : commande | stock | reserve | vendu | sorti
+   ----------------------------------------------------------------*/
+const SB_URL = "https://kuzjiwxehqrvmvismxee.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1emppd3hlaHFydm12aXNteGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0NjQ1OTAsImV4cCI6MjEwNTA0MDU5MH0.pQzTLijGAKrn0RvEDn1I2jBqOTWuyXmZHIP25mc5X9A";
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+const num = (v) => (v === null || v === undefined || v === "" ? null : +v);
+// base -> application
+const artDepuisBase = (r) => ({
+    id: r.id, produitId: r.produit_id, taille: r.taille || "", couleur: r.couleur || "",
+    statut: r.statut, cout: num(r.cout), fraisAchat: +r.frais_achat || 0,
+    prix: num(r.prix), fraisVente: +r.frais_vente || 0,
+    acheteur: r.acheteur || "", canal: r.canal || "",
+    dateAchat: r.date_achat, dateVente: r.date_vente, dateRemise: r.date_remise,
+    fournisseur: r.fournisseur || "", notes: r.notes || "", motif: r.motif, supprime: false,
+});
+// application -> base
+const artVersBase = (a, org) => ({
+    organisation_id: org, produit_id: a.produitId,
+    taille: a.taille || null, couleur: a.couleur || null,
+    statut: a.statut, cout: num(a.cout), frais_achat: num(a.fraisAchat) || 0,
+    prix: num(a.prix), frais_vente: num(a.fraisVente) || 0,
+    acheteur: a.acheteur || null, canal: a.canal || null,
+    date_achat: a.dateAchat || today(), date_vente: a.dateVente, date_remise: a.dateRemise,
+    fournisseur: a.fournisseur || null, notes: a.notes || null,
+    motif: a.statut === "sorti" ? (a.motif || "erreur") : null,
+});
+const EMPTY = { produits: [], articles: [], seq: 1 };
+const ECHELLES = {
+    eu: (() => { const a = []; for (let i = 35; i <= 48; i += 0.5)
+        a.push(String(i)); return a; })(),
+    vetement: ["XS", "S", "M", "L", "XL", "XXL"],
+    aucune: [],
+};
+const LIB = { commande: "Commandé", stock: "En stock", reserve: "Réservé", vendu: "Vendu", sorti: "Sorti" };
+const CANAUX = ["Main propre", "Vinted", "Instagram", "StockX", "Autre"];
+const MOTIFS = [
+    { k: "erreur", l: "Erreur de saisie", depense: false },
+    { k: "rembourse", l: "Remboursé (commande/fournisseur)", depense: false },
+    { k: "perdu", l: "Perdu ou cassé", depense: true },
+    { k: "offert", l: "Offert / usage perso", depense: true },
+];
+const eur = (n) => (Math.round((n || 0) * 100) / 100).toLocaleString("fr-FR", {
+    minimumFractionDigits: 0, maximumFractionDigits: 2,
+}) + " €";
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtDate = (d) => new Date(d + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+const days = (d) => Math.floor((Date.now() - new Date(d + "T12:00:00")) / 86400000);
+/* Réduit le poids stocké : les champs vides ne sont pas écrits. */
+function compacter(d) {
+    return {
+        seq: d.seq,
+        produits: d.produits,
+        articles: d.articles.map((a) => {
+            const o = {};
+            Object.entries(a).forEach(([k, v]) => {
+                if (v !== null && v !== "" && v !== false && v !== undefined)
+                    o[k] = v;
+            });
+            return o;
+        }),
+    };
+}
+/* ------------------------ données reprises du PDF ------------------------- */
+/* v = vendu, r = réservé, s = encore en stock. Répéter une taille = plusieurs
+   exemplaires. Aucun coût d'achat n'apparaissait dans le document.            */
+const SEED = [
+    // --- Premier envoi (seules ventes documentées avec un prix) ---
+    { nom: "Premier envoi — blanche", d: "2025-09-01", l: "45v 43v 44r 42r",
+        det: { "45": [110, "Frr Ali"], "43": [110, "Daronne"], "44": [110, "Vinted"], "42": [90, "Vinted"] } },
+    { nom: "Premier envoi — bleu", d: "2025-09-01", l: "42v 42v 44v",
+        det: { "42": [110, "Edwin lz"], "44": [90, ""] } },
+    { nom: "Premier envoi — turquoise", d: "2025-09-01", l: "45v",
+        det: { "45": [110, "Pti de la gare"] } },
+    // --- Nouvel arrivage avril ---
+    { nom: "Saucony tan marron", d: "2026-04-15", l: "41v 43v 45v" },
+    { nom: "Saucony bleu ciel", d: "2026-04-15", l: "41v 42v 43v 44v" },
+    { nom: "Asics orange", d: "2026-04-15", l: "37v 38s 39r 42v 44v 45v 45v" },
+    { nom: "Asics 1130 kaki", d: "2026-04-15", l: "37v 38v 39v 40v" },
+    { nom: "Asics 1130 blanc bleu", d: "2026-04-15", l: "36v 39v 42v 44v 45v" },
+    { nom: "Asics Byako turquoise", d: "2026-04-15", l: "45s" },
+    { nom: "Asics hiliana", d: "2026-04-15", l: "37v 38v 39v" },
+    { nom: "Saucony full White", d: "2026-04-15", l: "38v 41v 42v 43v 44v 45v" },
+    { nom: "Saucony bleu fluo", d: "2026-04-15", l: "45v" },
+    { nom: "New Balance gris", d: "2026-04-15", l: "43v 44v 45v" },
+    { nom: "New Balance vert", d: "2026-04-15", l: "39v" },
+    { nom: "Ensemble ON noir", d: "2026-04-15", l: "Mv Lv Lv Lv XLv XLv XLs XXLv XXLs 3XLv" },
+    { nom: "Ensemble Nike vert/noir", d: "2026-04-15", l: "Mv Lv Lv XLv XLv XLv XXLv XXLv XXLv 3XLv" },
+    { nom: "Ensemble Nike marron", d: "2026-04-15", l: "Mv Lv Lr XLv XLv XLv XXLv XXLv XXLv 3XLv" },
+    { nom: "Ensemble ON blanc/gris", d: "2026-04-15", l: "Mv Mv Lv Lv Lv XLv XLv XXLv XXLv 3XLs" },
+    // --- Arrivage du 18/06/26 ---
+    { nom: "Saucony blanc/orange", d: "2026-06-18", l: "44v 45v" },
+    { nom: "Asics jaune", d: "2026-06-18", l: "37v 39v 39v 40r 42s 44v 45v 46v" },
+    { nom: "Ensemble Nike (os)", d: "2026-06-18", l: "Mv Lv XLv XLs XXLv XXLv XXLv 3XLv 3XLv 3XLs" },
+    { nom: "Nike Trail raisin", d: "2026-06-18", l: "Mv Lv XLv XXLv 3XLv" },
+    { nom: "Nike Trail raisin/noir", d: "2026-06-18", l: "Mv Lv XLv XXLv 3XLv" },
+    { nom: "Under Armor blanc", d: "2026-06-18", l: "40v 41v 42v 43v 44v 44v 45v 45v 46v 46v 47v" },
+    { nom: "Asics gel nimbus 16 violet", d: "2026-06-18", l: "38v 39s 43v 44s 45s 46s" },
+    { nom: "Asics gel nimbus 16 turquoise", d: "2026-06-18", l: "38v 40v 42v 43s 44v 45s 46v" },
+    { nom: "Asics gel kahama 8", d: "2026-06-18", l: "38v 38r 39r 40v" },
+    { nom: "Ensemble ON vert", d: "2026-06-18", l: "Mv Mv Mv Lv Lv Lv XLv XLv" },
+    { nom: "Ensemble ON rouge", d: "2026-06-18", l: "Mv Mv Ms Lv Lv Ls XLv XLv" },
+    { nom: "Ensemble ON bleu", d: "2026-06-18", l: "Mv Ls XLv XLs XXLv XXLs 3XLv 3XLs" },
+    // --- Restes notés en fin de document ---
+    { nom: "Saucony full B", d: "2026-06-18", l: "38s" },
+    { nom: "Sauco saumon", d: "2026-06-18", l: "36s" },
+];
+function construireSeed(base) {
+    const next = JSON.parse(JSON.stringify(base));
+    const vet = /^(M|L|XL|XXL|3XL)$/;
+    SEED.forEach((p) => {
+        const pid = "p" + next.seq++;
+        const echelle = vet.test(p.l.split(" ")[0].slice(0, -1)) ? "vetement" : "eu";
+        next.produits.push({ id: pid, nom: p.nom, echelle });
+        p.l.split(/\s+/).filter(Boolean).forEach((tok) => {
+            const taille = tok.slice(0, -1);
+            const code = tok.slice(-1);
+            const statut = code === "v" ? "vendu" : code === "r" ? "reserve" : "stock";
+            const det = p.det && p.det[taille];
+            next.articles.push({
+                id: "a" + next.seq++, produitId: pid, taille, couleur: "",
+                statut, cout: null, fraisAchat: 0,
+                prix: statut === "vendu" && det ? det[0] : null,
+                fraisVente: 0, acheteur: det ? det[1] : "",
+                canal: det && det[1] === "Vinted" ? "Vinted" : statut === "vendu" ? "Main propre" : "",
+                dateAchat: p.d, dateVente: statut === "vendu" ? p.d : null,
+                dateRemise: statut === "vendu" ? p.d : null,
+                fournisseur: "", arrivageId: p.d, notes: "", motif: null, supprime: false,
+            });
+        });
+    });
+    return next;
+}
+/* --------------------------- accès à la base ------------------------------ */
+async function charger(org) {
+    const [p, a] = await Promise.all([
+        sb.from("produits").select("*").eq("organisation_id", org).is("supprime_le", null),
+        sb.from("articles").select("*").eq("organisation_id", org).is("supprime_le", null),
+    ]);
+    if (p.error)
+        throw p.error;
+    if (a.error)
+        throw a.error;
+    return {
+        seq: 1,
+        produits: (p.data || []).map((r) => ({ id: r.id, nom: r.nom, echelle: r.echelle || "eu" })),
+        articles: (a.data || []).map(artDepuisBase),
+    };
+}
+/* Compare l'état d'avant et d'après, et n'envoie que les différences.
+   Les identifiants créés localement (p12, a34) déclenchent une insertion ;
+   la base attribue alors son propre identifiant.                            */
+async function synchroniser(avant, apres, org) {
+    const neuf = (id) => typeof id === "string" && /^[pa]\d+$/.test(id);
+    const mapP = new Map();
+    // produits ajoutés
+    const pNeufs = apres.produits.filter((p) => neuf(p.id));
+    if (pNeufs.length) {
+        const { data, error } = await sb.from("produits")
+            .insert(pNeufs.map((p) => ({ organisation_id: org, nom: p.nom, echelle: p.echelle })))
+            .select();
+        if (error)
+            throw new Error("Produits : " + error.message);
+        // par nom : l'ordre de retour n'est pas garanti
+        const parNom = new Map((data || []).map((r) => [r.nom.toLowerCase(), r.id]));
+        pNeufs.forEach((p) => {
+            const id = parNom.get(p.nom.toLowerCase());
+            if (!id)
+                throw new Error("Produit non créé : " + p.nom);
+            mapP.set(p.id, id);
+        });
+    }
+    // produits modifiés ou supprimés
+    const avantP = new Map(avant.produits.map((p) => [p.id, p]));
+    for (const p of apres.produits) {
+        if (neuf(p.id))
+            continue;
+        const a0 = avantP.get(p.id);
+        if (a0 && a0.nom !== p.nom) {
+            const { error } = await sb.from("produits").update({ nom: p.nom }).eq("id", p.id);
+            if (error)
+                throw error;
+        }
+    }
+    const apresP = new Set(apres.produits.map((p) => p.id));
+    for (const p of avant.produits) {
+        if (!apresP.has(p.id)) {
+            await sb.from("produits").update({ supprime_le: new Date().toISOString() }).eq("id", p.id);
+        }
+    }
+    // articles ajoutés
+    const aNeufs = apres.articles.filter((a) => neuf(a.id));
+    if (aNeufs.length) {
+        const lignes = aNeufs.map((a) => {
+            const pid = mapP.get(a.produitId) || a.produitId;
+            if (/^p\d+$/.test(String(pid)))
+                throw new Error("Produit introuvable pour un article");
+            return artVersBase({ ...a, produitId: pid }, org);
+        });
+        for (let i = 0; i < lignes.length; i += 100) {
+            const { error } = await sb.from("articles").insert(lignes.slice(i, i + 100));
+            if (error) {
+                throw new Error("Articles (" + (i + 1) + "/" + lignes.length + ") : " +
+                    error.message + (error.hint ? " — " + error.hint : ""));
+            }
+        }
+    }
+    // articles modifiés
+    const avantA = new Map(avant.articles.map((a) => [a.id, a]));
+    for (const a of apres.articles) {
+        if (neuf(a.id))
+            continue;
+        const a0 = avantA.get(a.id);
+        if (!a0 || JSON.stringify(a0) === JSON.stringify(a))
+            continue;
+        let q = sb.from("articles").update(artVersBase(a, org)).eq("id", a.id);
+        // garde-fou : si quelqu'un a changé le statut entre-temps, la mise à jour échoue
+        if (a0.statut !== a.statut)
+            q = q.eq("statut", a0.statut);
+        const { data, error } = await q.select();
+        if (error)
+            throw error;
+        if (a0.statut !== a.statut && (!data || !data.length)) {
+            throw new Error("Cet article vient d'être modifié par quelqu'un d'autre. Recharge la page.");
+        }
+    }
+    // articles supprimés
+    const apresA = new Set(apres.articles.map((a) => a.id));
+    const partis = avant.articles.filter((a) => !apresA.has(a.id) && !neuf(a.id)).map((a) => a.id);
+    if (partis.length) {
+        await sb.from("articles").update({ supprime_le: new Date().toISOString() }).in("id", partis);
+    }
+}
+/* ---------------------------------- app --------------------------------- */
+function App() {
+    const [session, setSession] = useState(undefined); // undefined = on ne sait pas encore
+    const [org, setOrg] = useState(null);
+    const [refus, setRefus] = useState(false);
+    const [data, setData] = useState(null);
+    const [err, setErr] = useState(null);
+    const [passe, setPasse] = useState([]);
+    const [sync, setSync] = useState(false);
+    const [tab, setTab] = useState("accueil");
+    const [sheet, setSheet] = useState(null);
+    const [toast, setToast] = useState(null);
+    const ref = useRef(null);
+    const timer = useRef(null);
+    useEffect(() => {
+        sb.auth.getSession().then(({ data }) => setSession(data.session));
+        const { data: sub } = sb.auth.onAuthStateChange((_e, s) => setSession(s));
+        return () => sub.subscription.unsubscribe();
+    }, []);
+    // organisation : on rejoint la sienne, sinon on la crée
+    useEffect(() => {
+        if (!session) {
+            setOrg(null);
+            setData(null);
+            return;
+        }
+        (async () => {
+            try {
+                // 0. le profil doit exister : les membres y font référence
+                await sb.from("profils").upsert({
+                    id: session.user.id, email: session.user.email,
+                    nom: (session.user.email || "").split("@")[0],
+                }, { onConflict: "id" });
+                // 1. déjà membre ?
+                const { data: m, error } = await sb.from("membres")
+                    .select("organisation_id").eq("profil_id", session.user.id).limit(1);
+                if (error)
+                    throw error;
+                if (m && m.length) {
+                    setOrg(m[0].organisation_id);
+                    return;
+                }
+                // 2. une invitation valable à son nom ?
+                const { data: rejointe } = await sb.rpc("rejoindre_par_invitation");
+                if (rejointe) {
+                    setOrg(rejointe);
+                    return;
+                }
+                // 3. sinon, seul le propriétaire peut créer l'espace
+                const { data: nouvelle, error: e2 } = await sb.rpc("creer_organisation", { p_nom: "RASSTOCK" });
+                if (e2) {
+                    setRefus(true);
+                    return;
+                }
+                setOrg(nouvelle);
+            }
+            catch (e) {
+                setErr(e.message || String(e));
+            }
+        })();
+    }, [session]);
+    const recharger = async (o) => {
+        try {
+            const d = await charger(o);
+            ref.current = d;
+            setData(d);
+            setErr(null);
+        }
+        catch (e) {
+            setErr(e.message || String(e));
+        }
+    };
+    useEffect(() => { if (org)
+        recharger(org); }, [org]);
+    // temps réel : toute écriture d'un collaborateur recharge l'écran
+    useEffect(() => {
+        if (!org)
+            return;
+        const canal = sb.channel("stock-" + org)
+            .on("postgres_changes", { event: "*", schema: "public", table: "articles",
+            filter: "organisation_id=eq." + org }, () => recharger(org))
+            .on("postgres_changes", { event: "*", schema: "public", table: "produits",
+            filter: "organisation_id=eq." + org }, () => recharger(org))
+            .subscribe();
+        return () => { sb.removeChannel(canal); };
+    }, [org]);
+    const save = async (next) => {
+        const avant = ref.current;
+        setPasse((p) => [...p.slice(-19), avant]);
+        setData(next);
+        ref.current = next;
+        setSync(true);
+        let resultat = { ok: true };
+        try {
+            await synchroniser(avant, next, org);
+        }
+        catch (e) {
+            resultat = { ok: false, message: e.message || String(e) };
+            setErr(resultat.message);
+        }
+        await recharger(org); // on affiche ce qui est réellement en base
+        setSync(false);
+        return resultat;
+    };
+    const annulerEtape = () => {
+        setPasse((p) => {
+            if (!p.length)
+                return p;
+            save(p[p.length - 1]);
+            return p.slice(0, -1);
+        });
+        clearTimeout(timer.current);
+        setToast(null);
+    };
+    const flash = (msg, undoState) => {
+        clearTimeout(timer.current);
+        setToast({ msg, undoState });
+        timer.current = setTimeout(() => setToast(null), 5000);
+    };
+    const undo = () => { if (toast === null || toast === void 0 ? void 0 : toast.undoState)
+        save(toast.undoState); clearTimeout(timer.current); setToast(null); };
+    if (session === undefined)
+        return React.createElement("p", { className: "p-8 text-center text-sm text-slate-400" }, "Chargement\u2026");
+    if (!session)
+        return React.createElement(Connexion, null);
+    if (refus)
+        return React.createElement(Refus, { email: session.user.email });
+    if (!data)
+        return (React.createElement("div", { className: "p-8 text-center text-sm text-slate-400" }, err ? React.createElement("span", { className: "text-red-700" }, err) : "Chargement de ton stock…"));
+    const vide = data.articles.length === 0;
+    return (React.createElement("div", { className: "min-h-screen bg-slate-100 text-slate-900 pb-24 antialiased" },
+        React.createElement("div", { className: "mx-auto max-w-2xl" },
+            React.createElement(Header, { tab: tab, onIA: () => setSheet({ type: "ia" }), onUndo: annulerEtape, nbUndo: passe.length, sync: sync }),
+            err && (React.createElement("div", { className: "mx-4 mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-800" },
+                err,
+                React.createElement("button", { onClick: () => setErr(null), className: "mt-2 block rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white" }, "J'ai lu"))),
+            tab === "accueil" && (React.createElement(Accueil, { data: data, vide: vide, onGo: setTab, onFill: (c) => setSheet({ type: "completer", champ: c }) })),
+            tab === "stock" && (React.createElement(Stock, { data: data, onSell: (a) => setSheet({ type: "vente", ...a }), onOpen: (id) => setSheet({ type: "article", id }), onEditProduct: (id) => setSheet({ type: "produit", id }) })),
+            tab === "ventes" && React.createElement(Ventes, { data: data, onOpen: (id) => setSheet({ type: "article", id }) }),
+            tab === "reglages" && React.createElement(Reglages, { data: data, save: save, org: org, session: session })),
+        React.createElement(FAB, { onPick: (t) => setSheet({ type: t }) }),
+        React.createElement(Nav, { tab: tab, setTab: setTab }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "menu" && React.createElement(MenuAjout, { onPick: (t) => setSheet({ type: t }), close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "achat" && React.createElement(Achat, { data: data, save: save, flash: flash, mode: "unitaire", close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "arrivage" && React.createElement(Achat, { data: data, save: save, flash: flash, mode: "arrivage", close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "vente" && React.createElement(Vente, { data: data, save: save, flash: flash, cible: sheet, close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "completer" && React.createElement(Completer, { data: data, save: save, flash: flash, champ: sheet.champ, close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "ia" && React.createElement(Outils, { data: data, save: save, flash: flash, close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "produit" && React.createElement(Produit, { data: data, save: save, flash: flash, id: sheet.id, close: () => setSheet(null) }),
+        (sheet === null || sheet === void 0 ? void 0 : sheet.type) === "article" && React.createElement(Article, { data: data, save: save, flash: flash, id: sheet.id, close: () => setSheet(null) }),
+        toast && React.createElement(Toast, { toast: toast, onUndo: undo, onClose: () => setToast(null) })));
+}
+function Refus({ email }) {
+    return (React.createElement("div", { className: "min-h-screen bg-slate-100 px-5 pt-20 antialiased" },
+        React.createElement("div", { className: "mx-auto max-w-sm rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200" },
+            React.createElement("p", { className: "font-medium" }, "Pas encore d'acc\u00E8s"),
+            React.createElement("p", { className: "mt-1 text-sm leading-relaxed text-slate-500" },
+                "L'adresse ",
+                React.createElement("b", { className: "text-slate-700" }, email),
+                " ne fait partie d'aucune \u00E9quipe. Demande \u00E0 l'administrateur de t'inviter depuis cette m\u00EAme adresse."),
+            React.createElement(Secondaire, { onClick: () => sb.auth.signOut(), className: "mt-4 w-full" }, "Changer d'adresse"))));
+}
+function Connexion() {
+    const [email, setEmail] = useState("");
+    const [code, setCode] = useState("");
+    const [etat, setEtat] = useState("email"); // email | envoi | code | verif
+    const [msg, setMsg] = useState("");
+    const envoyer = async () => {
+        if (!email.trim())
+            return;
+        setEtat("envoi");
+        setMsg("");
+        const { error } = await sb.auth.signInWithOtp({
+            email: email.trim().toLowerCase(),
+            options: { emailRedirectTo: window.location.href.split("#")[0] },
+        });
+        if (error) {
+            setMsg(error.message);
+            setEtat("email");
+        }
+        else
+            setEtat("code");
+    };
+    const valider = async () => {
+        const t = code.replace(/\D/g, "");
+        if (t.length < 6) {
+            setMsg("Le code fait six chiffres.");
+            return;
+        }
+        setEtat("verif");
+        setMsg("");
+        // Supabase attend un type différent selon que le compte existe déjà
+        // ou vient d'être créé. On essaie les trois plutôt que de deviner.
+        let dernier = null;
+        for (const type of ["email", "magiclink", "signup"]) {
+            const { error } = await sb.auth.verifyOtp({
+                email: email.trim().toLowerCase(), token: t, type,
+            });
+            if (!error)
+                return; // connecté : l'application prend le relais
+            dernier = error;
+        }
+        setMsg((dernier && dernier.message ? dernier.message + ". " : "") +
+            "Utilise le code du dernier email reçu : chaque nouvelle demande annule le précédent.");
+        setEtat("code");
+    };
+    return (React.createElement("div", { className: "min-h-screen bg-slate-100 px-5 pt-20 antialiased" },
+        React.createElement("div", { className: "mx-auto max-w-sm" },
+            React.createElement("div", { className: "mb-8" },
+                React.createElement("div", { className: "mb-4 flex h-14 w-14 items-center justify-center rounded-2xl", style: { backgroundColor: "#0F172A" } },
+                    React.createElement(Package, { className: "h-7 w-7 text-white", strokeWidth: 1.75 })),
+                React.createElement("h1", { className: "text-2xl font-semibold tracking-tight" }, "RASSTOCK"),
+                React.createElement("p", { className: "mt-1 text-sm text-slate-500" }, "Stock, commandes et ventes, partag\u00E9s en temps r\u00E9el.")),
+            React.createElement("div", { className: "rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200" }, etat === "code" || etat === "verif" ? (React.createElement(React.Fragment, null,
+                React.createElement("p", { className: "text-sm font-medium" }, "Entre ton code"),
+                React.createElement("p", { className: "mt-1 mb-4 text-sm leading-relaxed text-slate-500" },
+                    "Un code \u00E0 six chiffres vient d'\u00EAtre envoy\u00E9 \u00E0",
+                    " ",
+                    React.createElement("b", { className: "text-slate-700" }, email),
+                    "."),
+                React.createElement("input", { value: code, onChange: (e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6)), type: "tel", inputMode: "numeric", autoComplete: "one-time-code", autoFocus: true, onKeyDown: (e) => { if (e.key === "Enter")
+                        valider(); }, placeholder: "000000", className: "mb-3 w-full rounded-xl bg-slate-100 px-3.5 py-3 text-center text-2xl font-semibold tabular-nums tracking-tight ring-1 ring-slate-200 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600" }),
+                React.createElement(Primaire, { onClick: valider, disabled: etat === "verif" || code.length < 6, className: "w-full" }, etat === "verif" ? "Vérification…" : "Se connecter"),
+                msg && (React.createElement("p", { className: "mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800" }, msg)),
+                React.createElement("div", { className: "mt-4 flex gap-4" },
+                    React.createElement("button", { onClick: () => { setCode(""); setMsg(""); envoyer(); }, className: "text-sm font-medium text-blue-700" }, "Renvoyer un code"),
+                    React.createElement("button", { onClick: () => { setEtat("email"); setCode(""); setMsg(""); }, className: "text-sm font-medium text-slate-500" }, "Changer d'adresse")),
+                React.createElement("p", { className: "mt-4 text-xs leading-relaxed text-slate-400" }, "Prends le code du dernier email re\u00E7u : en redemander un annule le pr\u00E9c\u00E9dent. Valable une heure."))) : (React.createElement(React.Fragment, null,
+                React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-slate-500" }, "Adresse email"),
+                React.createElement("input", { value: email, onChange: (e) => setEmail(e.target.value), type: "email", inputMode: "email", autoCapitalize: "none", autoCorrect: "off", onKeyDown: (e) => { if (e.key === "Enter")
+                        envoyer(); }, placeholder: "prenom@exemple.com", className: "mb-3 w-full rounded-xl bg-slate-100 px-3.5 py-3 text-base ring-1 ring-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600" }),
+                React.createElement(Primaire, { onClick: envoyer, disabled: etat === "envoi" || !email.trim(), className: "w-full" }, etat === "envoi" ? "Envoi en cours…" : "Recevoir mon code"),
+                msg && (React.createElement("p", { className: "mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800" }, msg)),
+                React.createElement("p", { className: "mt-4 text-xs leading-relaxed text-slate-400" }, "Tu recevras un code \u00E0 six chiffres \u00E0 recopier ici. Rien \u00E0 installer, aucun mot de passe \u00E0 retenir.")))),
+            React.createElement("p", { className: "mt-6 text-center text-xs text-slate-400" }, "Nouveau dans l'\u00E9quipe ? Utilise l'adresse \u00E0 laquelle tu as re\u00E7u l'invitation."))));
+}
+/* --------------------------------- calculs -------------------------------- */
+function kpis(data) {
+    const A = data.articles.filter((a) => !a.supprime);
+    const dispo = A.filter((a) => a.statut === "stock");
+    const reserve = A.filter((a) => a.statut === "reserve");
+    const commande = A.filter((a) => a.statut === "commande");
+    const vendus = A.filter((a) => a.statut === "vendu");
+    const sortis = A.filter((a) => a.statut === "sorti");
+    const coutDe = (a) => (+a.cout || 0) + (+a.fraisAchat || 0);
+    const encaisseDe = (a) => (+a.prix || 0) - (+a.fraisVente || 0);
+    const valeur = [...dispo, ...reserve].reduce((s, a) => s + coutDe(a), 0);
+    const encaisse = vendus.reduce((s, a) => s + encaisseDe(a), 0);
+    const coutVentes = vendus.reduce((s, a) => s + coutDe(a), 0);
+    const pertes = sortis
+        .filter((a) => { var _a; return (_a = MOTIFS.find((m) => m.k === a.motif)) === null || _a === void 0 ? void 0 : _a.depense; })
+        .reduce((s, a) => s + coutDe(a), 0);
+    const marge = encaisse - coutVentes - pertes;
+    const sansPrix = vendus.filter((a) => a.prix === null || a.prix === "" || a.prix === 0);
+    const sansCout = A.filter((a) => a.statut !== "sorti" && (a.cout === null || a.cout === ""));
+    const dormant = dispo.filter((a) => days(a.dateAchat || today()) > 60);
+    const aExpedier = vendus.filter((a) => a.canal !== "Main propre" && !a.dateRemise);
+    return {
+        dispo: dispo.length, reserve: reserve.length, commande: commande.length,
+        valeur, encaisse, coutVentes, pertes, marge,
+        taux: encaisse > 0 ? (marge / encaisse) * 100 : 0,
+        dormant, aExpedier, vendus, sansPrix, sansCout,
+    };
+}
+/* --------------------------------- écrans --------------------------------- */
+function Header({ tab, onIA, onUndo, nbUndo, sync }) {
+    const t = { accueil: "Aujourd'hui", stock: "Stock", ventes: "Ventes", reglages: "Réglages" }[tab];
+    const pastille = "flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 active:bg-slate-50";
+    return (React.createElement("div", { className: "flex items-center justify-between gap-2 px-4 pt-6 pb-4" },
+        React.createElement("h1", { className: "min-w-0 flex-1 truncate text-2xl font-semibold tracking-tight" }, t),
+        sync && React.createElement("span", { className: "shrink-0 text-xs text-slate-400" }, "enregistrement\u2026"),
+        React.createElement("button", { onClick: onUndo, disabled: !nbUndo, className: pastille, style: { opacity: nbUndo ? 1 : 0.35 }, title: "Annuler la derni\u00E8re action" },
+            React.createElement(Undo2, { className: "h-4 w-4 text-slate-700" })),
+        React.createElement("button", { onClick: onIA, className: pastille, title: "Outils" },
+            React.createElement(Sparkles, { className: "h-4 w-4 text-blue-700" }))));
+}
+function Accueil({ data, vide, onGo, onFill }) {
+    const k = kpis(data);
+    const [formule, setFormule] = useState(null);
+    if (vide)
+        return (React.createElement("div", { className: "mx-4 rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center" },
+            React.createElement(Package, { className: "mx-auto mb-3 h-8 w-8 text-slate-300", strokeWidth: 1.5 }),
+            React.createElement("p", { className: "font-medium" }, "Rien en stock pour l'instant"),
+            React.createElement("p", { className: "mt-1 text-sm text-slate-500" }, "Appuie sur le bouton + pour enregistrer ton premier arrivage.")));
+    const principaux = [
+        { l: "Disponible", v: k.dispo, suf: " articles", f: "Articles au statut « en stock »." },
+        { l: "Valeur du stock", v: eur(k.valeur), f: "Somme des coûts d'achat des articles en stock et réservés." },
+        { l: "Encaissé", v: eur(k.encaisse), f: "Somme des (prix de vente − frais de vente) des articles vendus." },
+        {
+            l: "Marge réalisée", v: eur(k.marge),
+            sub: k.encaisse > 0 ? `${k.taux.toFixed(0)} % de l'encaissé` : null,
+            f: "Encaissé − coût des articles vendus − pertes. Le taux est rapporté à l'encaissé.",
+            fort: true,
+        },
+    ];
+    const secondaires = [
+        ["Commandé", k.commande], ["Réservé", k.reserve],
+    ].filter(([, v]) => v > 0);
+    const recents = [...data.articles]
+        .filter((a) => a.statut === "vendu" && !a.supprime)
+        .sort((a, b) => (b.dateVente || "").localeCompare(a.dateVente || ""))
+        .slice(0, 4);
+    return (React.createElement("div", { className: "space-y-4 px-4" },
+        React.createElement("div", { className: "grid grid-cols-2 gap-3" }, principaux.map((c) => (React.createElement("button", { key: c.l, onClick: () => setFormule(c), className: "rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-slate-200 active:bg-slate-50" },
+            React.createElement("div", { className: "text-xs font-medium text-slate-500" }, c.l),
+            React.createElement("div", { className: `mt-1 text-2xl font-semibold tabular-nums tracking-tight ${c.fort && k.marge >= 0 ? "text-emerald-700" : c.fort ? "text-red-600" : ""}` },
+                c.v,
+                React.createElement("span", { className: "text-sm font-normal text-slate-400" }, c.suf || "")),
+            c.sub && React.createElement("div", { className: "mt-0.5 text-xs text-slate-400" }, c.sub))))),
+        secondaires.length > 0 && (React.createElement("div", { className: "flex gap-4 rounded-xl bg-white px-4 py-2.5 text-sm ring-1 ring-slate-200" }, secondaires.map(([l, v]) => (React.createElement("span", { key: l, className: "text-slate-600" },
+            l,
+            " ",
+            React.createElement("b", { className: "tabular-nums text-slate-900" }, v)))))),
+        (k.aExpedier.length > 0 || k.dormant.length > 0 ||
+            k.sansCout.length > 0 || k.sansPrix.length > 0) && (React.createElement(Bloc, { titre: "\u00C0 traiter" },
+            k.sansCout.length > 0 && (React.createElement(Ligne, { icone: React.createElement(Settings2, { className: "h-4 w-4" }), texte: `${k.sansCout.length} articles sans coût d'achat`, sous: "Appuie pour les remplir produit par produit", onClick: () => onFill("cout") })),
+            k.sansPrix.length > 0 && (React.createElement(Ligne, { icone: React.createElement(Settings2, { className: "h-4 w-4" }), texte: `${k.sansPrix.length} ventes sans prix`, sous: "Appuie pour les remplir produit par produit", onClick: () => onFill("prix") })),
+            k.aExpedier.length > 0 && (React.createElement(Ligne, { icone: React.createElement(Truck, { className: "h-4 w-4" }), texte: `${k.aExpedier.length} à expédier`, sous: "Vendus, pas encore remis", onClick: () => onGo("ventes") })),
+            k.dormant.length > 0 && (React.createElement(Ligne, { icone: React.createElement(RotateCcw, { className: "h-4 w-4" }), texte: `${k.dormant.length} en stock depuis plus de 60 jours`, sous: `${eur(k.dormant.reduce((s, a) => s + (+a.cout || 0), 0))} immobilisés`, onClick: () => onGo("stock") })))),
+        recents.length > 0 && (React.createElement(Bloc, { titre: "Derni\u00E8res ventes" }, recents.map((a) => {
+            const p = data.produits.find((p) => p.id === a.produitId);
+            const m = (+a.prix || 0) - (+a.fraisVente || 0) - (+a.cout || 0) - (+a.fraisAchat || 0);
+            return (React.createElement("div", { key: a.id, className: "flex items-baseline justify-between py-2" },
+                React.createElement("div", { className: "min-w-0 pr-3" },
+                    React.createElement("div", { className: "truncate text-sm font-medium" }, p === null || p === void 0 ? void 0 :
+                        p.nom,
+                        " ",
+                        a.taille),
+                    React.createElement("div", { className: "text-xs text-slate-400" },
+                        a.acheteur || "Sans acheteur",
+                        " \u2014 ",
+                        fmtDate(a.dateVente))),
+                React.createElement("div", { className: "shrink-0 text-right" },
+                    React.createElement("div", { className: "text-sm font-medium tabular-nums" }, a.prix ? eur(a.prix) : React.createElement("span", { className: "text-slate-300" }, "prix ?")),
+                    a.prix != null && a.cout != null && (React.createElement("div", { className: `text-xs tabular-nums ${m >= 0 ? "text-emerald-700" : "text-red-600"}` },
+                        m >= 0 ? "+" : "",
+                        eur(m))))));
+        }))),
+        formule && (React.createElement(Modal, { close: () => setFormule(null) },
+            React.createElement("h3", { className: "text-lg font-semibold" }, formule.l),
+            React.createElement("p", { className: "mt-2 text-sm leading-relaxed text-slate-600" }, formule.f),
+            React.createElement(Primaire, { onClick: () => setFormule(null), className: "mt-5 w-full" }, "Fermer")))));
+}
+function Bloc({ titre, children }) {
+    return (React.createElement("div", { className: "rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200" },
+        React.createElement("div", { className: "mb-1 text-xs font-medium text-slate-500" }, titre),
+        React.createElement("div", { className: "divide-y divide-slate-100" }, children)));
+}
+function Ligne({ icone, texte, sous, onClick }) {
+    return (React.createElement("button", { onClick: onClick, className: "flex w-full items-center gap-3 py-2.5 text-left active:opacity-60" },
+        React.createElement("span", { className: "text-slate-400" }, icone),
+        React.createElement("span", { className: "min-w-0 flex-1" },
+            React.createElement("span", { className: "block text-sm font-medium" }, texte),
+            sous && React.createElement("span", { className: "block text-xs text-slate-400" }, sous)),
+        React.createElement(ChevronRight, { className: "h-4 w-4 shrink-0 text-slate-300" })));
+}
+/* ---------------------------------- stock --------------------------------- */
+function Stock({ data, onSell, onOpen, onEditProduct }) {
+    const [q, setQ] = useState("");
+    const [ouvert, setOuvert] = useState(null);
+    const [filtre, setFiltre] = useState("stock");
+    const groupes = useMemo(() => {
+        const A = data.articles.filter((a) => !a.supprime &&
+            (filtre === "tous" ? a.statut !== "sorti" && a.statut !== "vendu" : a.statut === filtre));
+        const map = new Map();
+        A.forEach((a) => {
+            const p = data.produits.find((p) => p.id === a.produitId);
+            if (!p)
+                return;
+            const cle = `${p.nom} ${a.couleur || ""}`.trim();
+            if (!map.has(cle))
+                map.set(cle, { cle, produit: p, couleur: a.couleur, articles: [] });
+            map.get(cle).articles.push(a);
+        });
+        let g = [...map.values()];
+        if (q.trim()) {
+            const s = q.toLowerCase();
+            g = g.filter((x) => x.cle.toLowerCase().includes(s) ||
+                x.articles.some((a) => (a.taille || "").toLowerCase().includes(s) ||
+                    (a.acheteur || "").toLowerCase().includes(s)));
+        }
+        return g.sort((a, b) => a.cle.localeCompare(b.cle));
+    }, [data, q, filtre]);
+    const filtres = [["stock", "En stock"], ["reserve", "Réservé"], ["commande", "Commandé"], ["tous", "Tous"]];
+    return (React.createElement("div", { className: "px-4" },
+        React.createElement("div", { className: "relative mb-3" },
+            React.createElement(Search, { className: "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" }),
+            React.createElement("input", { value: q, onChange: (e) => setQ(e.target.value), placeholder: "Produit, taille, acheteur", className: "w-full rounded-xl border-0 bg-white py-3 pl-9 pr-3 text-base shadow-sm ring-1 ring-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600" })),
+        React.createElement("div", { className: "mb-3 flex gap-2 overflow-x-auto pb-1" }, filtres.map(([k, l]) => (React.createElement("button", { key: k, onClick: () => setFiltre(k), className: `shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium ${filtre === k ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}` }, l)))),
+        groupes.length === 0 ? (React.createElement("p", { className: "py-12 text-center text-sm text-slate-400" }, "Rien \u00E0 afficher ici.")) : (React.createElement("div", { className: "space-y-2" }, groupes.map((g) => {
+            const est = ouvert === g.cle;
+            const tailles = [...new Set(g.articles.map((a) => a.taille || "—"))]
+                .sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0) || a.localeCompare(b));
+            return (React.createElement("div", { key: g.cle, className: "overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" },
+                React.createElement("div", { className: "flex items-center" },
+                    React.createElement("button", { onClick: () => setOuvert(est ? null : g.cle), className: "flex min-w-0 flex-1 items-center gap-3 p-4 text-left active:bg-slate-50" },
+                        React.createElement("div", { className: "min-w-0 flex-1" },
+                            React.createElement("div", { className: "truncate font-medium" }, g.produit.nom),
+                            React.createElement("div", { className: "text-sm text-slate-500" },
+                                g.couleur ? `${g.couleur} — ` : "",
+                                g.articles.length,
+                                " article",
+                                g.articles.length > 1 ? "s" : "")),
+                        React.createElement(ChevronDown, { className: `h-5 w-5 shrink-0 text-slate-300 ${est ? "rotate-180" : ""}` })),
+                    React.createElement("button", { onClick: () => onEditProduct(g.produit.id), className: "mr-2 rounded-lg p-2.5 text-slate-300 active:bg-slate-100" },
+                        React.createElement(Pencil, { className: "h-4 w-4" }))),
+                est && (React.createElement("div", { className: "border-t border-slate-100 p-4 pt-3" },
+                    React.createElement("p", { className: "mb-2 text-xs text-slate-400" }, filtre === "stock" ? "Appuie sur une taille pour vendre" : "Appuie pour ouvrir le détail"),
+                    React.createElement("div", { className: "flex flex-wrap gap-2" }, tailles.map((t) => {
+                        const lot = g.articles.filter((a) => (a.taille || "—") === t);
+                        return (React.createElement("button", { key: t, onClick: () => filtre === "stock"
+                                ? onSell({ produitId: g.produit.id, taille: t === "—" ? "" : t, couleur: g.couleur })
+                                : onOpen(lot[0].id), className: "relative w-16 rounded-xl bg-slate-100 px-3 py-2.5 text-center ring-1 ring-slate-200 active:bg-blue-700 active:text-white" },
+                            React.createElement("div", { className: "text-base font-semibold tabular-nums leading-none" }, t),
+                            React.createElement("div", { className: "mt-1 text-xs leading-none text-slate-500" },
+                                lot.length,
+                                "\u00D7")));
+                    })),
+                    React.createElement("div", { className: "mt-3 space-y-1 border-t border-slate-100 pt-3" },
+                        React.createElement("p", { className: "pb-1 text-xs text-slate-400" }, "Appuie sur une ligne pour la corriger"),
+                        g.articles.map((a) => (React.createElement("button", { key: a.id, onClick: () => onOpen(a.id), className: "flex w-full items-center justify-between gap-2 py-1.5 text-left text-sm active:opacity-60" },
+                            React.createElement("span", { className: "min-w-0 truncate text-slate-600" },
+                                a.taille || "Standard",
+                                " \u2014 ",
+                                a.cout == null ? "coût inconnu" : `acheté ${eur(a.cout)}`),
+                            React.createElement("span", { className: "flex shrink-0 items-center gap-2" },
+                                React.createElement("span", { className: "rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500" }, LIB[a.statut]),
+                                React.createElement(Pencil, { className: "h-3.5 w-3.5 text-slate-300" }))))))))));
+        })))));
+}
+/* ---------------------------------- ventes -------------------------------- */
+function Ventes({ data, onOpen }) {
+    const liste = data.articles
+        .filter((a) => a.statut === "vendu" && !a.supprime)
+        .sort((a, b) => (b.dateVente || "").localeCompare(a.dateVente || ""));
+    if (!liste.length)
+        return React.createElement("p", { className: "px-4 py-12 text-center text-sm text-slate-400" }, "Aucune vente enregistr\u00E9e.");
+    const jours = [...new Set(liste.map((a) => a.dateVente))];
+    return (React.createElement("div", { className: "space-y-4 px-4" }, jours.map((j) => {
+        const lot = liste.filter((a) => a.dateVente === j);
+        const total = lot.reduce((s, a) => s + (+a.prix || 0), 0);
+        return (React.createElement("div", { key: j },
+            React.createElement("div", { className: "mb-1.5 flex items-baseline justify-between px-1" },
+                React.createElement("span", { className: "text-xs font-medium text-slate-500" }, j === today() ? "Aujourd'hui" : fmtDate(j)),
+                React.createElement("span", { className: "text-xs font-medium tabular-nums text-slate-500" }, eur(total))),
+            React.createElement("div", { className: "divide-y divide-slate-100 rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" }, lot.map((a) => {
+                const p = data.produits.find((p) => p.id === a.produitId);
+                const m = (+a.prix || 0) - (+a.fraisVente || 0) - (+a.cout || 0) - (+a.fraisAchat || 0);
+                const attente = a.canal !== "Main propre" && !a.dateRemise;
+                return (React.createElement("button", { key: a.id, onClick: () => onOpen(a.id), className: "flex w-full items-center gap-3 p-4 text-left active:bg-slate-50" },
+                    React.createElement("div", { className: "min-w-0 flex-1" },
+                        React.createElement("div", { className: "truncate font-medium" }, p === null || p === void 0 ? void 0 :
+                            p.nom,
+                            " ",
+                            a.taille),
+                        React.createElement("div", { className: "truncate text-xs text-slate-400" },
+                            a.acheteur || "Sans acheteur",
+                            " \u2014 ",
+                            a.canal,
+                            attente && React.createElement("span", { className: "ml-1 text-blue-700" }, "\u2014 \u00E0 exp\u00E9dier"))),
+                    React.createElement("div", { className: "shrink-0 text-right" }, a.prix ? (React.createElement(React.Fragment, null,
+                        React.createElement("div", { className: "font-medium tabular-nums" }, eur(a.prix)),
+                        React.createElement("div", { className: `text-xs tabular-nums ${a.cout === null ? "text-slate-300" : m >= 0 ? "text-emerald-700" : "text-red-600"}` }, a.cout === null ? "coût ?" : `${m >= 0 ? "+" : ""}${eur(m)}`))) : (React.createElement("div", { className: "text-sm text-slate-300" }, "prix ?")))));
+            }))));
+    })));
+}
+/* ------------------------------ feuille achat ----------------------------- */
+function Achat({ data, save, flash, mode, close }) {
+    const [nom, setNom] = useState("");
+    const [produitId, setProduitId] = useState(null);
+    const [echelle, setEchelle] = useState("eu");
+    const [couleur, setCouleur] = useState("");
+    const [tailles, setTailles] = useState([]);
+    const [qte, setQte] = useState(1);
+    const [cout, setCout] = useState("");
+    const [toutes, setToutes] = useState(false);
+    const [lot, setLot] = useState([]); // arrivage en cours
+    const [plus, setPlus] = useState(false);
+    const [frais, setFrais] = useState("");
+    const [fournisseur, setFournisseur] = useState("");
+    const produit = data.produits.find((p) => p.id === produitId);
+    const suggestions = nom.trim().length > 0 && !produit
+        ? data.produits.filter((p) => p.nom.toLowerCase().includes(nom.toLowerCase())).slice(0, 4)
+        : [];
+    // tailles déjà utilisées dans le stock, sinon échelle complète
+    const utilisees = [...new Set(data.articles.map((a) => a.taille).filter(Boolean))];
+    const base = ECHELLES[produit ? produit.echelle : echelle] || [];
+    const proposees = toutes || utilisees.length === 0
+        ? base
+        : base.filter((t) => utilisees.includes(t));
+    const choisirProduit = (p) => { setProduitId(p.id); setNom(p.nom); setEchelle(p.echelle); };
+    const creer = () => setProduitId(null);
+    const ajouterAuLot = () => {
+        const ts = proposees.length === 0 ? [""] : tailles;
+        if (!nom.trim() || (proposees.length > 0 && ts.length === 0))
+            return;
+        const lignes = ts.map((t) => ({ taille: t, couleur, qte: +qte, cout: +cout || 0, nom, produitId, echelle }));
+        setLot([...lot, ...lignes]);
+        setTailles([]);
+        setQte(1);
+    };
+    const commit = (statut) => {
+        const enCours = (() => {
+            const ts = proposees.length === 0 ? [""] : tailles;
+            if (!nom.trim() || (proposees.length > 0 && ts.length === 0))
+                return [];
+            return ts.map((t) => ({ taille: t, couleur, qte: +qte, cout: +cout || 0, nom, produitId, echelle }));
+        })();
+        const toutesLignes = [...lot, ...enCours];
+        if (!toutesLignes.length)
+            return;
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        const arrivageId = "arr" + next.seq++;
+        const nbTotal = toutesLignes.reduce((s, l) => s + l.qte, 0);
+        const fraisUnit = nbTotal > 0 ? (+frais || 0) / nbTotal : 0;
+        toutesLignes.forEach((l) => {
+            let pid = l.produitId;
+            if (!pid) {
+                const exist = next.produits.find((p) => p.nom.toLowerCase() === l.nom.trim().toLowerCase());
+                if (exist)
+                    pid = exist.id;
+                else {
+                    pid = "p" + next.seq++;
+                    next.produits.push({ id: pid, nom: l.nom.trim(), echelle: l.echelle });
+                }
+            }
+            for (let i = 0; i < l.qte; i++) {
+                next.articles.push({
+                    id: "a" + next.seq++, produitId: pid, taille: l.taille, couleur: l.couleur,
+                    statut, cout: l.cout, fraisAchat: Math.round(fraisUnit * 100) / 100,
+                    prix: null, fraisVente: 0, acheteur: "", canal: "",
+                    dateAchat: today(), dateVente: null, dateRemise: null,
+                    fournisseur, arrivageId, notes: "", motif: null, supprime: false,
+                });
+            }
+        });
+        save(next);
+        flash(`${nbTotal} article${nbTotal > 1 ? "s" : ""} ajouté${nbTotal > 1 ? "s" : ""}`, avant);
+        close();
+    };
+    const totalLot = lot.reduce((s, l) => s + l.qte, 0);
+    const montantLot = lot.reduce((s, l) => s + l.qte * l.cout, 0);
+    return (React.createElement(Sheet, { titre: mode === "arrivage" ? "Arrivage" : "Nouvel achat", close: close },
+        mode === "arrivage" && totalLot > 0 && (React.createElement("div", { className: "mb-4 rounded-xl bg-slate-900 px-4 py-3 text-white" },
+            React.createElement("div", { className: "text-sm" },
+                React.createElement("b", { className: "tabular-nums" }, totalLot),
+                " article",
+                totalLot > 1 ? "s" : "",
+                " \u2014",
+                " ",
+                React.createElement("b", { className: "tabular-nums" }, eur(montantLot))),
+            React.createElement("div", { className: "mt-2 max-h-24 space-y-0.5 overflow-y-auto text-xs text-slate-300" }, lot.map((l, i) => (React.createElement("div", { key: i, className: "flex justify-between" },
+                React.createElement("span", null,
+                    l.nom,
+                    " ",
+                    l.couleur,
+                    " ",
+                    l.taille,
+                    " \u00D7",
+                    l.qte),
+                React.createElement("button", { onClick: () => setLot(lot.filter((_, j) => j !== i)), className: "ml-2 text-slate-400" }, "retirer"))))))),
+        React.createElement(Champ, { label: "Produit" },
+            React.createElement("input", { value: nom, autoFocus: true, onChange: (e) => { setNom(e.target.value); setProduitId(null); }, placeholder: "Nom du mod\u00E8le", className: inputCls }),
+            suggestions.length > 0 && (React.createElement("div", { className: "mt-1 overflow-hidden rounded-xl ring-1 ring-slate-200" }, suggestions.map((p) => (React.createElement("button", { key: p.id, onClick: () => choisirProduit(p), className: "block w-full bg-white px-3 py-2.5 text-left text-sm active:bg-slate-50" }, p.nom))))),
+            nom.trim() && !produit && suggestions.length === 0 && (React.createElement("p", { className: "mt-1 text-xs text-emerald-700" }, "Nouveau produit \u2014 il sera cr\u00E9\u00E9 automatiquement")),
+            produit && React.createElement("p", { className: "mt-1 text-xs text-slate-400" }, "Produit existant")),
+        !produit && (React.createElement(Champ, { label: "D\u00E9clinaisons" },
+            React.createElement("div", { className: "flex gap-2" }, [["eu", "Pointures"], ["vetement", "Tailles S-XL"], ["aucune", "Aucune"]].map(([k, l]) => (React.createElement("button", { key: k, onClick: () => { setEchelle(k); setTailles([]); }, className: `flex-1 rounded-xl py-2.5 text-sm font-medium ${echelle === k ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}` }, l)))))),
+        React.createElement(Champ, { label: "Coloris (facultatif)" },
+            React.createElement("input", { value: couleur, onChange: (e) => setCouleur(e.target.value), placeholder: "Panda, Noir, Triple White\u2026", className: inputCls })),
+        proposees.length > 0 && (React.createElement(Champ, { label: "Tailles" },
+            React.createElement("div", { className: "flex flex-wrap gap-2" }, proposees.map((t) => (React.createElement("button", { key: t, onClick: () => setTailles(tailles.includes(t) ? tailles.filter((x) => x !== t) : [...tailles, t]), className: `w-14 rounded-lg px-2.5 py-2 text-sm font-medium tabular-nums ${tailles.includes(t) ? "bg-blue-700 text-white" : "bg-white text-slate-700 ring-1 ring-slate-200"}` }, t)))),
+            !toutes && proposees.length < base.length && (React.createElement("button", { onClick: () => setToutes(true), className: "mt-2 text-xs text-blue-700" }, "Afficher toutes les tailles")))),
+        React.createElement("div", { className: "flex gap-3" },
+            React.createElement(Champ, { label: "Quantit\u00E9 par taille", className: "flex-1" },
+                React.createElement("div", { className: "flex items-center gap-2 rounded-xl bg-white p-1 ring-1 ring-slate-200" },
+                    React.createElement("button", { onClick: () => setQte(Math.max(1, qte - 1)), className: "h-10 w-10 rounded-lg text-lg font-medium text-slate-500 active:bg-slate-100" }, "\u2212"),
+                    React.createElement("span", { className: "flex-1 text-center text-lg font-semibold tabular-nums" }, qte),
+                    React.createElement("button", { onClick: () => setQte(qte + 1), className: "h-10 w-10 rounded-lg text-lg font-medium text-slate-500 active:bg-slate-100" }, "+"))),
+            React.createElement(Champ, { label: "Co\u00FBt unitaire", className: "flex-1" },
+                React.createElement("input", { value: cout, onChange: (e) => setCout(e.target.value), type: "number", inputMode: "decimal", placeholder: "85", className: inputCls }))),
+        React.createElement("button", { onClick: () => setPlus(!plus), className: "mb-3 text-sm text-blue-700" }, plus ? "Moins d'options" : "Plus d'options"),
+        plus && (React.createElement(React.Fragment, null,
+            React.createElement(Champ, { label: "Fournisseur" },
+                React.createElement("input", { value: fournisseur, onChange: (e) => setFournisseur(e.target.value), className: inputCls })),
+            React.createElement(Champ, { label: "Frais de port du lot (r\u00E9partis au prorata)" },
+                React.createElement("input", { value: frais, onChange: (e) => setFrais(e.target.value), type: "number", inputMode: "decimal", placeholder: "0", className: inputCls })))),
+        React.createElement("div", { className: "sticky bottom-0 -mx-5 mt-2 space-y-2 border-t border-slate-100 bg-white px-5 pb-1 pt-3" },
+            mode === "arrivage" && (React.createElement(Secondaire, { onClick: ajouterAuLot, className: "w-full" }, "Ajouter et saisir la suite")),
+            React.createElement("div", { className: "flex gap-2" },
+                React.createElement(Primaire, { onClick: () => commit("stock"), className: "flex-1" }, mode === "arrivage" ? "Terminer l'arrivage" : "Reçu, en stock"),
+                mode !== "arrivage" && (React.createElement(Secondaire, { onClick: () => commit("commande"), className: "px-4" }, "Command\u00E9"))))));
+}
+/* ------------------------------ feuille vente ----------------------------- */
+function Vente({ data, save, flash, cible, close }) {
+    const candidats = data.articles.filter((a) => !a.supprime && a.statut === "stock" && a.produitId === cible.produitId &&
+        (a.taille || "") === (cible.taille || "") && (a.couleur || "") === (cible.couleur || ""));
+    const article = [...candidats].sort((a, b) => (a.dateAchat || "").localeCompare(b.dateAchat || ""))[0];
+    const produit = data.produits.find((p) => p.id === cible.produitId);
+    const dernier = data.articles
+        .filter((a) => a.produitId === cible.produitId && a.statut === "vendu" && a.prix)
+        .sort((a, b) => (b.dateVente || "").localeCompare(a.dateVente || ""))[0];
+    const [prix, setPrix] = useState(dernier ? String(dernier.prix) : "");
+    const [acheteur, setAcheteur] = useState("");
+    const [canal, setCanal] = useState("Main propre");
+    const [fraisVente, setFraisVente] = useState("");
+    const [plus, setPlus] = useState(false);
+    const acheteurs = [...new Set(data.articles.map((a) => a.acheteur).filter(Boolean))];
+    if (!article)
+        return (React.createElement(Sheet, { titre: "Vendre", close: close },
+            React.createElement("p", { className: "py-8 text-center text-sm text-slate-500" }, "Plus aucun exemplaire disponible. Quelqu'un vient peut-\u00EAtre de le vendre.")));
+    const valider = (statut) => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        const a = next.articles.find((x) => x.id === article.id);
+        if (!a || a.statut !== "stock") {
+            flash("Cet article vient d'être vendu.");
+            close();
+            return;
+        }
+        a.statut = statut;
+        if (statut === "vendu") {
+            a.prix = +prix || 0;
+            a.fraisVente = +fraisVente || 0;
+            a.acheteur = acheteur;
+            a.canal = canal;
+            a.dateVente = today();
+            a.dateRemise = canal === "Main propre" ? today() : null;
+        }
+        else {
+            a.acheteur = acheteur;
+        }
+        save(next);
+        flash(statut === "vendu" ? `Vendu ${eur(+prix || 0)}` : "Réservé", avant);
+        close();
+    };
+    const marge = (+prix || 0) - (+fraisVente || 0) - (+article.cout || 0) - (+article.fraisAchat || 0);
+    return (React.createElement(Sheet, { titre: "Vendre", close: close },
+        React.createElement("div", { className: "mb-4 rounded-xl bg-slate-100 p-4" },
+            React.createElement("div", { className: "font-medium" }, produit === null || produit === void 0 ? void 0 :
+                produit.nom,
+                " ",
+                cible.couleur),
+            React.createElement("div", { className: "mt-0.5 text-sm text-slate-500" },
+                "Taille ",
+                cible.taille || "standard",
+                " \u2014 ",
+                article.cout == null ? "coût inconnu" : `acheté ${eur(article.cout)}`,
+                " le ",
+                fmtDate(article.dateAchat)),
+            React.createElement("div", { className: "mt-1 text-xs text-slate-400" },
+                candidats.length,
+                " exemplaire",
+                candidats.length > 1 ? "s" : "",
+                " \u2014 le plus ancien est s\u00E9lectionn\u00E9")),
+        React.createElement(Champ, { label: "Prix de vente" },
+            React.createElement("input", { value: prix, onChange: (e) => setPrix(e.target.value), type: "number", inputMode: "decimal", autoFocus: true, placeholder: "180", className: `${inputCls} text-2xl font-semibold` }),
+            prix && (React.createElement("p", { className: `mt-1.5 text-sm ${marge >= 0 ? "text-emerald-700" : "text-red-600"}` },
+                "Marge ",
+                marge >= 0 ? "+" : "",
+                eur(marge)))),
+        React.createElement(Champ, { label: "Canal" },
+            React.createElement("div", { className: "flex flex-wrap gap-2" }, CANAUX.map((c) => (React.createElement("button", { key: c, onClick: () => setCanal(c), className: `rounded-full px-3.5 py-1.5 text-sm font-medium ${canal === c ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}` }, c))))),
+        React.createElement("button", { onClick: () => setPlus(!plus), className: "mb-3 text-sm text-blue-700" }, plus ? "Moins d'options" : "Acheteur et frais"),
+        plus && (React.createElement(React.Fragment, null,
+            React.createElement(Champ, { label: "Acheteur" },
+                React.createElement("input", { value: acheteur, onChange: (e) => setAcheteur(e.target.value), list: "acheteurs", className: inputCls }),
+                React.createElement("datalist", { id: "acheteurs" }, acheteurs.map((x) => React.createElement("option", { key: x, value: x })))),
+            React.createElement(Champ, { label: "Frais de vente (commission)" },
+                React.createElement("input", { value: fraisVente, onChange: (e) => setFraisVente(e.target.value), type: "number", inputMode: "decimal", placeholder: "0", className: inputCls })))),
+        React.createElement("div", { className: "sticky bottom-0 -mx-5 mt-2 flex gap-2 border-t border-slate-100 bg-white px-5 pb-1 pt-3" },
+            React.createElement(Primaire, { onClick: () => valider("vendu"), disabled: !prix, className: "flex-1" }, "Vendu"),
+            React.createElement(Secondaire, { onClick: () => valider("reserve"), className: "px-5" }, "R\u00E9server"))));
+}
+/* ----------------------------- fiche article ------------------------------ */
+function Article({ data, save, flash, id, close }) {
+    var _a, _b, _c, _d;
+    const a0 = data.articles.find((x) => x.id === id);
+    const [f, setF] = useState(a0 ? { ...a0 } : null);
+    const [sortie, setSortie] = useState(false);
+    if (!f)
+        return null;
+    const produit = data.produits.find((p) => p.id === f.produitId);
+    const appliquer = (patch, msg) => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        const a = next.articles.find((x) => x.id === id);
+        Object.assign(a, patch);
+        save(next);
+        flash(msg, avant);
+        close();
+    };
+    const supprimer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        next.articles = next.articles.filter((x) => x.id !== id);
+        save(next);
+        flash("Article supprimé", avant);
+        close();
+    };
+    const enregistrer = () => appliquer({
+        statut: f.statut,
+        cout: f.cout === "" || f.cout === null ? null : +f.cout,
+        prix: f.prix === null || f.prix === "" ? null : +f.prix,
+        fraisAchat: +f.fraisAchat || 0, fraisVente: +f.fraisVente || 0,
+        acheteur: f.acheteur, notes: f.notes, taille: f.taille, couleur: f.couleur,
+    }, "Modifications enregistrées");
+    return (React.createElement(Sheet, { titre: (produit === null || produit === void 0 ? void 0 : produit.nom) || "Article", close: close },
+        React.createElement("div", { className: "mb-4 flex items-center gap-2" },
+            React.createElement("span", { className: "text-xs text-slate-400" },
+                "Achet\u00E9 le ",
+                fmtDate(f.dateAchat))),
+        React.createElement(Champ, { label: "Statut" },
+            React.createElement("div", { className: "flex flex-wrap gap-2" }, Object.entries(LIB).map(([k, l]) => (React.createElement("button", { key: k, onClick: () => setF({ ...f, statut: k }), className: `rounded-full px-3.5 py-1.5 text-sm font-medium ${f.statut === k ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}` }, l))))),
+        React.createElement("div", { className: "flex gap-3" },
+            React.createElement(Champ, { label: "Taille", className: "flex-1" },
+                React.createElement("input", { value: f.taille || "", onChange: (e) => setF({ ...f, taille: e.target.value }), className: inputCls })),
+            React.createElement(Champ, { label: "Coloris", className: "flex-1" },
+                React.createElement("input", { value: f.couleur || "", onChange: (e) => setF({ ...f, couleur: e.target.value }), className: inputCls }))),
+        React.createElement("div", { className: "flex gap-3" },
+            React.createElement(Champ, { label: "Co\u00FBt d'achat", className: "flex-1" },
+                React.createElement("input", { value: (_a = f.cout) !== null && _a !== void 0 ? _a : "", onChange: (e) => setF({ ...f, cout: e.target.value }), type: "number", inputMode: "decimal", className: inputCls })),
+            React.createElement(Champ, { label: "Frais d'achat", className: "flex-1" },
+                React.createElement("input", { value: (_b = f.fraisAchat) !== null && _b !== void 0 ? _b : "", onChange: (e) => setF({ ...f, fraisAchat: e.target.value }), type: "number", inputMode: "decimal", className: inputCls }))),
+        (React.createElement("div", { className: "flex gap-3" },
+            React.createElement(Champ, { label: "Prix de vente", className: "flex-1" },
+                React.createElement("input", { value: (_c = f.prix) !== null && _c !== void 0 ? _c : "", onChange: (e) => setF({ ...f, prix: e.target.value }), type: "number", inputMode: "decimal", className: inputCls })),
+            React.createElement(Champ, { label: "Frais de vente", className: "flex-1" },
+                React.createElement("input", { value: (_d = f.fraisVente) !== null && _d !== void 0 ? _d : "", onChange: (e) => setF({ ...f, fraisVente: e.target.value }), type: "number", inputMode: "decimal", className: inputCls })))),
+        React.createElement(Champ, { label: "Acheteur" },
+            React.createElement("input", { value: f.acheteur || "", onChange: (e) => setF({ ...f, acheteur: e.target.value }), className: inputCls })),
+        React.createElement(Champ, { label: "Notes" },
+            React.createElement("textarea", { value: f.notes || "", onChange: (e) => setF({ ...f, notes: e.target.value }), rows: 2, className: inputCls })),
+        React.createElement("div", { className: "space-y-2 border-t border-slate-100 pt-4" },
+            f.statut === "commande" && (React.createElement(Action, { onClick: () => appliquer({ statut: "stock" }, "Reçu, en stock"), icone: React.createElement(Check, { className: "h-4 w-4" }) }, "Marquer re\u00E7u")),
+            f.statut === "vendu" && !f.dateRemise && (React.createElement(Action, { onClick: () => appliquer({ dateRemise: today() }, "Marqué expédié"), icone: React.createElement(Truck, { className: "h-4 w-4" }) }, "Marquer exp\u00E9di\u00E9")),
+            (f.statut === "vendu" || f.statut === "reserve") && (React.createElement(Action, { onClick: () => appliquer({
+                    statut: "stock", prix: null, fraisVente: 0, acheteur: "", canal: "",
+                    dateVente: null, dateRemise: null,
+                }, f.statut === "vendu" ? "Vente annulée, article remis en stock" : "Réservation annulée"), icone: React.createElement(RotateCcw, { className: "h-4 w-4" }) }, f.statut === "vendu" ? "Annuler la vente" : "Annuler la réservation")),
+            f.statut === "sorti" && (React.createElement(Action, { onClick: () => appliquer({ statut: "stock", motif: null }, "Remis en stock"), icone: React.createElement(RotateCcw, { className: "h-4 w-4" }) }, "Remettre en stock")),
+            React.createElement(Action, { onClick: supprimer, icone: React.createElement(Trash2, { className: "h-4 w-4" }), danger: true }, "Supprimer cette ligne"),
+            ["stock", "commande"].includes(f.statut) && !sortie && (React.createElement(Action, { onClick: () => setSortie(true), icone: React.createElement(Trash2, { className: "h-4 w-4" }), danger: true }, "Sortir du stock")),
+            sortie && (React.createElement("div", { className: "rounded-xl bg-slate-100 p-3" },
+                React.createElement("p", { className: "mb-2 text-xs text-slate-500" }, "Pourquoi cet article sort-il ?"),
+                React.createElement("div", { className: "space-y-1.5" }, MOTIFS.map((m) => (React.createElement("button", { key: m.k, onClick: () => appliquer({ statut: "sorti", motif: m.k }, `Sorti — ${m.l.toLowerCase()}`), className: "block w-full rounded-lg bg-white px-3 py-2.5 text-left text-sm ring-1 ring-slate-200 active:bg-slate-50" },
+                    m.l,
+                    React.createElement("span", { className: "block text-xs text-slate-400" }, m.depense ? "Compté comme une perte" : "Retiré des dépenses")))))))),
+        React.createElement("div", { className: "sticky bottom-0 -mx-5 mt-4 border-t border-slate-100 bg-white px-5 pb-1 pt-3" },
+            React.createElement(Primaire, { onClick: enregistrer, className: "w-full" }, "Enregistrer"))));
+}
+/* --------------------------- complétion en masse --------------------------- */
+/* Remplit un champ pour tous les exemplaires d'un produit d'un coup.
+   Aucune connexion, aucune clé : c'est du calcul local.                        */
+function Completer({ data, save, flash, champ, close }) {
+    const estCout = champ === "cout";
+    const manquants = data.produits.map((p) => {
+        const A = data.articles.filter((a) => !a.supprime && a.produitId === p.id &&
+            (estCout ? a.statut !== "sorti" && a.cout == null
+                : a.statut === "vendu" && (a.prix == null || a.prix === 0)));
+        return A.length ? { p, n: A.length } : null;
+    }).filter(Boolean);
+    const [vals, setVals] = useState({});
+    const total = manquants.reduce((s, m) => s + (vals[m.p.id] ? m.n : 0), 0);
+    const montant = manquants.reduce((s, m) => s + (+vals[m.p.id] || 0) * (vals[m.p.id] ? m.n : 0), 0);
+    const appliquer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        let n = 0;
+        next.articles.forEach((a) => {
+            const v = vals[a.produitId];
+            if (!v || a.supprime)
+                return;
+            if (estCout && a.statut !== "sorti" && a.cout == null) {
+                a.cout = +v;
+                n++;
+            }
+            if (!estCout && a.statut === "vendu" && (a.prix == null || a.prix === 0)) {
+                a.prix = +v;
+                n++;
+            }
+        });
+        if (!n)
+            return;
+        save(next);
+        flash(`${n} article${n > 1 ? "s" : ""} complété${n > 1 ? "s" : ""}`, avant);
+        close();
+    };
+    return (React.createElement(Sheet, { titre: estCout ? "Compléter les coûts" : "Compléter les prix", close: close },
+        React.createElement("p", { className: "mb-4 text-sm text-slate-500" }, estCout
+            ? "Un coût d'achat par produit, appliqué à tous ses exemplaires. Laisse vide ce que tu ne connais pas."
+            : "Un prix de vente par produit, appliqué à ses ventes sans prix."),
+        manquants.length === 0 ? (React.createElement("p", { className: "py-8 text-center text-sm text-slate-500" }, "Tout est d\u00E9j\u00E0 renseign\u00E9.")) : (React.createElement("div", { className: "mb-4 space-y-2" }, manquants.map(({ p, n }) => (React.createElement("div", { key: p.id, className: "flex items-center gap-3" },
+            React.createElement("div", { className: "min-w-0 flex-1" },
+                React.createElement("div", { className: "truncate text-sm font-medium" }, p.nom),
+                React.createElement("div", { className: "text-xs text-slate-400" },
+                    n,
+                    " article",
+                    n > 1 ? "s" : "")),
+            React.createElement("input", { value: vals[p.id] || "", type: "number", inputMode: "decimal", placeholder: "\u2014", onChange: (e) => setVals({ ...vals, [p.id]: e.target.value }), className: "w-24 shrink-0 rounded-lg bg-white px-3 py-2.5 text-right text-base tabular-nums ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600" })))))),
+        total > 0 && (React.createElement("div", { className: "mb-3 rounded-xl bg-slate-100 p-3 text-sm" },
+            React.createElement("b", { className: "tabular-nums" }, total),
+            " article",
+            total > 1 ? "s" : "",
+            " \u2014",
+            " ",
+            estCout ? "total dépensé" : "chiffre d'affaires",
+            " ",
+            React.createElement("b", { className: "tabular-nums" }, eur(montant)))),
+        React.createElement(Primaire, { onClick: appliquer, disabled: total === 0, className: "mb-2 w-full" },
+            "Appliquer",
+            total > 0 ? ` (${total})` : "")));
+}
+/* -------------------------------- outils ---------------------------------- */
+/* Opérations courantes, exécutées localement : pas de clé, pas de réseau,
+   et un aperçu du nombre d'articles touchés avant toute écriture.            */
+function Outils({ data, save, flash, close }) {
+    const [mode, setMode] = useState("menu");
+    const vivants = data.articles.filter((a) => !a.supprime);
+    const nb = {
+        cout: vivants.filter((a) => a.statut !== "sorti" && a.cout == null).length,
+        prix: vivants.filter((a) => a.statut === "vendu" && (a.prix == null || a.prix === 0)).length,
+        recus: vivants.filter((a) => a.statut === "commande").length,
+        expedies: vivants.filter((a) => a.statut === "vendu" && a.canal !== "Main propre" && !a.dateRemise).length,
+        commission: vivants.filter((a) => a.statut === "vendu" && a.prix && !a.fraisVente).length,
+    };
+    const lot = (filtre, patch, msg) => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        let n = 0;
+        next.articles.forEach((a) => { if (!a.supprime && filtre(a)) {
+            patch(a);
+            n++;
+        } });
+        if (!n)
+            return;
+        save(next);
+        flash(`${n} ${msg}`, avant);
+        close();
+    };
+    if (mode === "cout" || mode === "prix")
+        return React.createElement(Completer, { data: data, save: save, flash: flash, champ: mode, close: close });
+    if (mode === "commission")
+        return React.createElement(Commission, { data: data, save: save, flash: flash, close: close });
+    if (mode === "fusion")
+        return React.createElement(Fusion, { data: data, save: save, flash: flash, close: close });
+    if (mode === "vider")
+        return React.createElement(Vider, { data: data, save: save, flash: flash, close: close });
+    if (mode === "ia")
+        return React.createElement(Assistant, { data: data, save: save, flash: flash, close: close });
+    const items = [
+        { k: "cout", t: "Compléter les coûts d'achat", s: "Un montant par produit, appliqué à tous ses exemplaires", n: nb.cout },
+        { k: "prix", t: "Compléter les prix de vente", s: "Pour les ventes enregistrées sans montant", n: nb.prix },
+        { k: "commission", t: "Appliquer une commission", s: "Un pourcentage sur les ventes d'un canal", n: nb.commission },
+        { k: "fusion", t: "Fusionner deux produits", s: "Quand le même modèle existe en double", n: null },
+        { k: "vider", t: "Solder un produit", s: "Tout marquer vendu ou sorti d'un coup", n: null },
+    ];
+    return (React.createElement(Sheet, { titre: "Outils", close: close },
+        React.createElement("div", { className: "space-y-2" },
+            nb.recus > 0 && (React.createElement(Action, { icone: React.createElement(Check, { className: "h-4 w-4" }), onClick: () => lot((a) => a.statut === "commande", (a) => { a.statut = "stock"; }, "article(s) reçus, passés en stock") },
+                "Marquer ",
+                nb.recus,
+                " commande(s) re\u00E7ue(s)")),
+            nb.expedies > 0 && (React.createElement(Action, { icone: React.createElement(Truck, { className: "h-4 w-4" }), onClick: () => lot((a) => a.statut === "vendu" && a.canal !== "Main propre" && !a.dateRemise, (a) => { a.dateRemise = today(); }, "vente(s) marquées expédiées") },
+                "Marquer ",
+                nb.expedies,
+                " vente(s) exp\u00E9di\u00E9e(s)")),
+            items.map((i) => (React.createElement("button", { key: i.k, onClick: () => setMode(i.k), className: "flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 text-left ring-1 ring-slate-200 active:bg-slate-50" },
+                React.createElement("span", { className: "min-w-0 flex-1" },
+                    React.createElement("span", { className: "block text-sm font-medium" }, i.t),
+                    React.createElement("span", { className: "block text-xs text-slate-400" }, i.s)),
+                i.n != null && i.n > 0 && (React.createElement("span", { className: "shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs tabular-nums text-slate-600" }, i.n)),
+                React.createElement(ChevronRight, { className: "h-4 w-4 shrink-0 text-slate-300" }))))),
+        React.createElement("div", { className: "mt-4 border-t border-slate-100 pt-4" },
+            React.createElement("button", { onClick: () => setMode("ia"), className: "flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 text-left ring-1 ring-slate-200 active:bg-slate-50" },
+                React.createElement(Sparkles, { className: "h-4 w-4 shrink-0 text-blue-700" }),
+                React.createElement("span", { className: "min-w-0 flex-1" },
+                    React.createElement("span", { className: "block text-sm font-medium" }, "Demander en toutes lettres"),
+                    React.createElement("span", { className: "block text-xs text-slate-400" }, "Pour ce qui n'est pas dans la liste. N\u00E9cessite une cl\u00E9 API payante.")),
+                React.createElement(ChevronRight, { className: "h-4 w-4 shrink-0 text-slate-300" })))));
+}
+function Commission({ data, save, flash, close }) {
+    const [canal, setCanal] = useState("Vinted");
+    const [taux, setTaux] = useState("");
+    const cibles = data.articles.filter((a) => !a.supprime && a.statut === "vendu" &&
+        a.canal === canal && a.prix && !a.fraisVente);
+    const montant = cibles.reduce((s, a) => s + (+a.prix * (+taux || 0)) / 100, 0);
+    const appliquer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        let n = 0;
+        next.articles.forEach((a) => {
+            if (!a.supprime && a.statut === "vendu" && a.canal === canal && a.prix && !a.fraisVente) {
+                a.fraisVente = Math.round((+a.prix * (+taux || 0)) / 100 * 100) / 100;
+                n++;
+            }
+        });
+        if (!n)
+            return;
+        save(next);
+        flash(`Commission appliquée à ${n} vente(s)`, avant);
+        close();
+    };
+    return (React.createElement(Sheet, { titre: "Appliquer une commission", close: close },
+        React.createElement("p", { className: "mb-4 text-sm text-slate-500" }, "Les frais de plateforme sont d\u00E9duits de l'encaiss\u00E9 et donc de la marge."),
+        React.createElement(Champ, { label: "Canal" },
+            React.createElement("div", { className: "flex flex-wrap gap-2" }, CANAUX.map((c) => (React.createElement("button", { key: c, onClick: () => setCanal(c), className: `rounded-full px-3.5 py-1.5 text-sm font-medium ${canal === c ? "bg-slate-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}` }, c))))),
+        React.createElement(Champ, { label: "Taux de commission (%)" },
+            React.createElement("input", { value: taux, onChange: (e) => setTaux(e.target.value), type: "number", inputMode: "decimal", placeholder: "10", className: inputCls })),
+        React.createElement("div", { className: "mb-3 rounded-xl bg-slate-100 p-3 text-sm" },
+            cibles.length,
+            " vente(s) concern\u00E9e(s)",
+            taux && React.createElement(React.Fragment, null,
+                " \u2014 ",
+                React.createElement("b", { className: "tabular-nums" }, eur(montant)),
+                " de frais au total")),
+        React.createElement(Primaire, { onClick: appliquer, disabled: !cibles.length || !taux, className: "mb-2 w-full" }, "Appliquer")));
+}
+function Fusion({ data, save, flash, close }) {
+    var _a;
+    const [source, setSource] = useState("");
+    const [cible, setCible] = useState("");
+    const compte = (id) => data.articles.filter((a) => !a.supprime && a.produitId === id).length;
+    const appliquer = () => {
+        var _a;
+        if (!source || !cible || source === cible)
+            return;
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        const nomS = (_a = next.produits.find((p) => p.id === source)) === null || _a === void 0 ? void 0 : _a.nom;
+        next.articles.forEach((a) => { if (a.produitId === source)
+            a.produitId = cible; });
+        next.produits = next.produits.filter((p) => p.id !== source);
+        save(next);
+        flash(`« ${nomS} » fusionné`, avant);
+        close();
+    };
+    const liste = (val, set, exclu) => (React.createElement("select", { value: val, onChange: (e) => set(e.target.value), className: inputCls },
+        React.createElement("option", { value: "" }, "Choisir un produit\u2026"),
+        data.produits.filter((p) => p.id !== exclu).map((p) => (React.createElement("option", { key: p.id, value: p.id },
+            p.nom,
+            " (",
+            compte(p.id),
+            ")")))));
+    return (React.createElement(Sheet, { titre: "Fusionner deux produits", close: close },
+        React.createElement("p", { className: "mb-4 text-sm text-slate-500" }, "Les exemplaires du premier rejoignent le second, puis le premier dispara\u00EEt. Rien n'est perdu."),
+        React.createElement(Champ, { label: "Produit \u00E0 absorber" }, liste(source, setSource, cible)),
+        React.createElement(Champ, { label: "Produit conserv\u00E9" }, liste(cible, setCible, source)),
+        source && cible && source !== cible && (React.createElement("div", { className: "mb-3 rounded-xl bg-slate-100 p-3 text-sm" },
+            compte(source),
+            " exemplaire(s) d\u00E9plac\u00E9(s) \u2014",
+            " ", (_a = data.produits.find((p) => p.id === cible)) === null || _a === void 0 ? void 0 :
+            _a.nom,
+            " en aura ",
+            compte(source) + compte(cible))),
+        React.createElement(Primaire, { onClick: appliquer, disabled: !source || !cible || source === cible, className: "mb-2 w-full" }, "Fusionner")));
+}
+function Vider({ data, save, flash, close }) {
+    const [pid, setPid] = useState("");
+    const [prix, setPrix] = useState("");
+    const restants = data.articles.filter((a) => !a.supprime && a.produitId === pid &&
+        (a.statut === "stock" || a.statut === "reserve"));
+    const solder = (statut, motif) => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        let n = 0;
+        next.articles.forEach((a) => {
+            if (a.supprime || a.produitId !== pid)
+                return;
+            if (a.statut !== "stock" && a.statut !== "reserve")
+                return;
+            a.statut = statut;
+            if (statut === "vendu") {
+                a.prix = +prix || null;
+                a.dateVente = today();
+                a.canal = a.canal || "Main propre";
+            }
+            else {
+                a.motif = motif;
+            }
+            n++;
+        });
+        if (!n)
+            return;
+        save(next);
+        flash(`${n} article(s) soldé(s)`, avant);
+        close();
+    };
+    return (React.createElement(Sheet, { titre: "Solder un produit", close: close },
+        React.createElement("p", { className: "mb-4 text-sm text-slate-500" }, "Utile quand ton stock r\u00E9el est vide mais que l'application affiche encore des articles."),
+        React.createElement(Champ, { label: "Produit" },
+            React.createElement("select", { value: pid, onChange: (e) => setPid(e.target.value), className: inputCls },
+                React.createElement("option", { value: "" }, "Choisir un produit\u2026"),
+                data.produits.map((p) => (React.createElement("option", { key: p.id, value: p.id }, p.nom))))),
+        pid && (React.createElement(React.Fragment, null,
+            React.createElement("div", { className: "mb-4 rounded-xl bg-slate-100 p-3 text-sm" },
+                restants.length,
+                " article(s) encore en stock ou r\u00E9serv\u00E9s"),
+            React.createElement(Champ, { label: "Prix de vente \u00E0 appliquer (facultatif)" },
+                React.createElement("input", { value: prix, onChange: (e) => setPrix(e.target.value), type: "number", inputMode: "decimal", placeholder: "110", className: inputCls })),
+            React.createElement("div", { className: "space-y-2" },
+                React.createElement(Primaire, { onClick: () => solder("vendu"), disabled: !restants.length, className: "w-full" }, "Tout marquer vendu"),
+                React.createElement(Action, { onClick: () => solder("sorti", "perdu"), icone: React.createElement(Trash2, { className: "h-4 w-4" }), danger: true }, "Tout sortir du stock (perdu ou cass\u00E9)"),
+                React.createElement(Action, { onClick: () => solder("sorti", "erreur"), icone: React.createElement(Trash2, { className: "h-4 w-4" }), danger: true }, "Tout sortir (erreur de saisie)"))))));
+}
+/* ------------------------------- assistant -------------------------------- */
+// Résout un sélecteur en liste d'articles concrets, côté application.
+function resoudre(data, sel = {}) {
+    return data.articles.filter((a) => {
+        if (a.supprime)
+            return false;
+        if (sel.produit) {
+            const p = data.produits.find((x) => x.id === a.produitId);
+            if (!p || !p.nom.toLowerCase().includes(String(sel.produit).toLowerCase()))
+                return false;
+        }
+        if (sel.tailles && sel.tailles.length &&
+            !sel.tailles.map(String).includes(String(a.taille)))
+            return false;
+        if (sel.statut && a.statut !== sel.statut)
+            return false;
+        if (sel.sans_cout && a.cout != null)
+            return false;
+        if (sel.sans_prix && a.prix != null)
+            return false;
+        return true;
+    });
+}
+function Assistant({ data, save, flash, close }) {
+    const [q, setQ] = useState("");
+    const [etat, setEtat] = useState("repos"); // repos | reflexion | apercu | erreur
+    const [plan, setPlan] = useState(null);
+    const [msg, setMsg] = useState("");
+    const resume = data.produits.map((p) => {
+        const A = data.articles.filter((a) => a.produitId === p.id && !a.supprime);
+        if (!A.length)
+            return null;
+        const parts = {};
+        A.forEach((a) => {
+            const k = `${a.taille || "-"} ${a.statut}`;
+            parts[k] = (parts[k] || 0) + 1;
+        });
+        const couts = [...new Set(A.map((a) => a.cout).filter((c) => c != null))];
+        return `${p.nom} [${p.echelle}] : ${Object.entries(parts).map(([k, n]) => `${k}×${n}`).join(", ")}` +
+            (couts.length ? ` | coûts connus: ${couts.join("/")}` : " | aucun coût");
+    }).filter(Boolean).join("\n");
+    const demander = async () => {
+        if (!q.trim())
+            return;
+        setEtat("reflexion");
+        setMsg("");
+        const systeme = `Tu transformes une demande en opérations sur un stock de revente.
+Réponds UNIQUEMENT avec un objet JSON, sans texte ni balises markdown.
+
+Format :
+{"resume":"phrase courte en français décrivant ce que tu vas faire",
+ "operations":[ ... ]}
+
+Opérations possibles :
+{"type":"modifier","selecteur":{...},"champs":{"cout":85,"prix":110,"acheteur":"Ali","canal":"Vinted","statut":"stock","notes":"..."}}
+{"type":"vendre","selecteur":{...},"prix":110,"acheteur":"","canal":"Vinted"}
+{"type":"ajouter","produit":"Asics jaune","echelle":"eu","tailles":["42","43"],"quantite":1,"cout":85,"prix":110,"statut":"stock"}
+{"type":"renommer","produit":"ancien nom","nouveau_nom":"nouveau nom"}
+{"type":"supprimer","selecteur":{...}}
+
+Sélecteur (tous les champs sont optionnels, ils se cumulent) :
+{"produit":"texte contenu dans le nom","tailles":["42","43"],"statut":"stock|reserve|vendu|commande|sorti","sans_cout":true,"sans_prix":true}
+
+Statuts : commande, stock, reserve, vendu, sorti.
+Si la demande est ambiguë ou impossible, renvoie {"resume":"...","operations":[],"question":"ta question"}.
+N'invente jamais de produit absent de l'inventaire.
+
+INVENTAIRE ACTUEL :
+${resume}`;
+        try {
+            let cle = localStorage.getItem("cle-api");
+            if (!cle) {
+                cle = prompt("Clé API Anthropic (optionnel — pour remplir tes coûts, utilise plutôt « Compléter les coûts » depuis l'accueil, c'est gratuit) :");
+                if (!cle) {
+                    setMsg("Pas de clé. Pour les modifications en masse, passe par « articles sans coût d'achat » sur l'écran d'accueil — c'est gratuit et sans connexion.");
+                    setEtat("erreur");
+                    return;
+                }
+                localStorage.setItem("cle-api", cle);
+            }
+            const r = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": cle,
+                    "anthropic-version": "2023-06-01",
+                    "anthropic-dangerous-direct-browser-access": "true",
+                },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-6",
+                    max_tokens: 1000,
+                    messages: [{ role: "user", content: `${systeme}\n\nDEMANDE : ${q}` }],
+                }),
+            });
+            const d = await r.json();
+            const txt = (d.content || []).map((c) => c.text || "").join("").replace(/```json|```/g, "").trim();
+            const j = JSON.parse(txt);
+            if (j.question) {
+                setMsg(j.question);
+                setEtat("erreur");
+                return;
+            }
+            if (!j.operations || !j.operations.length) {
+                setMsg(j.resume || "Rien à modifier.");
+                setEtat("erreur");
+                return;
+            }
+            setPlan(j);
+            setEtat("apercu");
+        }
+        catch (e) {
+            setMsg("Je n'ai pas réussi à interpréter la demande. Reformule en nommant le produit.");
+            setEtat("erreur");
+        }
+    };
+    // Calcule l'effet de chaque opération, sans rien écrire.
+    const apercu = useMemo(() => {
+        if (!plan)
+            return [];
+        return plan.operations.map((op) => {
+            var _a, _b;
+            if (op.type === "ajouter")
+                return { op, n: (((_a = op.tailles) === null || _a === void 0 ? void 0 : _a.length) || 1) * (op.quantite || 1),
+                    txt: `Ajouter ${(((_b = op.tailles) === null || _b === void 0 ? void 0 : _b.length) || 1) * (op.quantite || 1)} article(s) — ${op.produit}` };
+            if (op.type === "renommer")
+                return { op, n: 1, txt: `Renommer « ${op.produit} » en « ${op.nouveau_nom} »` };
+            const cibles = resoudre(data, op.selecteur);
+            const quoi = op.type === "supprimer" ? "Supprimer"
+                : op.type === "vendre" ? `Vendre à ${eur(op.prix || 0)}`
+                    : "Modifier " + Object.entries(op.champs || {})
+                        .map(([k, v]) => `${k} → ${typeof v === "number" ? eur(v) : v}`).join(", ");
+            return { op, n: cibles.length, cibles, txt: `${quoi} · ${cibles.length} article(s)` };
+        });
+    }, [plan, data]);
+    const total = apercu.reduce((n, a) => n + a.n, 0);
+    const appliquer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        let total = 0;
+        plan.operations.forEach((op) => {
+            if (op.type === "renommer") {
+                const p = next.produits.find((x) => x.nom.toLowerCase().includes(String(op.produit).toLowerCase()));
+                if (p) {
+                    p.nom = op.nouveau_nom;
+                    total++;
+                }
+                return;
+            }
+            if (op.type === "ajouter") {
+                let p = next.produits.find((x) => x.nom.toLowerCase() === String(op.produit).toLowerCase());
+                if (!p) {
+                    p = { id: "p" + next.seq++, nom: op.produit, echelle: op.echelle || "eu" };
+                    next.produits.push(p);
+                }
+                (op.tailles || [""]).forEach((t) => {
+                    var _a, _b;
+                    for (let i = 0; i < (op.quantite || 1); i++) {
+                        next.articles.push({
+                            id: "a" + next.seq++, produitId: p.id, taille: t, couleur: "",
+                            statut: op.statut || "stock", cout: (_a = op.cout) !== null && _a !== void 0 ? _a : null, fraisAchat: 0,
+                            prix: (_b = op.prix) !== null && _b !== void 0 ? _b : null, fraisVente: 0, acheteur: "", canal: "",
+                            dateAchat: today(), dateVente: null, dateRemise: null,
+                            fournisseur: "", arrivageId: null, notes: "", motif: null, supprime: false,
+                        });
+                        total++;
+                    }
+                });
+                return;
+            }
+            const ids = new Set(resoudre(next, op.selecteur).map((a) => a.id));
+            if (op.type === "supprimer") {
+                next.articles = next.articles.filter((a) => !ids.has(a.id));
+                total += ids.size;
+                return;
+            }
+            next.articles.forEach((a) => {
+                var _a;
+                if (!ids.has(a.id))
+                    return;
+                if (op.type === "vendre") {
+                    a.statut = "vendu";
+                    a.prix = (_a = op.prix) !== null && _a !== void 0 ? _a : a.prix;
+                    a.acheteur = op.acheteur || a.acheteur;
+                    a.canal = op.canal || "Main propre";
+                    a.dateVente = today();
+                    a.dateRemise = a.canal === "Main propre" ? today() : null;
+                }
+                else {
+                    Object.entries(op.champs || {}).forEach(([k, v]) => { a[k] = v; });
+                }
+                total++;
+            });
+        });
+        save(next);
+        flash(`${total} modification${total > 1 ? "s" : ""} appliquée${total > 1 ? "s" : ""}`, avant);
+        close();
+    };
+    const exemples = [
+        "Mets 85 € de coût d'achat sur tous les Under Armor",
+        "Tous les Asics jaune encore en stock passent à 110 €",
+        "Renomme Premier envoi — blanche en Asics blanche",
+    ];
+    return (React.createElement(Sheet, { titre: "Demander", close: close },
+        React.createElement("p", { className: "mb-3 text-sm text-slate-500" }, "D\u00E9cris ce que tu veux changer. Rien n'est modifi\u00E9 tant que tu n'as pas valid\u00E9."),
+        React.createElement("textarea", { value: q, onChange: (e) => setQ(e.target.value), rows: 3, autoFocus: true, onKeyDown: (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (etat !== "apercu")
+                        demander();
+                }
+            }, placeholder: "Mets 85 \u20AC de co\u00FBt sur tous les Asics jaune", className: `${inputCls} mb-2` }),
+        etat !== "apercu" && (React.createElement(Primaire, { onClick: demander, disabled: etat === "reflexion" || !q.trim(), className: "mb-4 w-full" }, etat === "reflexion" ? "Un instant…" : "Voir ce que ça donne")),
+        etat === "repos" && (React.createElement("div", { className: "mb-4 space-y-1.5" }, exemples.map((e) => (React.createElement("button", { key: e, onClick: () => setQ(e), className: "block w-full rounded-lg bg-slate-100 px-3 py-2 text-left text-xs text-slate-600 active:bg-slate-200" }, e))))),
+        etat === "erreur" && (React.createElement("p", { className: "mb-3 rounded-lg bg-amber-50 px-3 py-2.5 text-sm text-amber-900" }, msg)),
+        etat === "apercu" && plan && (React.createElement("div", { className: "mb-3 rounded-xl bg-slate-100 p-4" },
+            React.createElement("p", { className: "text-sm font-medium" }, plan.resume),
+            React.createElement("div", { className: "mt-2 space-y-1" },
+                apercu.slice(0, 4).map((a, i) => (React.createElement("div", { key: i, className: `text-sm ${a.n === 0 ? "text-slate-400" : "text-slate-700"}` },
+                    a.txt,
+                    a.n === 0 && " — aucune correspondance"))),
+                apercu.length > 4 && (React.createElement("div", { className: "text-sm text-slate-500" },
+                    "et ",
+                    apercu.length - 4,
+                    " op\u00E9ration(s) de plus"))),
+            React.createElement("div", { className: "mt-2 border-t border-slate-200 pt-2 text-sm font-medium" },
+                total,
+                " article(s) modifi\u00E9s au total"),
+            total === 0 && (React.createElement("p", { className: "mt-2 text-xs text-amber-700" }, "Rien ne correspond. V\u00E9rifie le nom du produit.")))),
+        etat === "apercu" && (React.createElement("div", { className: "flex gap-2 pb-2" },
+            React.createElement(Primaire, { onClick: appliquer, disabled: total === 0, className: "flex-1" },
+                "Appliquer",
+                total > 0 ? ` (${total})` : ""),
+            React.createElement(Secondaire, { onClick: () => { setEtat("repos"); setPlan(null); }, className: "px-5" }, "Reprendre")))));
+}
+function Produit({ data, save, flash, id, close }) {
+    const p0 = data.produits.find((p) => p.id === id);
+    const [nom, setNom] = useState((p0 === null || p0 === void 0 ? void 0 : p0.nom) || "");
+    const [conf, setConf] = useState(false);
+    if (!p0)
+        return null;
+    const nb = data.articles.filter((a) => a.produitId === id).length;
+    const renommer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        next.produits.find((p) => p.id === id).nom = nom.trim() || p0.nom;
+        save(next);
+        flash("Produit renommé", avant);
+        close();
+    };
+    const supprimer = () => {
+        const avant = JSON.parse(JSON.stringify(data));
+        const next = JSON.parse(JSON.stringify(data));
+        next.produits = next.produits.filter((p) => p.id !== id);
+        next.articles = next.articles.filter((a) => a.produitId !== id);
+        save(next);
+        flash(`${p0.nom} supprimé`, avant);
+        close();
+    };
+    return (React.createElement(Sheet, { titre: "Modifier le produit", close: close },
+        React.createElement(Champ, { label: "Nom" },
+            React.createElement("input", { value: nom, onChange: (e) => setNom(e.target.value), autoFocus: true, className: inputCls })),
+        React.createElement("p", { className: "mb-4 text-xs text-slate-400" },
+            nb,
+            " exemplaire",
+            nb > 1 ? "s" : "",
+            " rattach\u00E9",
+            nb > 1 ? "s" : "",
+            " \u00E0 ce produit."),
+        !conf ? (React.createElement(Action, { onClick: () => setConf(true), icone: React.createElement(Trash2, { className: "h-4 w-4" }), danger: true },
+            "Supprimer le produit et ses ",
+            nb,
+            " exemplaires")) : (React.createElement("div", { className: "rounded-xl bg-red-50 p-3" },
+            React.createElement("p", { className: "text-sm text-red-800" },
+                nb,
+                " exemplaire",
+                nb > 1 ? "s seront retirés" : " sera retiré",
+                ", ventes comprises."),
+            React.createElement("div", { className: "mt-2 flex gap-2" },
+                React.createElement("button", { onClick: supprimer, className: "flex-1 rounded-lg bg-red-600 py-2.5 text-sm font-medium text-white" }, "Supprimer"),
+                React.createElement("button", { onClick: () => setConf(false), className: "flex-1 rounded-lg bg-white py-2.5 text-sm font-medium ring-1 ring-slate-300" }, "Annuler")))),
+        React.createElement("div", { className: "sticky bottom-0 -mx-5 mt-4 border-t border-slate-100 bg-white px-5 pb-1 pt-3" },
+            React.createElement(Primaire, { onClick: renommer, className: "w-full" }, "Enregistrer"))));
+}
+function Action({ onClick, icone, children, danger }) {
+    return (React.createElement("button", { onClick: onClick, className: `flex w-full items-center gap-2.5 rounded-xl bg-white px-4 py-3 text-left text-sm font-medium ring-1 ring-slate-200 active:bg-slate-50 ${danger ? "text-red-600" : ""}` },
+        React.createElement("span", { className: danger ? "text-red-400" : "text-slate-400" }, icone),
+        children));
+}
+/* --------------------------------- réglages ------------------------------- */
+function Reglages({ data, save, org, session }) {
+    const [email, setEmail] = useState("");
+    const [msg, setMsg] = useState("");
+    const [membres, setMembres] = useState([]);
+    useEffect(() => {
+        sb.from("membres").select("role, profils(email, nom)").eq("organisation_id", org)
+            .then(({ data }) => setMembres(data || []));
+    }, [org]);
+    const inviter = async () => {
+        if (!email.trim())
+            return;
+        const { error } = await sb.from("invitations").insert({
+            organisation_id: org, email: email.trim().toLowerCase(),
+            role: "membre", cree_par: session.user.id,
+        });
+        if (error) {
+            setMsg(error.message);
+            return;
+        }
+        const { error: e2 } = await sb.auth.signInWithOtp({
+            email: email.trim(), options: { emailRedirectTo: window.location.href.split("#")[0] },
+        });
+        setMsg(e2 ? e2.message
+            : `Invitation envoyée à ${email.trim()}. Elle est valable 72 h et ne marche que depuis cette adresse.`);
+        setEmail("");
+    };
+    const importer = async () => {
+        if (data.articles.length && !confirm("Ton stock n'est pas vide. Importer quand même ?"))
+            return;
+        const seed = construireSeed({ produits: [], articles: [], seq: 1 });
+        // Les produits déjà en base sont réutilisés : pas de doublon si on réimporte.
+        const existants = new Map(data.produits.map((p) => [p.nom.toLowerCase(), p.id]));
+        const aCreer = [];
+        const corr = {};
+        seed.produits.forEach((p) => {
+            const dejaLa = existants.get(p.nom.toLowerCase());
+            if (dejaLa) {
+                corr[p.id] = dejaLa;
+            }
+            else {
+                corr[p.id] = p.id;
+                aCreer.push(p);
+            }
+        });
+        const articles = seed.articles.map((a) => ({ ...a, produitId: corr[a.produitId] }));
+        const r = await save({ ...data,
+            produits: [...data.produits, ...aCreer],
+            articles: [...data.articles, ...articles] });
+        if (r && r.ok)
+            alert(`Import réussi : ${aCreer.length} produits, ${articles.length} articles.`);
+        else
+            alert("L'import a échoué.\n\n" + (r ? r.message : "raison inconnue"));
+    };
+    // Écrit un seul article de test et affiche l'erreur brute s'il y en a une.
+    const tester = async () => {
+        const { data: p, error: e1 } = await sb.from("produits")
+            .insert({ organisation_id: org, nom: "TEST — à supprimer", echelle: "eu" }).select();
+        if (e1) {
+            alert("Échec sur les produits :\n\n" + e1.message);
+            return;
+        }
+        const { error: e2 } = await sb.from("articles").insert({
+            organisation_id: org, produit_id: p[0].id, taille: "42",
+            statut: "vendu", cout: null, prix: null, frais_achat: 0, frais_vente: 0,
+            date_achat: today(),
+        });
+        if (e2) {
+            alert("Échec sur les articles :\n\n" + e2.message +
+                (e2.details ? "\n\nDétail : " + e2.details : "") +
+                (e2.hint ? "\n\nPiste : " + e2.hint : ""));
+        }
+        else {
+            alert("Test réussi : l'écriture fonctionne. Supprime le produit « TEST » depuis l'écran Stock.");
+        }
+        await save({ ...data });
+    };
+    const exporter = () => {
+        const l = ["produit", "coloris", "taille", "statut", "cout", "frais_achat", "prix",
+            "frais_vente", "acheteur", "canal", "date_achat", "date_vente", "motif", "notes"];
+        const lignes = data.articles.map((a) => {
+            const p = data.produits.find((p) => p.id === a.produitId);
+            return [p === null || p === void 0 ? void 0 : p.nom, a.couleur, a.taille, a.statut, a.cout, a.fraisAchat, a.prix,
+                a.fraisVente, a.acheteur, a.canal, a.dateAchat, a.dateVente, a.motif, a.notes]
+                .map((v) => `"${String(v !== null && v !== void 0 ? v : "").replace(/"/g, '""')}"`).join(",");
+        });
+        const blob = new Blob(["\uFEFF" + [l.join(","), ...lignes].join("\n")], { type: "text/csv;charset=utf-8;" });
+        const u = URL.createObjectURL(blob);
+        const el = document.createElement("a");
+        el.href = u;
+        el.download = `stock-${today()}.csv`;
+        el.click();
+        URL.revokeObjectURL(u);
+    };
+    return (React.createElement("div", { className: "space-y-3 px-4" },
+        React.createElement("div", { className: "rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200" },
+            React.createElement("div", { className: "text-sm text-slate-500" },
+                data.produits.length,
+                " produits \u2014 ",
+                data.articles.length,
+                " articles"),
+            React.createElement("div", { className: "mt-1 text-xs text-emerald-700" }, "Enregistr\u00E9 automatiquement \u2014 partag\u00E9 avec ton \u00E9quipe")),
+        React.createElement("div", { className: "rounded-xl bg-white p-4 ring-1 ring-slate-200" },
+            React.createElement("div", { className: "mb-2 text-sm font-medium" }, "\u00C9quipe"),
+            React.createElement("div", { className: "mb-3 space-y-1" }, membres.map((m, i) => {
+                var _a;
+                return (React.createElement("div", { key: i, className: "flex justify-between text-sm text-slate-600" },
+                    React.createElement("span", { className: "truncate" }, ((_a = m.profils) === null || _a === void 0 ? void 0 : _a.email) || "—"),
+                    React.createElement("span", { className: "ml-2 shrink-0 text-xs text-slate-400" }, m.role)));
+            })),
+            React.createElement("input", { value: email, onChange: (e) => setEmail(e.target.value), type: "email", inputMode: "email", autoCapitalize: "none", placeholder: "email du collaborateur", className: inputCls + " mb-2" }),
+            React.createElement(Primaire, { onClick: inviter, disabled: !email.trim(), className: "w-full" }, "Inviter"),
+            msg && React.createElement("p", { className: "mt-2 text-xs text-slate-500" }, msg)),
+        React.createElement(Action, { onClick: exporter, icone: React.createElement(Download, { className: "h-4 w-4" }) }, "Exporter en CSV"),
+        React.createElement(Action, { onClick: importer, icone: React.createElement(Package, { className: "h-4 w-4" }) }, "Importer les donn\u00E9es du PDF"),
+        React.createElement(Action, { onClick: tester, icone: React.createElement(Settings2, { className: "h-4 w-4" }) }, "Tester l'\u00E9criture en base"),
+        React.createElement(Action, { onClick: () => sb.auth.signOut(), icone: React.createElement(RotateCcw, { className: "h-4 w-4" }) }, "Se d\u00E9connecter"),
+        React.createElement("p", { className: "px-1 pt-2 text-xs leading-relaxed text-slate-400" }, "Tes donn\u00E9es vivent dans une base de donn\u00E9es. Chaque modification est enregistr\u00E9e imm\u00E9diatement et visible par toute l'\u00E9quipe.")));
+}
+/* --------------------------------- éléments ------------------------------- */
+const inputCls = "w-full rounded-xl border-0 bg-white px-3.5 py-3 text-base shadow-sm ring-1 ring-slate-200 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600";
+const STYLE_PRIM = { backgroundColor: "#0F172A", color: "#FFFFFF" };
+const STYLE_SEC = { backgroundColor: "#FFFFFF", color: "#0F172A", boxShadow: "inset 0 0 0 1px #CBD5E1" };
+function Primaire({ onClick, disabled, children, className = "" }) {
+    return (React.createElement("button", { onClick: onClick, disabled: disabled, style: { ...STYLE_PRIM, opacity: disabled ? 0.35 : 1 }, className: `rounded-xl py-3.5 text-center font-medium ${className}` }, children));
+}
+function Secondaire({ onClick, children, className = "" }) {
+    return (React.createElement("button", { onClick: onClick, style: STYLE_SEC, className: `rounded-xl py-3.5 text-center font-medium ${className}` }, children));
+}
+function Champ({ label, children, className = "" }) {
+    return (React.createElement("div", { className: `mb-4 ${className}` },
+        React.createElement("label", { className: "mb-1.5 block text-xs font-medium text-slate-500" }, label),
+        children));
+}
+function Sheet({ titre, children, close }) {
+    return (React.createElement("div", { style: { backgroundColor: "rgba(15,23,42,0.4)" }, className: "fixed inset-0 z-50 flex items-end justify-center", onClick: close },
+        React.createElement("div", { onClick: (e) => e.stopPropagation(), className: "max-h-screen w-full max-w-2xl overflow-y-auto overscroll-contain rounded-t-3xl bg-white px-5 pb-8 pt-4" },
+            React.createElement("div", { className: "mb-4 flex items-center justify-between" },
+                React.createElement("h2", { className: "text-lg font-semibold" }, titre),
+                React.createElement("button", { onClick: close, className: "rounded-full p-1.5 text-slate-400 active:bg-slate-100" },
+                    React.createElement(X, { className: "h-5 w-5" }))),
+            children)));
+}
+function Modal({ children, close }) {
+    return (React.createElement("div", { style: { backgroundColor: "rgba(15,23,42,0.4)" }, className: "fixed inset-0 z-50 flex items-center justify-center p-6", onClick: close },
+        React.createElement("div", { onClick: (e) => e.stopPropagation(), className: "w-full max-w-sm rounded-2xl bg-white p-5" }, children)));
+}
+function MenuAjout({ onPick, close }) {
+    return (React.createElement(Sheet, { titre: "Enregistrer", close: close },
+        React.createElement("div", { className: "space-y-2 pb-2" },
+            React.createElement("button", { onClick: () => onPick("achat"), className: "w-full rounded-xl bg-white p-4 text-left ring-1 ring-slate-200 active:bg-slate-50" },
+                React.createElement("div", { className: "font-medium" }, "Un achat"),
+                React.createElement("div", { className: "text-sm text-slate-500" }, "Un produit, une ou plusieurs tailles")),
+            React.createElement("button", { onClick: () => onPick("arrivage"), className: "w-full rounded-xl bg-white p-4 text-left ring-1 ring-slate-200 active:bg-slate-50" },
+                React.createElement("div", { className: "font-medium" }, "Un arrivage"),
+                React.createElement("div", { className: "text-sm text-slate-500" }, "Saisie en rafale, le formulaire reste ouvert"))),
+        React.createElement("p", { className: "pb-2 text-xs text-slate-400" }, "Pour vendre, appuie sur une taille depuis l'\u00E9cran Stock.")));
+}
+function FAB({ onPick }) {
+    return (React.createElement("button", { onClick: () => onPick("menu"), className: "fixed bottom-20 left-1/2 z-40 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-blue-700 text-white shadow-lg active:scale-95" },
+        React.createElement(Plus, { className: "h-7 w-7", strokeWidth: 2.5 })));
+}
+function Nav({ tab, setTab }) {
+    const items = [
+        ["accueil", "Accueil"], ["stock", "Stock"], ["ventes", "Ventes"], ["reglages", "Réglages"],
+    ];
+    return (React.createElement("nav", { className: "fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white backdrop-blur" },
+        React.createElement("div", { className: "mx-auto flex max-w-2xl" }, items.map(([k, l]) => (React.createElement("button", { key: k, onClick: () => setTab(k), className: `flex-1 py-3.5 text-xs font-medium ${tab === k ? "text-blue-700" : "text-slate-400"}` }, l))))));
+}
+function Toast({ toast, onUndo, onClose }) {
+    return (React.createElement("div", { className: "fixed bottom-32 left-1/2 z-50 flex w-11/12 max-w-sm -translate-x-1/2 items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-white shadow-lg" },
+        React.createElement("span", { className: "flex-1 text-sm" }, toast.msg),
+        toast.undoState && (React.createElement("button", { onClick: onUndo, className: "flex items-center gap-1 text-sm font-medium text-slate-200" },
+            React.createElement(Undo2, { className: "h-4 w-4" }),
+            " Annuler")),
+        React.createElement("button", { onClick: onClose, className: "text-slate-400" },
+            React.createElement(X, { className: "h-4 w-4" }))));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App, null));
+
+}
+</script>
+
+<script>
+(function () {
+  var etat = document.getElementById("etat");
+  function dire(t, ko) { etat.style.display = "block"; etat.textContent = t; etat.className = ko ? "ko" : ""; }
+  var demarre = false;
+  window.onerror = function (m, s, l) {
+    // Une fois l'application lancée, les incidents des bibliothèques externes
+    // n'apportent aucune information exploitable : on les laisse à la console.
+    if (demarre || String(m).indexOf("Script error") === 0) {
+      console.warn("incident ignoré :", m, s, l);
+      return true;
+    }
+    dire("Erreur : " + m + "  (ligne " + l + ")", true);
+  };
+
+  var LOTS = [
+    ["https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
+     "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
+     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"],
+    ["https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js",
+     "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js",
+     "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"],
+    ["https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+     "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"]
+  ];
+
+  function charger(url) {
+    return new Promise(function (ok, ko) {
+      var s = document.createElement("script");
+      s.src = url; s.crossOrigin = "anonymous";
+      s.onload = ok; s.onerror = function () { ko(new Error(url)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function essayer(i) {
+    if (i >= LOTS.length) {
+      dire("Impossible de charger les bibliothèques. Vérifie ta connexion, puis recharge.", true);
+      return;
+    }
+    charger(LOTS[i][0])
+      .then(function () { return charger(LOTS[i][1]); })
+      .then(function () { return charger(LOTS[i][2]); })
+      .then(function () {
+        if (!window.React || !window.ReactDOM || !window.supabase) throw new Error("incomplet");
+        etat.style.display = "none";
+        try { demarrer(); demarre = true; }
+        catch (e) { dire("Erreur : " + (e && e.message ? e.message : e), true); }
+      })
+      .catch(function () { essayer(i + 1); });
+  }
+  essayer(0);
+})();
+</script>
+</body>
+</html>
