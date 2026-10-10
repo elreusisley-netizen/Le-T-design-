@@ -1199,10 +1199,12 @@ async function open3D(){
 
 function majBarreModeles(){
   var s=document.getElementById('v3dModele'); if(!s) return;
-  s.innerHTML=GARMENT_MODELS.map(function(m){
+  var l=modelesDuVetement(), cur=modeleActuel();
+  s.innerHTML=l.map(function(m){
     var ko=_glbEchecs[m.id]?' (fichier absent)':'';
-    return '<option value="'+m.id+'"'+(m.id===modele3D?' selected':'')+'>'+m.name+ko+'</option>';
+    return '<option value="'+m.id+'"'+(m.id===cur.id?' selected':'')+'>'+m.name+ko+'</option>';
   }).join('');
+  s.style.display = l.length>1 ? '' : 'none';
 }
 async function changerModele3D(id){
   modele3D=id; try{ localStorage.setItem('viral-modele3d',id); }catch(_){ }
@@ -1244,9 +1246,17 @@ function makeFabricNMTexture(){
    dépliage réel de ton GLB.
    zones : zones imprimables, pour brider plus tard les placements.      */
 const GARMENT_MODELS=[
-  { id:'maquette', name:'Maquette intégrée', model:null, defaultColor:'#e6dcc4' },
+  { id:'maquette', name:'Maquette intégrée', model:null, defaultColor:'#e6dcc4', pour:'tshirt' },
+  /* Modèles générés par le Studio 3D : un maillage par pièce (devant, dos,
+     manches, capuche…), coordonnées déjà « à plat » dans le repère du vêtement.
+     auto : zones d'impression calculées à partir de l'image 2D de l'éditeur. */
+  { id:'studio-tshirt', name:'T-shirt Studio 3D', model:'assets/3d/tshirt-studio.glb', pour:'tshirt', multi:true, auto:true },
+  { id:'studio-sweat', name:'Sweat demi-zip', model:'assets/3d/sweat-demi-zip.glb', pour:'sweat', multi:true, auto:true },
+  { id:'studio-hoodie', name:'Sweat capuche', model:'assets/3d/sweat-capuche.glb', pour:'hoodie', multi:true, auto:true },
+  { id:'studio-puffer', name:'Doudoune', model:'assets/3d/doudoune.glb', pour:'puffer', multi:true, auto:true },
+  { id:'studio-track', name:'Survêtement', model:'assets/3d/survetement.glb', pour:'track', multi:true, auto:true },
 
-  { id:'viral-oversize', name:'VIRAL Oversize',
+  { id:'viral-oversize', name:'VIRAL Oversize', pour:'tshirt',
     model:'assets/3d/tshirt-oversize.glb', defaultColor:'#ffffff',
     echelle:1, materiau:null,
     uv:{ front:{x:0.04,y:0.52,w:0.44,h:0.44}, back:{x:0.52,y:0.52,w:0.44,h:0.44},
@@ -1261,14 +1271,15 @@ const GARMENT_MODELS=[
 const MODEL_URL='assets/3d/tshirt-oversize.glb';   /* modèle principal */
 
 var modele3D = (function(){ try{ return localStorage.getItem('viral-modele3d') || 'viral-oversize'; }catch(_){ return 'viral-oversize'; } })();
+function modelesDuVetement(){
+  var g=(typeof garment!=='undefined')?garment:'tshirt';
+  var l=GARMENT_MODELS.filter(function(x){ return (x.pour||'tshirt')===g; });
+  return l.length ? l : [GARMENT_MODELS[0]];
+}
 function modeleActuel(){
-  var m = GARMENT_MODELS.filter(function(x){ return x.id===modele3D; })[0];
-  if (!m) {                       /* choix mémorisé devenu invalide : on repart du premier */
-    m = GARMENT_MODELS[0];
-    modele3D = m.id;
-    try{ localStorage.setItem('viral-modele3d', modele3D); }catch(e){}
-  }
-  return m;
+  var l=modelesDuVetement();
+  var m=l.filter(function(x){ return x.id===modele3D; })[0];
+  return m || l[0];                /* le choix mémorisé n'est gardé que pour le t-shirt */
 }
 var _glbCache={}, _glbEchecs={};
 
@@ -1329,16 +1340,42 @@ const ZONES_PROJ_DEFAUT={
      sans ce facteur, le design paraît un cinquième trop petit en 3D. */
   echelleDesign: 1.22
 };
+function cleZonesProj(){ var m=modeleActuel(); return m.auto ? 'viral-zones-proj-'+m.id : 'viral-zones-proj'; }
+function zonesBase(){ var m=modeleActuel(); return (m.auto && three.autoZones && three.autoZones[m.id]) ? three.autoZones[m.id] : ZONES_PROJ_DEFAUT; }
 function zonesProj(){
-  try{ var c=JSON.parse(localStorage.getItem('viral-zones-proj')||'null');
-       if(c) return { front:Object.assign({},ZONES_PROJ_DEFAUT.front,c.front),
-                      back:Object.assign({},ZONES_PROJ_DEFAUT.back,c.back),
-                      sleeve:Object.assign({},ZONES_PROJ_DEFAUT.sleeve,c.sleeve),
-                      side:Object.assign({},ZONES_PROJ_DEFAUT.side,c.side),
-                      echelleDesign:(c.echelleDesign!=null?c.echelleDesign:ZONES_PROJ_DEFAUT.echelleDesign) }; }catch(_){ }
-  return JSON.parse(JSON.stringify(ZONES_PROJ_DEFAUT));
+  var B=zonesBase();
+  try{ var c=JSON.parse(localStorage.getItem(cleZonesProj())||'null');
+       if(c) return { front:Object.assign({},B.front,c.front),
+                      back:Object.assign({},B.back,c.back),
+                      sleeve:Object.assign({},B.sleeve,c.sleeve),
+                      side:Object.assign({},B.side,c.side),
+                      echelleDesign:(c.echelleDesign!=null?c.echelleDesign:B.echelleDesign), seuil:B.seuil }; }catch(_){ }
+  return JSON.parse(JSON.stringify(B));
 }
-function enregistrerZonesProj(z){ try{ localStorage.setItem('viral-zones-proj',JSON.stringify(z)); }catch(_){ } }
+function enregistrerZonesProj(z){ try{ localStorage.setItem(cleZonesProj(),JSON.stringify(z)); }catch(_){ } }
+
+/* Emplacement du vêtement dans la zone de travail de l'éditeur (250 × 270),
+   pour une face donnée — même calcul que garmentCanvas().                  */
+function boiteImage2D(key){
+  var img=_hoodCache[garment+'_'+key];
+  if(!img||!img.naturalWidth) return null;
+  var iw=img.naturalWidth, ih=img.naturalHeight, CW=1000, CH=1080;
+  var sc=Math.min(CW*0.92/iw, CH*0.96/ih), dw=iw*sc/4, dh=ih*sc/4;
+  return { ox:(250-dw)/2, oy:(270-dh)/2, dw:dw, dh:dh };
+}
+/* Zones calculées pour que le design tombe sur le modèle 3D au même endroit
+   que sur l'image 2D : hauteur du vêtement 2D = hauteur du modèle, centré.
+   Le quadrant de l'atlas correspond à la zone [-10,260]×[0,270] de l'éditeur. */
+function zonesAuto(taille){
+  function z(key, largeur){
+    var b=boiteImage2D(key); if(!b) return null;
+    var s=taille.y/b.dh, cx=b.ox+b.dw/2;
+    return { x:0.5+(-10-cx)*s/largeur, y:1-(270-b.oy)/b.dh, w:270*s/largeur, h:270/b.dh };
+  }
+  var f=z('front',taille.x)||ZONES_PROJ_DEFAUT.front, bk=z('back',taille.x)||f, sd=z('side',taille.z)||ZONES_PROJ_DEFAUT.side;
+  return { front:f, back:bk, sleeve:sd, side:sd, echelleDesign:1, seuil:9 };
+}
+function matsVetement(){ return three.matsVetement||[]; }
 
 /* Atlas 2048² : quatre quadrants — avant, dos, manche gauche, manche droite.
    Le design conserve ses proportions, sinon impossible de juger un logo.  */
@@ -1372,7 +1409,13 @@ function atlasDesign(){
 
 /* Habille le modèle : matière coton, et injection de la projection. */
 function habillerModele(racine, tex, m){
+  three.matsVetement=[];
+  if(m && m.auto){
+    var b0=new THREE.Box3().setFromObject(racine);
+    three.autoZones=three.autoZones||{}; three.autoZones[m.id]=zonesAuto(b0.getSize(new THREE.Vector3()));
+  }
   var zones=zonesProj();
+  var multi=!!(m&&m.multi);
   var principal=null;
   racine.traverse(function(o){ if(o.isMesh && !principal &&
       o.geometry && o.geometry.attributes && o.geometry.attributes.uv) principal=o; });
@@ -1385,8 +1428,11 @@ function habillerModele(racine, tex, m){
     if(!o.isMesh) return;
     /* beaucoup de modèles contiennent deux maillages superposés : le second
        provoque du scintillement. On ne garde que le principal. */
-    if(o!==principal){ o.visible=false; return; }
+    if(!multi && o!==principal){ o.visible=false; return; }
     o.castShadow=true; o.receiveShadow=true;
+    var ancien=o.material||{}, nomMat=ancien.name||'';
+    /* fermeture éclair, tirette, embouts : on garde leur matière métal */
+    if(multi && /^(Zip_metal|Zip|Metal)$/.test(nomMat)) return;
 
     var mat=new THREE.MeshStandardMaterial({
       /* Les couleurs du sélecteur sont en sRGB. Sans conversion, le moteur
@@ -1397,6 +1443,10 @@ function habillerModele(racine, tex, m){
       envMapIntensity:0.15,
       normalMap:three.fabricNM, normalScale:new THREE.Vector2(0.4,0.4)
     });
+    /* les modèles du studio portent coutures, matelassage et côtes dans leur
+       texture (sur fond blanc) : elle se multiplie à la couleur choisie */
+    if(multi && ancien.map){ mat.map=ancien.map; if(THREE.sRGBEncoding) mat.map.encoding=THREE.sRGBEncoding; }
+    if(multi && /Puffer|doudoune/i.test(racine.name||'')){ mat.roughness=0.62; mat.envMapIntensity=0.35; }
     mat.userData.u={
       uDecal:{value:tex},
       uMin:{value:mn}, uTaille:{value:taille},
@@ -1404,7 +1454,7 @@ function habillerModele(racine, tex, m){
       uBack:{value:new THREE.Vector4(zones.back.x,zones.back.y,zones.back.w,zones.back.h)},
       uSleeve:{value:new THREE.Vector4(zones.sleeve.x,zones.sleeve.y,zones.sleeve.w,zones.sleeve.h)},
       uSide:{value:new THREE.Vector4(zones.side.x,zones.side.y,zones.side.w,zones.side.h)},
-      uRepere:{value:0}
+      uRepere:{value:0}, uSeuil:{value:(zones.seuil!=null?zones.seuil:0.56)}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -1415,7 +1465,7 @@ function habillerModele(racine, tex, m){
         .replace('#include <common>',
           '#include <common>\nvarying vec3 vPosL;\nvarying vec3 vNrmL;\n'+
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
-          'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\n'+
+          'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -1433,15 +1483,15 @@ function habillerModele(racine, tex, m){
           'if(nl.z>0.30)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
           'else if(nl.z<-0.30) dec=lireZone(vec2(1.0-q.x,q.y), uBack, vec2(1.0,0.0));\n'+
           /* au-dessus de la ligne d'emmanchure : la manche ; en dessous : le flanc */
-          'else if(nl.x>0.45)  dec = q.y>0.56 ? lireZone(vec2(1.0-q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
+          'else if(nl.x>0.45)  dec = q.y>uSeuil ? lireZone(vec2(1.0-q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(1.0-q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
-          'else if(nl.x<-0.45) dec = q.y>0.56 ? lireZone(vec2(q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
+          'else if(nl.x<-0.45) dec = q.y>uSeuil ? lireZone(vec2(q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
           'diffuseColor.rgb=mix(diffuseColor.rgb, dec.rgb, dec.a);');
     };
     if(o.material && o.material.dispose) o.material.dispose();
     o.material=mat;
-    three.matVetement=mat;
+    three.matVetement=mat; three.matsVetement.push(mat);
   });
 }
 
@@ -1452,16 +1502,16 @@ function couleurTissu(){
   return c;
 }
 function majCouleur3D(){
-  if(three.matVetement) three.matVetement.color.copy(couleurTissu());
+  matsVetement().forEach(function(mt){ mt.color.copy(couleurTissu()); });
 }
 
 function majZonesProj(){
-  var m=three.matVetement; if(!m||!m.userData.u) return;
   var z=zonesProj();
+  matsVetement().forEach(function(m){ if(!m.userData.u) return;
   m.userData.u.uFront.value.set(z.front.x,z.front.y,z.front.w,z.front.h);
   m.userData.u.uBack.value.set(z.back.x,z.back.y,z.back.w,z.back.h);
   m.userData.u.uSleeve.value.set(z.sleeve.x,z.sleeve.y,z.sleeve.w,z.sleeve.h);
-  m.userData.u.uSide.value.set(z.side.x,z.side.y,z.side.w,z.side.h);
+  m.userData.u.uSide.value.set(z.side.x,z.side.y,z.side.w,z.side.h); });
 }
 
 
@@ -1469,8 +1519,7 @@ function majZonesProj(){
 var _calibUV=false;
 function basculerCalibUV(){
   _calibUV=!_calibUV;
-  if(three.matVetement && three.matVetement.userData.u)
-    three.matVetement.userData.u.uRepere.value=_calibUV?1:0;
+  matsVetement().forEach(function(m){ if(m.userData.u) m.userData.u.uRepere.value=_calibUV?1:0; });
   var p=document.getElementById('uvPanel');
   if(p){ p.style.display=_calibUV?'block':'none'; if(_calibUV) majPanneauUV(); }
 }
@@ -1501,16 +1550,15 @@ function reglerZoneProj(zone,cle,val){
 }
 function reglerEchelleProj(v){
   var z=zonesProj(); z.echelleDesign=+v; enregistrerZonesProj(z);
-  if(three.matVetement && three.matVetement.userData.u){
+  if(matsVetement().length){
     var t=atlasDesign();                     /* l'atlas doit être refait */
-    three.matVetement.userData.u.uDecal.value=t;
-    three.matVetement.needsUpdate=true;
+    matsVetement().forEach(function(m){ if(m.userData.u){ m.userData.u.uDecal.value=t; m.needsUpdate=true; } });
   }
   majPanneauUV();
 }
 
 function reinitZonesProj(){
-  try{ localStorage.removeItem('viral-zones-proj'); }catch(_){ }
+  try{ localStorage.removeItem(cleZonesProj()); }catch(_){ }
   majZonesProj(); majPanneauUV();
 }
 
