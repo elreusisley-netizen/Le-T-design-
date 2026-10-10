@@ -346,7 +346,7 @@
   <canvas id="c3d"></canvas>
   <div id="uvPanel"></div>
   <div class="v3d-top">
-    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v8</small></span>
+    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v9</small></span>
     <select class="v3d-modele" id="v3dModele" onchange="changerModele3D(this.value)" aria-label="Modèle de vêtement"></select>
     <button class="v3d-close" onclick="close3D()">&times; Fermer</button>
   </div>
@@ -365,6 +365,25 @@
   </div>
 </div>
 
+<script>
+/* Version de l'app : quand une nouvelle version est publiée, le navigateur
+   peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
+   et on recharge une seule fois si une version plus récente existe.        */
+var APP_VERSION='9';
+(function(){
+  try{
+    if(!window.fetch || location.protocol==='file:') return;
+    fetch('./index.html?nv='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.text():''; }).then(function(t){
+      var m=t && t.match(/var APP_VERSION='([^']+)'/);
+      if(!m || m[1]===APP_VERSION) return;
+      var k='viral-maj-'+m[1];
+      try{ if(sessionStorage.getItem(k)) return; sessionStorage.setItem(k,'1'); }catch(_){ }
+      var u=location.pathname+'?v='+m[1]+location.hash;
+      location.replace(u);
+    }).catch(function(){});
+  }catch(_){ }
+})();
+</script>
 <script>
 function closeSheets(){document.querySelectorAll('.sheet.open').forEach(function(s){s.classList.remove('open');});document.querySelectorAll('.tab.on').forEach(function(t){t.classList.remove('on');});document.getElementById('scrim').classList.remove('on');}
 function openSheet(name){var s=document.getElementById('sheet-'+name);var open=s.classList.contains('open');closeSheets();if(!open){s.classList.add('open');document.getElementById('tab-'+name).classList.add('on');document.getElementById('scrim').classList.add('on');}}
@@ -1371,6 +1390,15 @@ function boiteImage2D(key){
 /* Zones calculées pour que le design tombe sur le modèle 3D au même endroit
    que sur l'image 2D : hauteur du vêtement 2D = hauteur du modèle, centré.
    Le quadrant de l'atlas correspond à la zone [-10,260]×[0,270] de l'éditeur. */
+function zonesAutoBoite(taille){
+  function z(key, largeur){
+    var b=boiteImage2D(key); if(!b) return null;
+    var s=taille.y/b.dh, cx=b.ox+b.dw/2;
+    return { x:0.5+(-10-cx)*s/largeur, y:1-(270-b.oy)/b.dh, w:270*s/largeur, h:270/b.dh };
+  }
+  var f=z('front',taille.x)||ZONES_PROJ_DEFAUT.front, bk=z('back',taille.x)||f, sd=z('side',taille.z)||ZONES_PROJ_DEFAUT.side;
+  return { front:f, back:bk, sleeve:sd, side:sd, echelleDesign:1, seuil:9, coteUnique:1 };
+}
 function zonesAuto(taille){
   function z(key, largeur){
     var b=boiteImage2D(key); if(!b) return null;
@@ -1414,6 +1442,14 @@ function _profil(M){
 function _bords(P,y){                        /* bords lissés autour d'une ligne */
   var n=0,l=0,r=0; for(var k=-4;k<=4;k++){ var yy=Math.round(y)+k; if(yy<0||yy>=P.L.length||P.L[yy]<0) continue; l+=P.L[yy]; r+=P.R[yy]; n++; }
   return n?{l:l/n,r:r/n}:{l:P.x0,r:P.x1};
+}
+function _segK(P2,P3,y){                    /* rapport d'échelle de la pièce concernée */
+  var s2=P2.seg, s3=P3.seg;
+  if(s2.length && s2.length===s3.length){
+    var i=0; while(i<s2.length-1 && y>(s2[i][1]+s2[i+1][0])/2) i++;
+    return (s3[i][1]-s3[i][0])/Math.max(1,s2[i][1]-s2[i][0]);
+  }
+  return (P3.y1-P3.y0)/Math.max(1,P2.y1-P2.y0);
 }
 function _mapY(P2,P3,y){
   var s2=P2.seg, s3=P3.seg, a,b,c,d;
@@ -1479,15 +1515,13 @@ function _versModele(R,x,y){
   var X=x*R.K, Y=y*R.K, P2=R.P2, P3=R.P3;
   var y3=_mapY(P2,P3,Y);
   var e2=_bords(P2,Y), e3=_bords(P3,y3);
-  var x3;
-  if(R.centre){
-    /* vue de côté : la manche occupe le milieu du profil ; on garde l'écart
-       au centre du vêtement, à l'échelle physique, pour rester sur la manche */
-    x3=(e3.l+e3.r)/2 + (X-(e2.l+e2.r)/2)*R.s;
-  } else {
-    var u=(X-e2.l)/Math.max(1,e2.r-e2.l); x3=e3.l+u*(e3.r-e3.l);
-  }
-  return { u:x3/R.W3, v:y3/R.H3 };
+  /* horizontalement : écart à l'axe du vêtement, à l'échelle de la pièce
+     (les manches n'ont pas le même écartement en 2D et en 3D : se caler sur
+     les bords ferait glisser un logo de poitrine vers l'épaule) */
+  var k=_segK(P2,P3,Y), c2=(P2.x0+P2.x1)/2, c3=(P3.x0+P3.x1)/2;
+  var x3=c3+(X-c2)*k;
+  x3=Math.max(e3.l, Math.min(e3.r, x3));
+  return { u:x3/R.W3, v:y3/R.H3, k:k };
 }
 /* un élément seul, rendu à part pour connaître sa vraie emprise */
 function _elementSeul(e){
@@ -1510,7 +1544,7 @@ function poserRecale(ctx, R, face, qx, qy, Q){
   arr.forEach(function(e){
     var el=_elementSeul(e); if(!el) return;
     var p=_versModele(R, el.cx, el.cy);
-    var w=el.w*R.K*s*Q/R.W3, h=el.h*R.K*s*Q/R.H3;
+    var w=el.w*R.K*p.k*Q/R.W3, h=el.h*R.K*p.k*Q/R.H3;
     ctx.save(); ctx.beginPath(); ctx.rect(qx*Q,qy*Q,Q,Q); ctx.clip();
     ctx.drawImage(el.cv, el.sx,el.sy,el.sw,el.sh, qx*Q+p.u*Q-w/2, qy*Q+p.v*Q-h/2, w, h);
     ctx.restore();
@@ -1792,7 +1826,10 @@ function buildScene(frontCanvas,backCanvas,glb){
   if(glb){
     const m=modeleActuel();
     const vetement=glb.clone(true);
-    three.recalage = m.auto ? recalage(vetement, m) : null;
+    try{ three.recalage = m.auto ? recalage(vetement, m) : null; }catch(err){ console.error(err); three.recalage=null; }
+    if(m.auto && !three.recalage){ /* secours : ancien calage par la boîte de l'image 2D */
+      try{ var bb=new THREE.Box3().setFromObject(vetement).getSize(new THREE.Vector3()); three.autoZones[m.id]=zonesAutoBoite(bb); majZonesProj(); }catch(_){ }
+    }
     const tex=atlasDesign();
     three.texVetement=tex;
     habillerModele(vetement,tex,m);
