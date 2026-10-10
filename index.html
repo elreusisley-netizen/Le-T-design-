@@ -646,7 +646,7 @@ let garment='tshirt';
 let selectedIds=[], mirror=false;
 const nodes=new Map(); const layer=document.getElementById('layer'); const stage=document.getElementById('stage');
 function els(){ return sides[currentSide]; }
-function stageSize(){ const r=stage.getBoundingClientRect(); return {w:r.width,h:r.height,left:r.left,top:r.top}; }
+function stageSize(){ const r=stage.getBoundingClientRect(); const w=stage.offsetWidth||r.width, h=stage.offsetHeight||r.height; return {w:w,h:h,left:r.left,top:r.top}; }
 const measureCtx=document.createElement('canvas').getContext('2d');
 function escapeHtml(s){ return s.replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c])); }
 function computeArc(e){ measureCtx.font=`${e.italic?'italic ':''}${e.bold?'700':'400'} ${e.size}px '${e.font}'`;
