@@ -1354,7 +1354,7 @@ function zonesProj(){
                       back:Object.assign({},B.back,c.back),
                       sleeve:Object.assign({},B.sleeve,c.sleeve),
                       side:Object.assign({},B.side,c.side),
-                      echelleDesign:(c.echelleDesign!=null?c.echelleDesign:B.echelleDesign), seuil:B.seuil }; }catch(_){ }
+                      echelleDesign:(c.echelleDesign!=null?c.echelleDesign:B.echelleDesign), seuil:B.seuil, coteUnique:B.coteUnique }; }catch(_){ }
   return JSON.parse(JSON.stringify(B));
 }
 function enregistrerZonesProj(z){ try{ localStorage.setItem(cleZonesProj(),JSON.stringify(z)); }catch(_){ } }
@@ -1377,10 +1377,145 @@ function zonesAuto(taille){
     var s=taille.y/b.dh, cx=b.ox+b.dw/2;
     return { x:0.5+(-10-cx)*s/largeur, y:1-(270-b.oy)/b.dh, w:270*s/largeur, h:270/b.dh };
   }
-  var f=z('front',taille.x)||ZONES_PROJ_DEFAUT.front, bk=z('back',taille.x)||f, sd=z('side',taille.z)||ZONES_PROJ_DEFAUT.side;
-  return { front:f, back:bk, sleeve:sd, side:sd, echelleDesign:1, seuil:9 };
+  /* le recalage place déjà chaque élément : chaque quadrant couvre tout le vêtement */
+  var plein={x:0,y:0,w:1,h:1};
+  return { front:plein, back:plein, sleeve:plein, side:plein, echelleDesign:1, seuil:9, coteUnique:1 };
 }
 function matsVetement(){ return three.matsVetement||[]; }
+
+
+/* ==================== RECALAGE 2D → 3D « intelligent » ====================
+   Pour les modèles du studio, on compare la silhouette de l'image 2D de
+   l'éditeur à celle du modèle 3D vu de face / de dos / de côté :
+   - verticalement, chaque pièce (veste, pantalon…) est recalée sur la sienne ;
+   - horizontalement, la position est prise par rapport aux bords du vêtement
+     à cette hauteur (manches comprises).
+   Chaque élément (texte, logo, image) est ensuite posé au point correspondant,
+   à la bonne taille physique et sans être déformé.                          */
+function _masque(w,h,dessiner){
+  var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  var c=cv.getContext('2d'); dessiner(c);
+  var d=c.getImageData(0,0,w,h).data, m=new Uint8Array(w*h);
+  for(var i=0;i<w*h;i++) m[i]=d[i*4+3]>110?1:0;
+  return {w:w,h:h,m:m};
+}
+function _profil(M){
+  var L=new Float32Array(M.h).fill(-1), R=new Float32Array(M.h).fill(-1), rows=[];
+  for(var y=0;y<M.h;y++){ var a=-1,b=-1, o=y*M.w;
+    for(var x=0;x<M.w;x++) if(M.m[o+x]){ if(a<0)a=x; b=x; }
+    L[y]=a; R[y]=b; }
+  var seg=[], deb=-1;                       /* pièces séparées par des lignes vides */
+  for(y=0;y<=M.h;y++){ var plein=y<M.h&&L[y]>=0;
+    if(plein&&deb<0) deb=y;
+    if(!plein&&deb>=0){ if(y-deb>M.h*0.04) seg.push([deb,y-1]); deb=-1; } }
+  var bx0=1e9,bx1=-1; for(y=0;y<M.h;y++) if(L[y]>=0){ bx0=Math.min(bx0,L[y]); bx1=Math.max(bx1,R[y]); }
+  return {L:L,R:R,seg:seg,x0:bx0,x1:bx1,y0:seg.length?seg[0][0]:0,y1:seg.length?seg[seg.length-1][1]:M.h-1};
+}
+function _bords(P,y){                        /* bords lissés autour d'une ligne */
+  var n=0,l=0,r=0; for(var k=-4;k<=4;k++){ var yy=Math.round(y)+k; if(yy<0||yy>=P.L.length||P.L[yy]<0) continue; l+=P.L[yy]; r+=P.R[yy]; n++; }
+  return n?{l:l/n,r:r/n}:{l:P.x0,r:P.x1};
+}
+function _mapY(P2,P3,y){
+  var s2=P2.seg, s3=P3.seg, a,b,c,d;
+  if(s2.length && s2.length===s3.length){
+    var i=0; while(i<s2.length-1 && y>(s2[i][1]+s2[i+1][0])/2) i++;
+    a=s2[i][0]; b=s2[i][1]; c=s3[i][0]; d=s3[i][1];
+  } else { a=P2.y0; b=P2.y1; c=P3.y0; d=P3.y1; }
+  return c+(y-a)*(d-c)/Math.max(1,b-a);
+}
+/* silhouette 3D par rastérisation des triangles projetés */
+function _masque3D(racine, axe, miroir, H){
+  var b=new THREE.Box3().setFromObject(racine), t=b.getSize(new THREE.Vector3());
+  var lw = axe==='z' ? t.z : t.x, W=Math.max(8,Math.round(H*lw/t.y));
+  var v=new THREE.Vector3();
+  var M=_masque(W,H,function(c){
+    c.fillStyle='#000';
+    racine.traverse(function(o){
+      if(!o.isMesh||!o.visible||!o.geometry||!o.geometry.attributes.position) return;
+      var g=o.geometry, pos=g.attributes.position, idx=g.index, n=idx?idx.count:pos.count;
+      var P=new Float32Array(pos.count*2), XW=new Float32Array(pos.count*3);
+      for(var i=0;i<pos.count;i++){ v.fromBufferAttribute(pos,i).applyMatrix4(o.matrixWorld); XW[i*3]=v.x; XW[i*3+1]=v.y; XW[i*3+2]=v.z;
+        var u=((axe==='z'?v.z-b.min.z:v.x-b.min.x)/lw); if(miroir) u=1-u;
+        P[i*2]=u*W; P[i*2+1]=(1-(v.y-b.min.y)/t.y)*H; }
+      c.beginPath();
+      for(var k=0;k<n;k+=3){
+        var i0=idx?idx.getX(k):k, i1=idx?idx.getX(k+1):k+1, i2=idx?idx.getX(k+2):k+2;
+        if(axe==='z'){ /* de profil : seules les surfaces tournées vers le côté reçoivent l'impression */
+          var e1x=XW[i1*3]-XW[i0*3], e1y=XW[i1*3+1]-XW[i0*3+1], e1z=XW[i1*3+2]-XW[i0*3+2];
+          var e2x=XW[i2*3]-XW[i0*3], e2y=XW[i2*3+1]-XW[i0*3+1], e2z=XW[i2*3+2]-XW[i0*3+2];
+          var nx=e1y*e2z-e1z*e2y, ny=e1z*e2x-e1x*e2z, nz=e1x*e2y-e1y*e2x, nl=Math.hypot(nx,ny,nz)||1;
+          if(nx/nl>-0.2 || Math.abs(nx)<=Math.abs(nz)) continue; }
+        var ax=P[i0*2],ay=P[i0*2+1],bx=P[i1*2],by=P[i1*2+1],cx=P[i2*2],cy=P[i2*2+1];
+        if((bx-ax)*(cy-ay)-(by-ay)*(cx-ax)<0){ var tx=bx,ty=by; bx=cx;by=cy;cx=tx;cy=ty; }
+        c.moveTo(ax,ay); c.lineTo(bx,by); c.lineTo(cx,cy); c.closePath();
+      }
+      c.fill('nonzero');
+    });
+  });
+  return M;
+}
+function _masque2D(cle){
+  var img=_hoodCache[garment+'_'+cle], bx=boiteImage2D(cle); if(!img||!bx) return null;
+  var K=2;                                   /* 2 px de masque par unité d'éditeur */
+  return _masque(250*K,270*K,function(c){ c.drawImage(img,bx.ox*K,bx.oy*K,bx.dw*K,bx.dh*K); });
+}
+var _recalages={};
+function recalage(racine, m){
+  var cle=m.id+'|'+garment;
+  if(_recalages[cle]) return _recalages[cle];
+  racine.updateMatrixWorld(true);
+  var H=400, r={};
+  [['front','x',false],['back','x',true],['side','z',false]].forEach(function(f){
+    var m2=_masque2D(f[0]); if(!m2) return;
+    var m3=_masque3D(racine,f[1],f[2],H);
+    var P2=_profil(m2), P3=_profil(m3);
+    r[f[0]]={ P2:P2, P3:P3, W3:m3.w, H3:m3.h, K:2, centre:false,
+              s:Math.sqrt(((P3.x1-P3.x0)/Math.max(1,P2.x1-P2.x0))*((P3.y1-P3.y0)/Math.max(1,P2.y1-P2.y0))) };
+  });
+  _recalages[cle]=r; return r;
+}
+/* position éditeur (unités 250×270) → coordonnées 0..1 dans le quadrant */
+function _versModele(R,x,y){
+  var X=x*R.K, Y=y*R.K, P2=R.P2, P3=R.P3;
+  var y3=_mapY(P2,P3,Y);
+  var e2=_bords(P2,Y), e3=_bords(P3,y3);
+  var x3;
+  if(R.centre){
+    /* vue de côté : la manche occupe le milieu du profil ; on garde l'écart
+       au centre du vêtement, à l'échelle physique, pour rester sur la manche */
+    x3=(e3.l+e3.r)/2 + (X-(e2.l+e2.r)/2)*R.s;
+  } else {
+    var u=(X-e2.l)/Math.max(1,e2.r-e2.l); x3=e3.l+u*(e3.r-e3.l);
+  }
+  return { u:x3/R.W3, v:y3/R.H3 };
+}
+/* un élément seul, rendu à part pour connaître sa vraie emprise */
+function _elementSeul(e){
+  var SC=4, cv=document.createElement('canvas'); cv.width=250*SC; cv.height=270*SC;
+  var c=cv.getContext('2d'); c.setTransform(SC,0,0,SC,0,0);
+  drawEl(c,e,250/stageSize().w);
+  var d=c.getImageData(0,0,cv.width,cv.height).data, x0=1e9,y0=1e9,x1=-1,y1=-1;
+  for(var y=0;y<cv.height;y+=2){ var o=y*cv.width*4;
+    for(var x=0;x<cv.width;x+=2) if(d[o+x*4+3]>8){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+  if(x1<0) return null;
+  x0=Math.max(0,x0-2); y0=Math.max(0,y0-2); x1=Math.min(cv.width-1,x1+2); y1=Math.min(cv.height-1,y1+2);
+  return { cv:cv, sx:x0, sy:y0, sw:x1-x0+1, sh:y1-y0+1, cx:(x0+x1)/2/SC, cy:(y0+y1)/2/SC, w:(x1-x0+1)/SC, h:(y1-y0+1)/SC };
+}
+function poserRecale(ctx, R, face, qx, qy, Q){
+  if(!R) return;
+  var arr=[...(sides[face]||[])].sort(function(a,b){ return (a.z||0)-(b.z||0); });
+  /* échelle physique : moyenne des rapports de taille 3D / 2D (sans déformer) */
+  var P2=R.P2, P3=R.P3;
+  var s=Math.sqrt(((P3.x1-P3.x0)/Math.max(1,P2.x1-P2.x0))*((P3.y1-P3.y0)/Math.max(1,P2.y1-P2.y0)));
+  arr.forEach(function(e){
+    var el=_elementSeul(e); if(!el) return;
+    var p=_versModele(R, el.cx, el.cy);
+    var w=el.w*R.K*s*Q/R.W3, h=el.h*R.K*s*Q/R.H3;
+    ctx.save(); ctx.beginPath(); ctx.rect(qx*Q,qy*Q,Q,Q); ctx.clip();
+    ctx.drawImage(el.cv, el.sx,el.sy,el.sw,el.sh, qx*Q+p.u*Q-w/2, qy*Q+p.v*Q-h/2, w, h);
+    ctx.restore();
+  });
+}
 
 /* Atlas 2048² : quatre quadrants — avant, dos, manche gauche, manche droite.
    Le design conserve ses proportions, sinon impossible de juger un logo.  */
@@ -1400,6 +1535,14 @@ function atlasDesign(){
                                                  sur les quadrants voisins */
     ctx.drawImage(source, qx*Q+(Q-w)/2, qy*Q+(Q-h)/2, w, h);
     ctx.restore();
+  }
+  var R=three.recalage, mA=modeleActuel();
+  if(mA && mA.auto && R){
+    try{ poserRecale(ctx,R.front,'front',0,0,Q); }catch(e){ console.error(e); }
+    try{ poserRecale(ctx,R.back,'back',1,0,Q); }catch(e){ console.error(e); }
+    try{ poserRecale(ctx,R.side,'side',1,1,Q); }catch(e){ console.error(e); }
+    var t0=new THREE.CanvasTexture(cv); t0.flipY=false; if(THREE.sRGBEncoding) t0.encoding=THREE.sRGBEncoding; t0.needsUpdate=true;
+    return t0;
   }
   try{ poser(renderDesignSeul('front'), 0,0, true); }catch(_){ }
   try{ poser(renderDesignSeul('back'),  1,0, true); }catch(_){ }
@@ -1459,7 +1602,7 @@ function habillerModele(racine, tex, m){
       uBack:{value:new THREE.Vector4(zones.back.x,zones.back.y,zones.back.w,zones.back.h)},
       uSleeve:{value:new THREE.Vector4(zones.sleeve.x,zones.sleeve.y,zones.sleeve.w,zones.sleeve.h)},
       uSide:{value:new THREE.Vector4(zones.side.x,zones.side.y,zones.side.w,zones.side.h)},
-      uRepere:{value:0}, uSeuil:{value:(zones.seuil!=null?zones.seuil:0.56)}
+      uRepere:{value:0}, uSeuil:{value:(zones.seuil!=null?zones.seuil:0.56)}, uUnique:{value:zones.coteUnique?1:0}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -1470,7 +1613,7 @@ function habillerModele(racine, tex, m){
         .replace('#include <common>',
           '#include <common>\nvarying vec3 vPosL;\nvarying vec3 vNrmL;\n'+
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
-          'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\n'+
+          'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\nuniform float uUnique;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -1485,10 +1628,13 @@ function habillerModele(racine, tex, m){
           'vec3 q=(vPosL-uMin)/max(uTaille, vec3(1e-5));\n'+
           'vec3 nl=normalize(vNrmL);\n'+
           'vec4 dec=vec4(0.0);\n'+
-          'if(nl.z>0.30)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
+          /* modèles du studio : le flanc droit (celui de la vue Côté) reçoit le visuel
+   dès que la surface regarde plus vers le côté que vers l'avant ou l'arrière */
+'if(uUnique>0.5 && nl.x<-0.2 && abs(nl.x)>abs(nl.z)) dec=lireZone(vec2(q.z,q.y), uSide, vec2(1.0,1.0));\n'+
+'else if(nl.z>0.30)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
           'else if(nl.z<-0.30) dec=lireZone(vec2(1.0-q.x,q.y), uBack, vec2(1.0,0.0));\n'+
           /* au-dessus de la ligne d'emmanchure : la manche ; en dessous : le flanc */
-          'else if(nl.x>0.45)  dec = q.y>uSeuil ? lireZone(vec2(1.0-q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
+          'else if(nl.x>0.45 && uUnique<0.5)  dec = q.y>uSeuil ? lireZone(vec2(1.0-q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(1.0-q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
           'else if(nl.x<-0.45) dec = q.y>uSeuil ? lireZone(vec2(q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
@@ -1646,6 +1792,7 @@ function buildScene(frontCanvas,backCanvas,glb){
   if(glb){
     const m=modeleActuel();
     const vetement=glb.clone(true);
+    three.recalage = m.auto ? recalage(vetement, m) : null;
     const tex=atlasDesign();
     three.texVetement=tex;
     habillerModele(vetement,tex,m);
