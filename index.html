@@ -346,7 +346,7 @@
   <canvas id="c3d"></canvas>
   <div id="uvPanel"></div>
   <div class="v3d-top">
-    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v9</small></span>
+    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v10</small></span>
     <select class="v3d-modele" id="v3dModele" onchange="changerModele3D(this.value)" aria-label="Modèle de vêtement"></select>
     <button class="v3d-close" onclick="close3D()">&times; Fermer</button>
   </div>
@@ -369,7 +369,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='9';
+var APP_VERSION='10';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1364,7 +1364,11 @@ const ZONES_PROJ_DEFAUT={
      sans ce facteur, le design paraît un cinquième trop petit en 3D. */
   echelleDesign: 1.22
 };
-function cleZonesProj(){ var m=modeleActuel(); return m.auto ? 'viral-zones-proj-'+m.id : 'viral-zones-proj'; }
+/* Les réglages « Calibrer UV » faits avec l'ancien calage (v8) n'ont plus le
+   même sens depuis le recalage automatique : on change de clé pour les ignorer,
+   sinon un ancien réglage étire ou décale les visuels sur les modèles 3D.      */
+function cleZonesProj(){ var m=modeleActuel(); return m.auto ? 'viral-zones-proj-v9-'+m.id : 'viral-zones-proj'; }
+try{ ['studio-tshirt','studio-sweat','studio-hoodie','studio-puffer','studio-track'].forEach(function(id){ localStorage.removeItem('viral-zones-proj-'+id); }); }catch(_){ }
 function zonesBase(){ var m=modeleActuel(); return (m.auto && three.autoZones && three.autoZones[m.id]) ? three.autoZones[m.id] : ZONES_PROJ_DEFAUT; }
 function zonesProj(){
   var B=zonesBase();
