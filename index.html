@@ -347,7 +347,7 @@
   <canvas id="c3d"></canvas>
   <div id="uvPanel"></div>
   <div class="v3d-top">
-    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v17</small></span>
+    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v18</small></span>
     <select class="v3d-modele" id="v3dModele" onchange="changerModele3D(this.value)" aria-label="Modèle de vêtement"></select>
     <button class="v3d-close" onclick="close3D()">&times; Fermer</button>
   </div>
@@ -370,7 +370,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='17';
+var APP_VERSION='18';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1713,7 +1713,7 @@ function atlasDesign(){
     try{ poserRecale(ctx,R.back,'back',1,0,Q); }catch(e){ console.error(e); }
     three.decals=[];
     try{ if(three.vetementCourant) calculerDecals(ctx,R,Q,T,three.vetementCourant); }catch(e){ console.error(e); }
-    var t0=new THREE.CanvasTexture(cv); t0.flipY=false; if(THREE.sRGBEncoding) t0.encoding=THREE.sRGBEncoding; t0.needsUpdate=true;
+    var t0=new THREE.CanvasTexture(cv); t0.flipY=false; t0.generateMipmaps=false; t0.minFilter=THREE.LinearFilter; if(THREE.sRGBEncoding) t0.encoding=THREE.sRGBEncoding; t0.needsUpdate=true;
     return t0;
   }
   try{ poser(renderDesignSeul('front'), 0,0, true); }catch(_){ }
@@ -1721,7 +1721,7 @@ function atlasDesign(){
   try{ poser(renderDesignSeul('sleeve'), 0,1); }catch(_){ }   /* les deux manches */
   try{ poser(renderDesignSeul('side'),   1,1); }catch(_){ }   /* les deux flancs  */
   var tex=new THREE.CanvasTexture(cv);
-  tex.flipY=false;
+  tex.flipY=false; tex.generateMipmaps=false; tex.minFilter=THREE.LinearFilter;
   if(THREE.sRGBEncoding) tex.encoding=THREE.sRGBEncoding;
   tex.needsUpdate=true;
   return tex;
@@ -1818,8 +1818,8 @@ function habillerModele(racine, tex, m){
 '      c4.rgb=pow(c4.rgb,vec3(2.2)); c4.a*=fa;\n'+
 '      decCote=vec4(mix(decCote.rgb,c4.rgb,c4.a), max(decCote.a,c4.a)); } } }\n'+
 'if(decCote.a>0.02) dec=decCote;\n'+
-'else if(nl.z>0.30)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
-          'else if(nl.z<-0.30) dec=lireZone(vec2(1.0-q.x,q.y), uBack, vec2(1.0,0.0));\n'+
+'else if(nl.z>0.30 && q.z>0.3)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
+          'else if(nl.z<-0.30 && q.z<0.7) dec=lireZone(vec2(1.0-q.x,q.y), uBack, vec2(1.0,0.0));\n'+
           /* au-dessus de la ligne d'emmanchure : la manche ; en dessous : le flanc */
           'else if(nl.x>0.45 && uUnique<0.5)  dec = q.y>uSeuil ? lireZone(vec2(1.0-q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(1.0-q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
