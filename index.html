@@ -347,7 +347,7 @@
   <canvas id="c3d"></canvas>
   <div id="uvPanel"></div>
   <div class="v3d-top">
-    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v14</small></span>
+    <span class="t">Vue 3D <small style="opacity:.45;font-size:11px">v15</small></span>
     <select class="v3d-modele" id="v3dModele" onchange="changerModele3D(this.value)" aria-label="Modèle de vêtement"></select>
     <button class="v3d-close" onclick="close3D()">&times; Fermer</button>
   </div>
@@ -370,7 +370,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='14';
+var APP_VERSION='15';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1588,10 +1588,60 @@ function poserRecale(ctx, R, face, qx, qy, Q){
   });
 }
 
+/* Visuels Côté / Épaule → patchs 3D.
+   Pour chaque élément : point d'ancrage trouvé en « tirant » un rayon depuis le
+   côté du vêtement, orientation = normale moyenne de la surface sous le patch,
+   taille physique issue du recalage. Le sprite est rangé dans le bas de l'atlas. */
+function calculerDecals(ctx,R,Q,T,racine){
+  var m=modeleActuel(), cote=m.cote||-1;
+  var par=racine.parent, pos=racine.position.clone(), qua=racine.quaternion.clone(), sca=racine.scale.clone();
+  if(par) par.remove(racine);
+  racine.position.set(0,0,0); racine.quaternion.identity(); racine.scale.set(1,1,1); racine.updateMatrixWorld(true);
+  var meshes=[], cotes=[];
+  racine.traverse(function(o){ if(o.isMesh&&o.visible&&o.material){ meshes.push(o); cotes.push(o.material.side); o.material.side=THREE.DoubleSide; } });
+  try{
+    var b=new THREE.Box3().setFromObject(racine), t=b.getSize(new THREE.Vector3());
+    var ray=new THREE.Raycaster(), dir=new THREE.Vector3(-cote,0,0), slot=0, S=Q/2;
+    var x0=cote>0 ? b.max.x+t.x : b.min.x-t.x;
+    var tirer=function(y,z){ ray.set(new THREE.Vector3(x0,y,z), dir); return ray.intersectObjects(meshes,false)[0]||null; };
+    ['side','sleeve'].forEach(function(face){
+      var RR=R[face]; if(!RR) return;
+      [...(sides[face]||[])].sort(function(a,b2){ return (a.z||0)-(b2.z||0); }).forEach(function(e){
+        if(slot>=8) return;
+        var el=_elementSeul(e); if(!el) return;
+        var p=_versModele(RR, el.cx, el.cy);
+        var uz=cote>0 ? 1-p.u : p.u;
+        var z=b.min.z+uz*t.z, y=b.min.y+(1-p.v)*t.y;
+        var w=el.w*RR.K*p.k/RR.W3*t.z, h=el.h*RR.K*p.k/RR.H3*t.y;
+        var c=tirer(y,z); if(!c) return;
+        var N=new THREE.Vector3(), n=0;
+        for(var i=-1;i<=1;i++) for(var j=-1;j<=1;j++){
+          var hh=(i||j)?tirer(y+j*h*0.35, z+i*w*0.35):c; if(!hh||!hh.face) continue;
+          if(Math.abs(hh.distance-c.distance)>Math.max(w,h)) continue;   /* ignore le corps derrière la manche */
+          var nn=hh.face.normal.clone().transformDirection(hh.object.matrixWorld); if(nn.x*cote<0) nn.negate(); N.add(nn); n++; }
+        if(!n) return; N.normalize();
+        var right=new THREE.Vector3().crossVectors(N.clone().negate(), new THREE.Vector3(0,1,0)); if(right.lengthSq()<1e-6) return; right.normalize();
+        var up=new THREE.Vector3().crossVectors(N,right).normalize();
+        var d=Math.max(w,h)*0.6;
+        var B=new THREE.Matrix4().makeBasis(right.multiplyScalar(w), up.multiplyScalar(h), N.clone().multiplyScalar(d)).setPosition(c.point);
+        var M=B.clone().invert();
+        var qx=slot<4?0:1, k=slot%4, X=qx*Q+(k%2)*S, Y=Q+Math.floor(k/2)*S;
+        ctx.save(); ctx.beginPath(); ctx.rect(X,Y,S,S); ctx.clip(); ctx.clearRect(X,Y,S,S);
+        ctx.drawImage(el.cv, el.sx,el.sy,el.sw,el.sh, X,Y,S,S); ctx.restore();
+        three.decals.push({ M:M, D:new THREE.Vector4(N.x,N.y,N.z,0), R:new THREE.Vector4(X/T,Y/T,S/T,S/T) });
+        slot++;
+      });
+    });
+  } finally {
+    meshes.forEach(function(o,i){ o.material.side=cotes[i]; });
+    racine.position.copy(pos); racine.quaternion.copy(qua); racine.scale.copy(sca);
+    if(par) par.add(racine); racine.updateMatrixWorld(true);
+  }
+}
 /* Atlas 2048² : quatre quadrants — avant, dos, manche gauche, manche droite.
    Le design conserve ses proportions, sinon impossible de juger un logo.  */
 function atlasDesign(){
-  var T=2048, Q=T/2;
+  var T=2048, Q=T/2; three.decals=[];
   var cv=document.createElement('canvas'); cv.width=cv.height=T;
   var ctx=cv.getContext('2d'); ctx.clearRect(0,0,T,T);
   var ech=zonesProj().echelleDesign || 1;
@@ -1611,8 +1661,8 @@ function atlasDesign(){
   if(mA && mA.auto && R){
     try{ poserRecale(ctx,R.front,'front',0,0,Q); }catch(e){ console.error(e); }
     try{ poserRecale(ctx,R.back,'back',1,0,Q); }catch(e){ console.error(e); }
-    try{ poserRecale(ctx,R.side,'side',1,1,Q); }catch(e){ console.error(e); }
-    try{ poserRecale(ctx,R.sleeve,'sleeve',1,1,Q); }catch(e){ console.error(e); }
+    three.decals=[];
+    try{ if(three.vetementCourant) calculerDecals(ctx,R,Q,T,three.vetementCourant); }catch(e){ console.error(e); }
     var t0=new THREE.CanvasTexture(cv); t0.flipY=false; if(THREE.sRGBEncoding) t0.encoding=THREE.sRGBEncoding; t0.needsUpdate=true;
     return t0;
   }
@@ -1674,7 +1724,11 @@ function habillerModele(racine, tex, m){
       uBack:{value:new THREE.Vector4(zones.back.x,zones.back.y,zones.back.w,zones.back.h)},
       uSleeve:{value:new THREE.Vector4(zones.sleeve.x,zones.sleeve.y,zones.sleeve.w,zones.sleeve.h)},
       uSide:{value:new THREE.Vector4(zones.side.x,zones.side.y,zones.side.w,zones.side.h)},
-      uRepere:{value:0}, uSeuil:{value:(zones.seuil!=null?zones.seuil:0.56)}, uUnique:{value:zones.coteUnique?1:0}, uCote:{value:(m&&m.cote)||-1}
+      uRepere:{value:0}, uSeuil:{value:(zones.seuil!=null?zones.seuil:0.56)}, uUnique:{value:zones.coteUnique?1:0}, uCote:{value:(m&&m.cote)||-1},
+      uDecM:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Matrix4(); })},
+      uDecR:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
+      uDecD:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
+      uDecN:{value:0}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -1686,6 +1740,7 @@ function habillerModele(racine, tex, m){
           '#include <common>\nvarying vec3 vPosL;\nvarying vec3 vNrmL;\n'+
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
           'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\nuniform float uUnique;\nuniform float uCote;\n'+
+          'uniform mat4 uDecM[8];\nuniform vec4 uDecR[8];\nuniform vec4 uDecD[8];\nuniform float uDecN;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -1703,9 +1758,15 @@ function habillerModele(racine, tex, m){
           /* modèles du studio : le flanc droit (celui de la vue Côté) reçoit le visuel
    dès que la surface regarde plus vers le côté que vers l'avant ou l'arrière */
 'vec4 decCote=vec4(0.0);\n'+
-/* le visuel de côté / d'épaule se projette sur tout ce qui regarde ce côté,
-   sans découpe selon les plis ; il passe devant les visuels face/dos */
-'if(uUnique>0.5 && nl.x*uCote>0.0 && (q.x-0.5)*uCote>0.0){ decCote=lireZone(vec2(uCote>0.0?1.0-q.z:q.z,q.y), uSide, vec2(1.0,1.0)); decCote.a*=smoothstep(0.3,0.6,nl.x*uCote); }\n'+
+/* visuels Côté / Épaule : de vrais « patchs » collés sur la surface,
+   orientés selon la manche ou le flanc à cet endroit (plus de bandes) */
+'for(int i=0;i<8;i++){ if(float(i)>=uDecN) break;\n'+
+'  vec4 dp=uDecM[i]*vec4(vPosL,1.0);\n'+
+'  if(abs(dp.x)<0.5 && abs(dp.y)<0.5 && abs(dp.z)<1.0){\n'+
+'    float fa=smoothstep(-0.15,0.2,dot(nl,uDecD[i].xyz));\n'+
+'    if(fa>0.0){ vec4 c4=texture2D(uDecal, uDecR[i].xy+vec2(dp.x+0.5,0.5-dp.y)*uDecR[i].zw);\n'+
+'      c4.rgb=pow(c4.rgb,vec3(2.2)); c4.a*=fa;\n'+
+'      decCote=vec4(mix(decCote.rgb,c4.rgb,c4.a), max(decCote.a,c4.a)); } } }\n'+
 'if(decCote.a>0.02) dec=decCote;\n'+
 'else if(nl.z>0.30)       dec=lireZone(vec2(q.x,q.y), uFront,  vec2(0.0,0.0));\n'+
           'else if(nl.z<-0.30) dec=lireZone(vec2(1.0-q.x,q.y), uBack, vec2(1.0,0.0));\n'+
@@ -1720,6 +1781,14 @@ function habillerModele(racine, tex, m){
     o.material=mat;
     three.matVetement=mat; three.matsVetement.push(mat);
   });
+  appliquerDecals();
+}
+function appliquerDecals(){
+  var L=three.decals||[];
+  matsVetement().forEach(function(mt){ var u=mt.userData.u; if(!u||!u.uDecM) return;
+    for(var i=0;i<8;i++){ var d=L[i];
+      if(d){ u.uDecM.value[i].copy(d.M); u.uDecR.value[i].copy(d.R); u.uDecD.value[i].copy(d.D); } }
+    u.uDecN.value=Math.min(8,L.length); });
 }
 
 /* met à jour les zones sans recharger la scène */
@@ -1780,6 +1849,7 @@ function reglerEchelleProj(v){
   if(matsVetement().length){
     var t=atlasDesign();                     /* l'atlas doit être refait */
     matsVetement().forEach(function(m){ if(m.userData.u){ m.userData.u.uDecal.value=t; m.needsUpdate=true; } });
+    appliquerDecals();
   }
   majPanneauUV();
 }
@@ -1872,6 +1942,7 @@ function buildScene(frontCanvas,backCanvas,glb){
     if(m.auto && !three.recalage){ /* secours : ancien calage par la boîte de l'image 2D */
       try{ var bb=new THREE.Box3().setFromObject(vetement).getSize(new THREE.Vector3()); three.autoZones[m.id]=zonesAutoBoite(bb); majZonesProj(); }catch(_){ }
     }
+    three.vetementCourant=vetement;
     const tex=atlasDesign();
     three.texVetement=tex;
     habillerModele(vetement,tex,m);
