@@ -187,10 +187,86 @@
 #spin{position:fixed;inset:0;z-index:60;background:radial-gradient(120% 120% at 50% 25%,#28344f,#0c1322);display:none;align-items:center;justify-content:center}
   #spinCanvas{max-width:92vw;max-height:72vh;touch-action:none;cursor:grab;filter:drop-shadow(0 16px 30px rgba(0,0,0,.42))}
   #spinCanvas:active{cursor:grabbing}
-</style></head>
+</style>
+<style>
+/* ================= STUDIO VIRAL : accueil + sélecteur de vêtement ================= */
+.brand .mark{border:none;padding:0;cursor:pointer}
+.gpill{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-width:0;flex:1;
+  max-width:190px;height:38px;padding:0 12px;border:1px solid rgba(195,154,63,.55);border-radius:10px;
+  background:rgba(255,255,255,.05);color:#f3efe4;cursor:pointer;text-align:left;font-family:inherit}
+.gpill:active{background:rgba(195,154,63,.16)}
+.gpill .k{font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:600;line-height:1}
+.gpill .v{display:flex;align-items:center;gap:6px;max-width:100%;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;line-height:1.1;white-space:nowrap}
+.gpill .v span{overflow:hidden;text-overflow:ellipsis}
+.gpill .v i{font-style:normal;font-family:'Inter',sans-serif;font-size:10px;color:var(--gold);flex:none}
+
+#studio{position:fixed;inset:0;z-index:90;background:#f6f2ea;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#studio.open{display:flex}
+.st-hero{background:linear-gradient(180deg,#1a2740,#131c30);color:#f3efe4;text-align:center;
+  padding:max(26px,calc(env(safe-area-inset-top) + 18px)) 22px 26px;border-bottom:2px solid var(--gold);flex:none}
+.st-mark{width:44px;height:44px;margin:0 auto 14px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(120% 120% at 30% 20%,#e6c869,#b8862d);color:#1a2740;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;
+  box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.25)}
+.st-titre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;letter-spacing:6px;line-height:1}
+.st-sous{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:18px;margin-top:8px}
+.st-corps{padding:20px 16px calc(28px + var(--sbtm));max-width:620px;width:100%;margin:0 auto;flex:1}
+.st-question{font-size:15px;color:var(--ink);text-align:center;margin:2px 0 16px;font-weight:500}
+.st-reprendre{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 16px;padding:12px 14px;border:1px solid var(--gold);
+  border-radius:14px;background:#fff;box-shadow:0 0 0 3px var(--goldsoft);cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
+.st-reprendre img{width:46px;height:46px;object-fit:contain;flex:none;background:#efe9dd;border-radius:10px;padding:4px}
+.st-reprendre b{display:block;font-size:14px}
+.st-reprendre small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.st-reprendre .fl{margin-left:auto;color:var(--gold);font-size:18px}
+.st-grille{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (min-width:560px){.st-grille{grid-template-columns:repeat(3,1fr)}}
+.gcard{position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;border:1px solid var(--line);border-radius:16px;
+  background:#fff;overflow:hidden;cursor:pointer;font-family:inherit;color:var(--ink);text-align:left;
+  box-shadow:0 1px 2px rgba(22,34,58,.05),0 6px 18px rgba(22,34,58,.06);transition:transform .15s ease,border-color .15s ease}
+.gcard:active{transform:scale(.98)}
+.gcard .im{height:128px;display:flex;align-items:center;justify-content:center;background:radial-gradient(90% 90% at 50% 40%,#f1ece2,#d9d1c1)}
+.gcard .im img{max-width:82%;max-height:86%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.14))}
+.gcard .tx{display:block;flex:1;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.gcard .nm,.gcard .ds{display:block}
+.gcard .nm{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;line-height:1.1}
+.gcard .ds{font-size:11px;color:var(--muted);margin-top:3px}
+.gcard.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.gcard .badge-encours{position:absolute;z-index:2;top:8px;left:8px;font-size:10px;font-weight:600;letter-spacing:.3px;padding:3px 7px;border-radius:999px;
+  background:var(--accent);color:#f3efe4}
+.gcard.mini .im{height:84px}
+.gcard.mini .tx{padding:7px 9px 9px}
+.gcard.mini .nm{font-size:15px}
+.gcard.mini .ds{display:none}
+#sheet-garment .st-grille{grid-template-columns:repeat(3,1fr);gap:8px}
+
+.var-liste{display:flex;flex-direction:column;gap:8px}
+.var-opt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fbfaf7;
+  cursor:pointer;font-family:inherit;color:var(--ink);text-align:left;font-size:15px}
+.var-opt .rd{width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);flex:none}
+.var-opt.on{border-color:var(--gold);background:#fff}
+.var-opt.on .rd{border-color:var(--gold);background:radial-gradient(circle,var(--gold) 45%,transparent 50%)}
+.var-opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.st-note{font-size:12px;color:var(--muted);margin:10px 2px 0;line-height:1.4}
+.st-lien{display:block;width:100%;margin-top:14px;padding:12px;border:none;background:none;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}
+
+#studioVar{position:fixed;inset:0;z-index:95;display:none;align-items:flex-end;background:rgba(10,16,30,.45)}
+#studioVar.open{display:flex}
+#studioVar .pan,#gdlg .pan{width:100%;background:#fff;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + var(--sbtm));max-width:620px;margin:0 auto}
+#studioVar h3,#gdlg h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:0 0 4px}
+#studioVar p,#gdlg p{font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.45}
+
+#gdlg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;background:rgba(10,16,30,.5)}
+#gdlg.open{display:flex}
+#gdlg .act{display:flex;flex-direction:column;gap:8px}
+#gdlg button{width:100%;padding:13px 14px;border-radius:12px;font-size:15px;font-family:inherit;cursor:pointer;border:1px solid var(--line2);background:#fbfaf7;color:var(--ink);text-align:left}
+#gdlg button small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+#gdlg button.pri{background:var(--accent);border-color:var(--accent);color:#f5f2ec}
+#gdlg button.pri small{color:#c9c3b4}
+#gdlg button.ann{text-align:center;border:none;background:none;color:var(--muted)}
+</style>
+</head>
 <body>
 <div class="mtop">
-  <div class="brand"><span class="mark"></span><span class="title">Modélisation <b>by&nbsp;viral</b></span></div>
+  <div class="brand"><button class="mark" onclick="ouvrirStudio()" aria-label="Accueil Studio VIRAL"></button><button class="gpill" id="gpill" onclick="ouvrirFeuilleVetement()" aria-label="Changer de vêtement"><span class="k">Vêtement</span><span class="v"><span id="gpillNom">T-shirt</span><i>▾</i></span></button></div>
   <button class="iconbtn" id="btnUndo" onclick="undo()">&#8630;</button>
   <button class="iconbtn" id="btnRedo" onclick="redo()">&#8631;</button>
   <button class="btn3d" onclick="closeSheets();openPreview()">Aperçu</button>
@@ -209,7 +285,7 @@
     <img id="garmentImg" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;opacity:0;transition:opacity .25s ease"><div id="layer"></div>
   </div>
 </div>
-<div class="mhint">Glisse pour déplacer · poignée coin = taille · poignée haute = rotation · double-tap un texte pour l\'éditer</div>
+<div class="mhint">Glisse pour déplacer · poignée coin = taille · poignée haute = rotation · double-tap un texte pour l’éditer</div>
 <div class="tabbar">
   <button class="tab" id="tab-add" onclick="openSheet('add')">Ajouter</button>
   <button class="tab" id="tab-layers" onclick="openSheet('layers')">Calques</button>
@@ -273,17 +349,16 @@
 <div class="sheet" id="sheet-props">
   <div class="sheet-head"><div class="grab"></div><div class="sheet-title">Réglages</div><button class="sheet-close" onclick="closeSheets()">&times;</button></div>
   <div class="sheet-body">
-    <h4>Vêtement</h4>
-    <div class="toggle" style="display:grid;grid-template-columns:repeat(3,1fr)"><div class="chip gchip on" data-g="tshirt" onclick="setGarment('tshirt')">T-shirt</div><div class="chip gchip" data-g="sweat" onclick="setGarment('sweat')">Sweat</div><div class="chip gchip" data-g="hoodie" onclick="setGarment('hoodie')">Sweat capuche</div><div class="chip gchip" data-g="puffer" onclick="setGarment('puffer')">Doudoune</div><div class="chip gchip" data-g="track" onclick="setGarment('track')">Survêtement</div><div class="chip gchip" data-g="cap" onclick="setGarment('cap')">Casquette</div></div>
-    <div id="props"><div class="empty">Sélectionne un élément sur le t-shirt pour modifier sa police, sa couleur, sa taille et sa position.</div></div>
+    <div class="toggle" style="display:none"><div class="chip gchip on" data-g="tshirt" onclick="setGarment('tshirt')">T-shirt</div><div class="chip gchip" data-g="sweat" onclick="setGarment('sweat')">Sweat</div><div class="chip gchip" data-g="hoodie" onclick="setGarment('hoodie')">Sweat capuche</div><div class="chip gchip" data-g="puffer" onclick="setGarment('puffer')">Doudoune</div><div class="chip gchip" data-g="track" onclick="setGarment('track')">Survêtement</div><div class="chip gchip" data-g="cap" onclick="setGarment('cap')">Casquette</div></div>
+    <div id="props"><div class="empty">Sélectionne un élément sur le vêtement pour modifier sa police, sa couleur, sa taille et sa position.</div></div>
     <button class="btn" onclick="deleteSelected()">Supprimer l'element selectionne</button>
     <h4>Faces</h4>
     <div class="empty" style="padding:2px 2px 7px">Copier le design de la face affichée vers une autre :</div>
     <div class="row"><button class="btn mini" onclick="copyFaceTo('front')">Devant</button><button class="btn mini" onclick="copyFaceTo('back')">Dos</button><button class="btn mini" onclick="copyFaceTo('sleeve')">&Eacute;paule</button></div>
     <button class="btn" onclick="swapFaces()">&Eacute;changer Devant / Dos</button>
-    <h4>T-shirt</h4>
+    <h4 id="titreCouleurVetement">T-shirt</h4>
     <div class="field">
-      <label>Couleur du t-shirt</label>
+      <label>Couleur du vêtement</label>
       <input type="color" id="shirtColor" value="#e6dcc4" oninput="setShirt(this.value,true)">
       <div class="swatches">
         <span class="sw" style="background:#1b2740" onclick="setShirt('#1b2740',true)"></span>
@@ -366,11 +441,52 @@
   </div>
 </div>
 
+
+<div class="sheet" id="sheet-garment">
+  <div class="sheet-head"><div class="grab"></div><div class="sheet-title">Vêtement</div><button class="sheet-close" onclick="closeSheets()">&times;</button></div>
+  <div class="sheet-body">
+    <div class="st-grille" id="gsheetGrille"></div>
+    <div id="gsheetVar"></div>
+    <div class="st-note">Chaque vêtement garde son propre design : tu peux changer puis revenir sans rien perdre.</div>
+    <button class="st-lien" onclick="closeSheets();ouvrirStudio()">Retour à l'accueil Studio</button>
+  </div>
+</div>
+
+<div id="studio" aria-label="Studio VIRAL">
+  <div class="st-hero">
+    <div class="st-mark">V</div>
+    <div class="st-titre">VIRAL DESIGN</div>
+    <div class="st-sous">Ton style. Tes créations.</div>
+  </div>
+  <div class="st-corps">
+    <div id="stReprendre"></div>
+    <div class="st-question">Que souhaites-tu personnaliser aujourd’hui ?</div>
+    <div class="st-grille" id="stGrille"></div>
+  </div>
+</div>
+
+<div id="studioVar" onclick="if(event.target===this)fermerVariantes()">
+  <div class="pan">
+    <h3 id="svTitre">Choisis ton modèle</h3>
+    <p id="svTexte"></p>
+    <div class="var-liste" id="svListe"></div>
+    <button class="st-lien" onclick="fermerVariantes()">Retour</button>
+  </div>
+</div>
+
+<div id="gdlg">
+  <div class="pan">
+    <h3 id="gdTitre"></h3>
+    <p id="gdTexte"></p>
+    <div class="act" id="gdAct"></div>
+  </div>
+</div>
+
 <script>
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='18';
+var APP_VERSION='19';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1046,7 +1162,7 @@ function parseCommand(msg){ const t=norm(msg); let did=false;
     if(/\bcote\b|profil/.test(t)){ pushHistory('cmd'); switchSide('side',true); return true; }
     if(/devant|face/.test(t)){ pushHistory('cmd'); switchSide('front',true); return true; }
   }
-  { let gsw=null; if(/doudoune|puffer|\bparka\b/.test(t)) gsw='puffer'; else if(/surv[eê]t|jogging|tracksuit/.test(t)) gsw='track'; else if(/capuche|\bhoodie\b/.test(t)) gsw='hoodie'; else if(/\b(sweat|sweat-?shirt|pull)\b/.test(t)) gsw='sweat'; else if(/casquette|\bcap\b/.test(t)) gsw='cap'; else if(/\b(t-?shirt|tee)\b/.test(t) && /\b(passe|mets|met|bascule|change)\b/.test(t) && !findColor(t)) gsw='tshirt'; if(gsw){ pushHistory('cmd'); setGarment(gsw); const col=findColor(t); if(col) setShirt(col,false); return true; } }
+  { let gsw=null; if(/doudoune|puffer|\bparka\b/.test(t)) gsw='puffer'; else if(/surv[eê]t|jogging|tracksuit/.test(t)) gsw='track'; else if(/capuche|\bhoodie\b/.test(t)) gsw='hoodie'; else if(/\b(sweat|sweat-?shirt|pull)\b/.test(t)) gsw='sweat'; else if(/casquette|\bcap\b/.test(t)) gsw='cap'; else if(/\b(t-?shirt|tee)\b/.test(t) && /\b(passe|mets|met|bascule|change)\b/.test(t) && !findColor(t)) gsw='tshirt'; if(gsw){ const col=findColor(t); changerVetement(gsw, col?{couleur:col}:{}); return true; } }
   // couleur du tshirt
   if(/t-?shirt|maillot|tissu|le fond/.test(t)){ const col=findColor(t); if(col){ pushHistory('cmd'); setShirt(col,false); return true; } }
   // ajouts
@@ -2112,13 +2228,264 @@ setBackground('front'); setShirt('#e6dcc4',false); render(); updateHistButtons()
 try{ renderSaves(); }catch(e){}
 </script>
 <script>
+/* =====================================================================
+   STUDIO VIRAL — accueil, sélecteur de vêtement et garde-robe des designs
+   ---------------------------------------------------------------------
+   - Chaque vêtement garde son propre design (faces, couleur, face affichée)
+     dans `garde`. Changer de vêtement range le design en cours et ressort
+     celui du vêtement choisi : rien n'est jamais effacé.
+   - Le transfert d'un design vers un autre vêtement n'est fait que sur
+     demande explicite, et seulement vers les faces que ce vêtement possède.
+   - La session est sauvegardée automatiquement (localStorage) pour être
+     reprise depuis l'écran d'accueil.
+   ===================================================================== */
+var garde = {};                 /* vêtement -> {sides, color, side} (vêtements inactifs) */
+var CLE_SESSION = 'viral-session-v1';
+
+var FACES_VETEMENT = {
+  tshirt:['front','back','side','sleeve'], sweat:['front','back','side'], hoodie:['front','back','side'],
+  puffer:['front','back','side'], track:['front','back'], cap:['front','back','side']
+};
+var NOM_FACE = {front:'Devant', back:'Dos', side:'Côté', sleeve:'Épaule'};
+
+/* Catégories : uniquement celles dont les visuels existent dans l'appli. */
+var CATS_VETEMENT = [
+  {g:'tshirt', nm:'T-shirt',         ds:'Devant · Dos · Côté · Épaule', src:function(){ return TEE_IMG.front; }},
+  {g:'sweat',  nm:'Sweat',           ds:'Demi-zip · Devant · Dos · Côté', src:function(){ return HOOD_IMG.front; }},
+  {g:'hoodie', nm:'Sweat à capuche', ds:'Devant · Dos · Côté', src:function(){ return HOODIE_IMG.front; }},
+  {g:'puffer', nm:'Doudoune',        ds:'Devant · Dos · Côté', src:function(){ return PUFFER_IMG.front; }},
+  {g:'track',  nm:'Survêtement',     ds:'Devant · Dos', src:function(){ return TRACK_IMG.front; }},
+  {g:'cap',    nm:'Casquette',       ds:'Devant · Dos · Côté', src:function(){ return CAP_IMG.front; }}
+].filter(function(c){ try{ return !!c.src(); }catch(_){ return false; } });
+
+function catDe(g){ return CATS_VETEMENT.filter(function(c){ return c.g===g; })[0] || {g:g, nm:g, ds:'', src:function(){ return ''; }}; }
+function nomVetement(g){ return catDe(g).nm; }
+
+/* Variantes = modèles 3D réellement déclarés (et non en échec) pour ce vêtement. */
+function variantesDe(g){
+  return GARMENT_MODELS.filter(function(x){ return (x.pour||'tshirt')===g && x.model && !_glbEchecs[x.id]; });
+}
+function choisirVariante(id){ modele3D=id; try{ localStorage.setItem('viral-modele3d-v14',id); }catch(_){ } majVetementUI(); }
+
+/* ---------- état ---------- */
+function copie(o){ return JSON.parse(JSON.stringify(o)); }
+function etatCourant(){ return {sides:copie({front:sides.front||[],back:sides.back||[],side:sides.side||[],sleeve:sides.sleeve||[]}), color:shirtColor, side:currentSide}; }
+function nbElements(st){ if(!st||!st.sides) return 0; var n=0; ['front','back','side','sleeve'].forEach(function(k){ n+=(st.sides[k]||[]).length; }); return n; }
+function aDuContenu(g){ return g===garment ? nbElements(etatCourant())>0 : nbElements(garde[g])>0; }
+
+function majChipsFaces(){
+  var f=FACES_VETEMENT[garment]||['front','back'];
+  ['front','back','side','sleeve'].forEach(function(k){
+    var c=document.getElementById('chip-'+k); if(!c) return;
+    c.style.display = f.indexOf(k)>=0 ? '' : 'none';
+    c.classList.toggle('on', k===currentSide);
+  });
+}
+
+function majVetementUI(){
+  var pv=document.getElementById('gpillNom'); if(pv) pv.textContent=nomVetement(garment);
+  var h=document.getElementById('titreCouleurVetement'); if(h) h.textContent=nomVetement(garment);
+  if(document.getElementById('sheet-garment').classList.contains('open')) rendreFeuilleVetement();
+}
+
+/* Applique un état complet pour le vêtement g (sans toucher à l'historique). */
+function appliquerEtat(g, st){
+  var f=FACES_VETEMENT[g]||['front','back'];
+  sides.front=st.sides.front||[]; sides.back=st.sides.back||[]; sides.side=st.sides.side||[]; sides.sleeve=st.sides.sleeve||[];
+  currentSide = f.indexOf(st.side)>=0 ? st.side : 'front';
+  garment=g; selectedId=null; selectedIds=[];
+  nodes.forEach(function(n){ n.remove(); }); nodes.clear();
+  setShirt(st.color||shirtColor,false);
+  setGarment(g);                         /* fond, contrôles, 3D éventuelle */
+  switchSide(currentSide,true);          /* recharge les calques de la face */
+  majChipsFaces(); majVetementUI(); planifierSauvegarde();
+}
+
+/* ---------- changement de vêtement ---------- */
+function changerVetement(g, opts){
+  opts=opts||{};
+  if(!FACES_VETEMENT[g]) return;
+  if(g===garment){ if(opts.couleur) setShirt(opts.couleur,true); majVetementUI(); return; }
+  var cur=etatCourant();
+  var cible=garde[g];
+  if(nbElements(cible)>0 || nbElements(cur)===0 || opts.sansTransfert){ basculerVetement(g,'garde',opts); return; }
+
+  /* Le vêtement choisi est vierge et le design actuel n'est pas vide : on demande. */
+  var fCible=FACES_VETEMENT[g];
+  var perdues=['front','back','side','sleeve'].filter(function(k){ return (cur.sides[k]||[]).length && fCible.indexOf(k)<0; });
+  var ok=['front','back','side','sleeve'].filter(function(k){ return (cur.sides[k]||[]).length && fCible.indexOf(k)>=0; });
+  var txt='Ton design sur le '+nomVetement(garment).toLowerCase()+' reste enregistré : tu pourras y revenir à tout moment.';
+  var acts=[{t:'Commencer un '+nomVetement(g).toLowerCase()+' vierge', s:'Le design actuel reste sur le '+nomVetement(garment).toLowerCase()+'.', pri:true, f:function(){ basculerVetement(g,'garde',opts); }}];
+  if(ok.length){
+    acts.push({t:'Reprendre mon design sur ce vêtement', s:'Faces copiées : '+ok.map(function(k){ return NOM_FACE[k]; }).join(', ')+'.'+(perdues.length?' Absentes de ce vêtement : '+perdues.map(function(k){ return NOM_FACE[k]; }).join(', ')+'.':''), f:function(){ basculerVetement(g,'transfert',opts); }});
+  }
+  dialogue('Passer au '+nomVetement(g).toLowerCase(), txt, acts);
+}
+
+function basculerVetement(g, mode, opts){
+  opts=opts||{};
+  pushHistory('garment');
+  var cur=etatCourant();
+  garde[garment]=cur;
+  var st;
+  if(mode==='transfert'){
+    var f=FACES_VETEMENT[g];
+    st={sides:{front:[],back:[],side:[],sleeve:[]}, color:cur.color, side:f.indexOf(cur.side)>=0?cur.side:'front'};
+    f.forEach(function(k){ st.sides[k]=(cur.sides[k]||[]).map(function(e){ var c=copie(e); c.id=uid++; return c; }); });
+    /* identifiants de groupe recopiés tels quels : ils restent cohérents entre eux */
+  } else {
+    st=garde[g] ? copie(garde[g]) : {sides:{front:[],back:[],side:[],sleeve:[]}, color:cur.color, side:'front'};
+  }
+  delete garde[g];
+  appliquerEtat(g, st);
+  if(opts.couleur) setShirt(opts.couleur,false);
+  if(opts.variante) choisirVariante(opts.variante);
+}
+
+/* ---------- boîte de dialogue ---------- */
+function dialogue(titre, texte, actions){
+  var d=document.getElementById('gdlg');
+  document.getElementById('gdTitre').textContent=titre;
+  document.getElementById('gdTexte').textContent=texte;
+  var box=document.getElementById('gdAct'); box.innerHTML='';
+  actions.concat([{t:'Annuler', ann:true, f:function(){}}]).forEach(function(a){
+    var b=document.createElement('button'); if(a.pri) b.className='pri'; if(a.ann) b.className='ann';
+    b.textContent=a.t; if(a.s){ var s=document.createElement('small'); s.textContent=a.s; b.appendChild(s); }
+    b.onclick=function(){ d.classList.remove('open'); a.f(); };
+    box.appendChild(b);
+  });
+  d.classList.add('open');
+}
+
+/* ---------- cartes ---------- */
+function carteHTML(c, mini, actif){
+  var encours = aDuContenu(c.g) && !(mini && actif);
+  return '<button class="gcard'+(mini?' mini':'')+(actif?' on':'')+'" data-g="'+c.g+'">'
+    + (encours?'<span class="badge-encours">En cours</span>':'')
+    + '<span class="im"><img alt="" src="'+c.src()+'"></span>'
+    + '<span class="tx"><span class="nm">'+c.nm+'</span><span class="ds">'+c.ds+'</span></span></button>';
+}
+
+/* ---------- feuille « Vêtement » dans l'éditeur ---------- */
+function ouvrirFeuilleVetement(){
+  var s=document.getElementById('sheet-garment'); var deja=s.classList.contains('open');
+  closeSheets(); if(deja) return;
+  rendreFeuilleVetement();
+  s.classList.add('open'); document.getElementById('scrim').classList.add('on');
+}
+function rendreFeuilleVetement(){
+  var gr=document.getElementById('gsheetGrille');
+  gr.innerHTML=CATS_VETEMENT.map(function(c){ return carteHTML(c,true,c.g===garment); }).join('');
+  gr.querySelectorAll('.gcard').forEach(function(b){ b.onclick=function(){
+    var g=b.getAttribute('data-g'); if(g===garment) return;
+    closeSheets(); changerVetement(g);
+  }; });
+  var v=variantesDe(garment), box=document.getElementById('gsheetVar');
+  if(v.length>1){
+    var cur=modeleActuel().id;
+    box.innerHTML='<h4>Modèle '+nomVetement(garment).toLowerCase()+'</h4><div class="var-liste">'
+      + v.map(function(m){ return '<button class="var-opt'+(m.id===cur?' on':'')+'" data-v="'+m.id+'"><span class="rd"></span><span>'+m.name+'<small>Utilisé pour l’aperçu 3D</small></span></button>'; }).join('')
+      + '</div>';
+    box.querySelectorAll('.var-opt').forEach(function(b){ b.onclick=function(){ choisirVariante(b.getAttribute('data-v')); }; });
+  } else box.innerHTML='';
+}
+
+/* ---------- écran d'accueil ---------- */
+function ouvrirStudio(){
+  closeSheets();
+  var rep=document.getElementById('stReprendre'), n=nbElements(etatCourant());
+  if(n>0){
+    var c=catDe(garment);
+    rep.innerHTML='<button class="st-reprendre"><img alt="" src="'+c.src()+'"><span><b>Reprendre ma création</b><small>'+c.nm+' · '+n+' élément'+(n>1?'s':'')+'</small></span><span class="fl">›</span></button>';
+    rep.firstChild.onclick=fermerStudio;
+  } else rep.innerHTML='';
+  var gr=document.getElementById('stGrille');
+  gr.innerHTML=CATS_VETEMENT.map(function(c){ return carteHTML(c,false,false); }).join('');
+  gr.querySelectorAll('.gcard').forEach(function(b){ b.onclick=function(){ choisirDepuisStudio(b.getAttribute('data-g')); }; });
+  document.getElementById('studio').classList.add('open');
+  document.getElementById('studio').scrollTop=0;
+}
+function fermerStudio(){ document.getElementById('studio').classList.remove('open'); fermerVariantes(); }
+
+function choisirDepuisStudio(g){
+  var v=variantesDe(g);
+  if(v.length>1){ ouvrirVariantes(g,v); return; }
+  ouvrirEditeur(g, v[0]&&v[0].id);
+}
+function ouvrirEditeur(g, variante){
+  fermerStudio();
+  /* depuis l'accueil : on n'impose pas de question, le design précédent reste rangé */
+  if(g===garment){ if(variante) choisirVariante(variante); return; }
+  changerVetement(g,{sansTransfert:true, variante:variante});
+}
+function ouvrirVariantes(g, v){
+  document.getElementById('svTitre').textContent=nomVetement(g)+' : choisis ton modèle';
+  document.getElementById('svTexte').textContent='Plusieurs modèles sont disponibles. Tu pourras en changer à tout moment depuis le sélecteur « Vêtement ».';
+  var cur=(g===garment)?modeleActuel().id:null;
+  var l=document.getElementById('svListe');
+  l.innerHTML=v.map(function(m){ return '<button class="var-opt'+(m.id===cur?' on':'')+'" data-v="'+m.id+'"><span class="rd"></span><span>'+m.name+'<small>Utilisé pour l’aperçu 3D</small></span></button>'; }).join('');
+  l.querySelectorAll('.var-opt').forEach(function(b){ b.onclick=function(){ ouvrirEditeur(g,b.getAttribute('data-v')); }; });
+  document.getElementById('studioVar').classList.add('open');
+}
+function fermerVariantes(){ document.getElementById('studioVar').classList.remove('open'); }
+
+/* ---------- historique : la garde-robe fait partie de l'état ---------- */
+var _snapSansGarde=false;
+var _snapBase=snapshot;
+snapshot=function(){ var s=_snapBase(); if(_snapSansGarde) return s; var o=JSON.parse(s); o.w=garde; return JSON.stringify(o); };
+var _restoreBase=restore;
+restore=function(json){
+  var d=JSON.parse(json);
+  if(d.w){ garde=copie(d.w); }
+  else {
+    /* chargement d'un design enregistré / importé : le travail en cours est rangé */
+    var g2=d.g||'tshirt';
+    if(g2!==garment && nbElements(etatCourant())>0) garde[garment]=etatCourant();
+    delete garde[g2];
+  }
+  _restoreBase(json);
+  setGarment(garment);                   /* remet les contrôles du vêtement restauré */
+  switchSide(currentSide,true);
+  majChipsFaces(); majVetementUI(); planifierSauvegarde();
+};
+/* les fichiers enregistrés / exportés gardent exactement leur format d'origine */
+var _saveBase=saveDesign; saveDesign=function(){ _snapSansGarde=true; try{ _saveBase(); } finally{ _snapSansGarde=false; } };
+var _exportBase=exportDesign; exportDesign=function(){ _snapSansGarde=true; try{ _exportBase(); } finally{ _snapSansGarde=false; } };
+
+/* ---------- sauvegarde automatique de la session ---------- */
+var _tSauve=null;
+function planifierSauvegarde(){ clearTimeout(_tSauve); _tSauve=setTimeout(sauverSession,700); }
+function sauverSession(){ try{ localStorage.setItem(CLE_SESSION, snapshot()); }catch(_){ /* quota : on garde l'historique en mémoire */ } }
+var _renderBase=render; render=function(){ var r=_renderBase.apply(this,arguments); planifierSauvegarde(); return r; };
+var _setShirtBase=setShirt; setShirt=function(){ var r=_setShirtBase.apply(this,arguments); planifierSauvegarde(); return r; };
+window.addEventListener('pagehide',sauverSession);
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') sauverSession(); });
+
+/* ---------- démarrage ---------- */
+(function(){
+  try{
+    var s=localStorage.getItem(CLE_SESSION);
+    if(s){
+      var d=JSON.parse(s);
+      if(d && d.f){
+        _restoreBase(s); garde=d.w?copie(d.w):{}; delete garde[garment];
+        setGarment(garment); switchSide(currentSide,true);
+        history=[]; future=[]; updateHistButtons();
+      }
+    }
+  }catch(_){ }
+  majChipsFaces(); majVetementUI();
+  ouvrirStudio();
+})();
+</script>
+<script>
 /* ---------------------- mise à jour de l'application ----------------------
    Un service worker garde l'application en cache pour l'usage hors ligne.
    Sans ce contrôle, il continue de servir l'ancienne version même après un
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v5";
+window.VIRAL_VERSION = "v6";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
