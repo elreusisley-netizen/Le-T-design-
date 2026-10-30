@@ -372,6 +372,27 @@
     <h4>Export</h4>
     <button class="btn gold" onclick="downloadPNG()">Télécharger en PNG</button>
     <div class="empty" style="padding-top:2px">Exporte la face affichée.</div>
+    <div id="compteBloc" style="display:none">
+    <h4>Mon compte</h4>
+    <div id="compteOff">
+      <div class="empty" style="padding:2px 2px 8px">Facultatif : crée un compte pour sauvegarder tes designs en ligne et les retrouver sur un autre appareil. Pas de mot de passe, tu reçois un code par e-mail.</div>
+      <div class="field"><input type="email" id="compteEmail" inputmode="email" autocomplete="email" placeholder="ton@email.com"></div>
+      <div id="compteCodeZone" style="display:none"><div class="field"><input type="text" id="compteCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Code reçu par e-mail"></div></div>
+      <button class="btn gold" id="compteBtn" onclick="compteAction()">Recevoir un code</button>
+    </div>
+    <div id="compteOn" style="display:none">
+      <div class="empty" style="padding:2px 2px 8px">Connecté : <b id="compteQui"></b></div>
+      <button class="btn gold" onclick="sauverEnLigne()">Sauvegarder en ligne</button>
+      <div id="cloudListe" style="margin-top:8px"></div>
+      <button class="btn" onclick="compteDeconnexion()">Se déconnecter</button>
+    </div>
+    <div class="aistatus" id="compteStatus" style="text-align:left;margin-top:6px"></div>
+    <h4>Statistiques</h4>
+    <label class="empty" style="display:flex;gap:10px;align-items:flex-start;padding:2px 2px 6px;cursor:pointer">
+      <input type="checkbox" id="statsToggle" onchange="VB.setStats(this.checked)" style="margin-top:3px;width:18px;height:18px;flex:none">
+      <span>Envoyer des statistiques anonymes d’utilisation (ouvertures, vêtements choisis, sauvegardes, exports) pour améliorer VIRAL Design. Aucun nom, aucun e-mail, aucune image de tes designs.</span>
+    </label>
+    </div>
     <h4>Projet</h4>
     <div class="field"><input type="text" id="saveName" placeholder="Nom du design"></div>
     <div class="row"><button class="btn mini" onclick="saveDesign()">Enregistrer</button><button class="btn mini" onclick="exportDesign()">Exporter fichier</button></div>
@@ -486,7 +507,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='19';
+var APP_VERSION='20';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -2227,6 +2248,8 @@ setBackground('front'); setShirt('#e6dcc4',false); render(); updateHistButtons()
 
 try{ renderSaves(); }catch(e){}
 </script>
+<script src="./supabase-config.js"></script>
+<script src="./viral-backend.js"></script>
 <script>
 /* =====================================================================
    STUDIO VIRAL — accueil, sélecteur de vêtement et garde-robe des designs
@@ -2397,7 +2420,7 @@ function ouvrirStudio(){
   if(n>0){
     var c=catDe(garment);
     rep.innerHTML='<button class="st-reprendre"><img alt="" src="'+c.src()+'"><span><b>Reprendre ma création</b><small>'+c.nm+' · '+n+' élément'+(n>1?'s':'')+'</small></span><span class="fl">›</span></button>';
-    rep.firstChild.onclick=fermerStudio;
+    rep.firstChild.onclick=function(){ fermerStudio(); };
   } else rep.innerHTML='';
   var gr=document.getElementById('stGrille');
   gr.innerHTML=CATS_VETEMENT.map(function(c){ return carteHTML(c,false,false); }).join('');
@@ -2479,13 +2502,147 @@ document.addEventListener('visibilitychange',function(){ if(document.visibilityS
 })();
 </script>
 <script>
+/* =====================================================================
+   STATISTIQUES + COMPTE FACULTATIF (Supabase via viral-backend.js)
+   N'agit que si supabase-config.js est rempli ; sinon l'appli reste
+   exactement comme avant.
+   ===================================================================== */
+(function(){
+  if(!window.VB || !VB.enabled) return;
+
+  /* ----- ouverture / retour ----- */
+  var jour = new Date().toLocaleDateString('sv-SE'), dernier = null;
+  try{ dernier = localStorage.getItem('viral-derniere-visite'); localStorage.setItem('viral-derniere-visite', jour); }catch(_){ }
+  if(dernier === jour) dernier = null;
+  var dejaCompte = false; try{ dejaCompte = sessionStorage.getItem('viral-open') === '1'; sessionStorage.setItem('viral-open','1'); }catch(_){ }
+  if(!dejaCompte){                       /* une ouverture = une session, même si l'appli se recharge pour une mise à jour */
+    VB.track('app_open');
+    if(dernier && dernier !== jour) VB.track('return_visit');
+  }
+  window.addEventListener('appinstalled', function(){ VB.track('pwa_installed'); });
+
+  /* ----- éditeur & vêtements ----- */
+  var editeurOuvert = false;
+  var _fermerStudio = fermerStudio;
+  fermerStudio = function(){
+    var r = _fermerStudio.apply(this, arguments);
+    if(!editeurOuvert){ editeurOuvert = true; VB.track('editor_open'); }
+    return r;
+  };
+  var _basculer = basculerVetement;
+  basculerVetement = function(g){ var r = _basculer.apply(this, arguments); VB.track('garment_select', {garment: g}); return r; };
+  var _ouvrirEditeur = ouvrirEditeur;
+  ouvrirEditeur = function(g){ var meme = (g === garment); var r = _ouvrirEditeur.apply(this, arguments); if(meme) VB.track('garment_select', {garment: g}); return r; };
+
+  /* 1er élément posé sur un vêtement : compté une seule fois par appareil et par vêtement */
+  function verifierPersonnalise(){
+    try{
+      if(nbElements(etatCourant()) === 0) return;
+      var f = JSON.parse(localStorage.getItem('viral-personnalises') || '{}');
+      if(f[garment]) return;
+      f[garment] = 1; localStorage.setItem('viral-personnalises', JSON.stringify(f));
+      VB.track('garment_customized', {garment: garment});
+    }catch(_){ }
+  }
+  var _t = null, _render = render;
+  render = function(){ var r = _render.apply(this, arguments); clearTimeout(_t); _t = setTimeout(verifierPersonnalise, 900); return r; };
+
+  /* ----- sauvegardes & exports ----- */
+  var _save = saveDesign; saveDesign = function(){ var r = _save.apply(this, arguments); VB.track('design_save', {garment: garment}); return r; };
+  var _exp = exportDesign; exportDesign = function(){ var r = _exp.apply(this, arguments); VB.track('export_file', {garment: garment}); return r; };
+  var _png = downloadPNG; downloadPNG = function(){ VB.track('export_png', {garment: garment}); return _png.apply(this, arguments); };
+
+  /* ----- compte facultatif ----- */
+  document.getElementById('compteBloc').style.display = '';
+  var tg = document.getElementById('statsToggle'); tg.checked = VB.statsOn();
+
+  function statut(t){ var s = document.getElementById('compteStatus'); if(s) s.textContent = t || ''; }
+  function majCompte(){
+    var s = VB.session();
+    document.getElementById('compteOff').style.display = s ? 'none' : '';
+    document.getElementById('compteOn').style.display = s ? '' : 'none';
+    if(s){ document.getElementById('compteQui').textContent = VB.emailMasque(); listerEnLigne(); }
+  }
+  VB.onSession(majCompte);
+
+  var codeEnvoye = false;
+  window.compteAction = function(){
+    var em = document.getElementById('compteEmail').value.trim();
+    var btn = document.getElementById('compteBtn');
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ statut('Entre une adresse e-mail valide.'); return; }
+    if(navigator.onLine === false){ statut('Pas de connexion internet.'); return; }
+    btn.disabled = true;
+    if(!codeEnvoye){
+      statut('Envoi du code…');
+      VB.sendCode(em).then(function(){
+        codeEnvoye = true; document.getElementById('compteCodeZone').style.display = '';
+        btn.textContent = 'Valider le code'; statut('E-mail envoyé à ' + em + ' : entre le code ou touche le lien reçu. Pense aux spams.');
+        document.getElementById('compteCode').focus();
+      }).catch(function(e){ statut(e.status === 429 ? 'Trop de demandes : réessaie dans une minute.' : 'Envoi impossible : ' + e.message); })
+        .then(function(){ btn.disabled = false; });
+    } else {
+      var code = document.getElementById('compteCode').value;
+      statut('Vérification…');
+      VB.verifyCode(em, code).then(function(){
+        statut('Connecté.'); codeEnvoye = false; btn.textContent = 'Recevoir un code';
+        document.getElementById('compteCodeZone').style.display = 'none'; document.getElementById('compteCode').value = '';
+      }).catch(function(){ statut('Code incorrect ou expiré.'); })
+        .then(function(){ btn.disabled = false; });
+    }
+  };
+  document.getElementById('compteEmail').addEventListener('input', function(){
+    if(codeEnvoye){ codeEnvoye = false; document.getElementById('compteCodeZone').style.display = 'none'; document.getElementById('compteBtn').textContent = 'Recevoir un code'; }
+  });
+  window.compteDeconnexion = function(){ VB.signOut().then(function(){ statut('Déconnecté. Tes designs enregistrés sur cet appareil restent ici.'); }); };
+
+  function designActuel(){ _snapSansGarde = true; try{ return JSON.parse(snapshot()); } finally{ _snapSansGarde = false; } }
+  window.sauverEnLigne = function(){
+    var inp = document.getElementById('saveName');
+    var nm = (inp && inp.value.trim()) || (nomVetement(garment) + ' ' + new Date().toLocaleDateString('fr-FR'));
+    statut('Sauvegarde en ligne…');
+    VB.rest('POST', 'designs?on_conflict=user_id,name', { name: nm.slice(0,80), garment: garment, data: designActuel() }, 'resolution=merge-duplicates,return=minimal')
+      .then(function(){ statut('Sauvegardé en ligne : ' + nm); VB.track('design_cloud_save', {garment: garment}); listerEnLigne(); })
+      .catch(function(e){ statut(e.status === 401 ? 'Session expirée : reconnecte-toi.' : 'Sauvegarde impossible : ' + e.message); });
+  };
+  function listerEnLigne(){
+    var box = document.getElementById('cloudListe'); if(!box) return;
+    VB.rest('GET', 'designs?select=id,name,garment,updated_at&order=updated_at.desc&limit=50').then(function(l){
+      box.innerHTML = '';
+      if(!l || !l.length){ box.innerHTML = '<div class="empty">Aucun design en ligne pour le moment.</div>'; return; }
+      l.forEach(function(d){
+        var row = document.createElement('div'); row.className = 'lyr';
+        var sp = document.createElement('span'); sp.textContent = d.name + (d.garment ? ' · ' + nomVetement(d.garment) : ''); row.appendChild(sp);
+        var b1 = document.createElement('button'); b1.className = 'mini-a'; b1.textContent = 'Charger'; b1.onclick = function(){ chargerEnLigne(d.id, d.name); }; row.appendChild(b1);
+        var b2 = document.createElement('button'); b2.className = 'mini-a del'; b2.textContent = 'Suppr'; b2.onclick = function(){ supprimerEnLigne(d.id, d.name); }; row.appendChild(b2);
+        box.appendChild(row);
+      });
+    }).catch(function(){ box.innerHTML = '<div class="empty">Liste indisponible (hors ligne ?).</div>'; });
+  }
+  function chargerEnLigne(id, nm){
+    VB.rest('GET', 'designs?select=data&id=eq.' + encodeURIComponent(id)).then(function(l){
+      if(!l || !l[0]) throw new Error('introuvable');
+      pushHistory('load'); restore(JSON.stringify(l[0].data)); updateHistButtons(); statut('Chargé : ' + nm);
+    }).catch(function(e){ statut('Chargement impossible : ' + e.message); });
+  }
+  function supprimerEnLigne(id, nm){
+    dialogue('Supprimer « ' + nm + ' » ?', 'Ce design sera supprimé de ton compte en ligne. Ce que tu as à l’écran ne change pas.',
+      [{t:'Supprimer définitivement', pri:true, f:function(){
+        VB.rest('DELETE', 'designs?id=eq.' + encodeURIComponent(id), null, 'return=minimal')
+          .then(function(){ statut('Supprimé : ' + nm); listerEnLigne(); })
+          .catch(function(e){ statut('Suppression impossible : ' + e.message); });
+      }}]);
+  }
+  majCompte();
+})();
+</script>
+<script>
 /* ---------------------- mise à jour de l'application ----------------------
    Un service worker garde l'application en cache pour l'usage hors ligne.
    Sans ce contrôle, il continue de servir l'ancienne version même après un
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v6";
+window.VIRAL_VERSION = "v7";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
