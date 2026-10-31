@@ -9,6 +9,6 @@
    pas de statistiques, pas de comptes.
    ===================================================================== */
 window.VIRAL_SUPABASE = {
-  url: '',
-  anonKey: ''
+  url: 'https://hmmqdqdsuziqozhadkmi.supabase.co',
+  anonKey: 'sb_publishable_GkAdaHzrjdfWMKgbr8_OkA_385Z1MQJ'
 };
