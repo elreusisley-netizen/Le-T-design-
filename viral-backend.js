@@ -173,6 +173,35 @@
       return http(method, '/rest/v1/' + path, body, { token: t, prefer: prefer });
     });
   }
+  /* ---------- stockage (Supabase Storage) : toujours avec le jeton de l'utilisateur ---------- */
+  function cheminSur(path){ return String(path).split('/').map(encodeURIComponent).join('/'); }
+  function stockage(method, url, body, type){
+    return token().then(function(t){
+      if(!t) { var e = new Error('Connexion requise'); e.status = 401; throw e; }
+      var h = { 'apikey': KEY, 'Authorization': 'Bearer ' + t };
+      if(type) h['Content-Type'] = type;
+      return fetch(URL_ + url, { method: method, headers: h, body: body, cache: 'no-store' }).then(function(r){
+        if(!r.ok) return r.text().then(function(x){ var j = null; try{ j = JSON.parse(x); }catch(_){ }
+          var e = new Error((j && (j.message || j.error)) || ('Erreur ' + r.status)); e.status = r.status; throw e; });
+        return r;
+      });
+    });
+  }
+  var storage = {
+    upload: function(bucket, path, blob, type){ return stockage('POST', '/storage/v1/object/' + bucket + '/' + cheminSur(path), blob, type || blob.type || 'application/octet-stream'); },
+    download: function(bucket, path){ return stockage('GET', '/storage/v1/object/authenticated/' + bucket + '/' + cheminSur(path)).then(function(r){ return r.blob(); }); },
+    remove: function(bucket, path){ return stockage('DELETE', '/storage/v1/object/' + bucket + '/' + cheminSur(path)); }
+  };
+
+  /* ---------- rôle : décidé par le serveur (fonction is_admin), jamais par l'appareil ---------- */
+  var _role = null;
+  function estAdmin(){
+    if(!enabled || !session) return Promise.resolve(false);
+    if(!_role) _role = rpc('is_admin').then(function(v){ return v === true; }).catch(function(e){ _role = null; throw e; });
+    return _role;
+  }
+  abonnes.push(function(){ _role = null; });
+
   function emailMasque(){
     var e = session && session.user && session.user.email; if(!e) return '';
     var p = e.split('@'); return p[0].slice(0,2) + '•••@' + (p[1] || '');
@@ -188,7 +217,8 @@
     onSession: function(f){ abonnes.push(f); },
     sendCode: sendCode, verifyCode: verifyCode, signOut: signOut,
     rpc: rpc, rest: rest, token: token, emailMasque: emailMasque,
-    pret: function(){ return pret; }
+    pret: function(){ return pret; },
+    storage: storage, estAdmin: estAdmin
   };
   if(enabled) setTimeout(envoyer, 2500);
 })();

@@ -1,5 +1,5 @@
 /* by viral — service worker (offline, tolerant) */
-const CACHE = 'byviral-v5';
+const CACHE = 'byviral-v6';
 const CORE = [
   './',
   './index.html',

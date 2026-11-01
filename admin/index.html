@@ -62,7 +62,7 @@
   .bars .n{text-align:right;font-variant-numeric:tabular-nums}
   .bars .sub{grid-column:2/4;font-size:11px;color:var(--muted);margin-top:-6px}
   nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;background:linear-gradient(180deg,#1a2740,#101827);border-top:1px solid rgba(255,255,255,.08);padding-bottom:var(--sbtm)}
-  nav button{flex:1;padding:12px 2px 13px;border:none;background:none;color:#b9b3a4;font-size:11.5px;font-weight:500;position:relative;cursor:pointer}
+  nav button{flex:1;padding:12px 1px 13px;border:none;background:none;color:#b9b3a4;font-size:10.5px;font-weight:500;position:relative;cursor:pointer}
   nav button.on{color:var(--gold)}
   nav button.on::before{content:"";position:absolute;top:0;left:24%;right:24%;height:2px;background:var(--gold);border-radius:2px}
   .center{min-height:70dvh;display:flex;flex-direction:column;justify-content:center;max-width:420px;margin:0 auto}
@@ -87,6 +87,13 @@
   .user dt{color:var(--muted)} .user dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
   .stack{display:flex;flex-direction:column;gap:10px}
   .hidden{display:none!important}
+  .res{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start}
+  .res-im{width:76px;height:76px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#e9e4d8 0 25%,#f6f2ea 0 50%) 0 0/14px 14px;overflow:hidden}
+  .res-im img{max-width:88%;max-height:88%;object-fit:contain}
+  .res-f input{margin-bottom:6px;padding:9px 11px;font-size:15px}
+  .res-a{display:flex;gap:6px;margin-top:6px}
+  .res-a .btn{margin-top:0;padding:9px 6px;font-size:13px}
+  .btn.danger{border-color:var(--bad);color:var(--bad)}
 </style>
 </head>
 <body>
@@ -109,6 +116,7 @@
   <button data-t="creations">Créations</button>
   <button data-t="installs">Installations</button>
   <button data-t="comptes">Comptes</button>
+  <button data-t="ressources">Ressources</button>
 </nav>
 
 <script src="../supabase-config.js"></script>
@@ -179,6 +187,7 @@ function verifierAcces(){
     if(ok !== true){ ecranRefus(); return; }
     document.getElementById('hdr').classList.remove('hidden'); document.getElementById('nav').classList.remove('hidden');
     charger();
+    if(location.hash === '#ressources') allerOnglet('ressources');
   }).catch(function(e){
     if(e.status === 401){ ecranConnexion('Session expirée, reconnecte-toi.'); return; }
     ecranErreur(navigator.onLine === false ? 'Pas de connexion internet.' : e.message);
@@ -213,10 +222,143 @@ document.getElementById('periods').onclick = function(ev){
 };
 document.getElementById('nav').onclick = function(ev){
   var b = ev.target.closest('button'); if(!b) return;
-  etat.onglet = b.getAttribute('data-t');
-  this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); });
-  rendre(); window.scrollTo(0, 0);
+  allerOnglet(b.getAttribute('data-t'));
 };
+
+function allerOnglet(t){
+  etat.onglet = t;
+  document.querySelectorAll('#nav button').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-t') === t); });
+  document.getElementById('periods').style.display = t === 'ressources' ? 'none' : '';
+  try{ history.replaceState(null, '', t === 'apercu' ? location.pathname : '#' + t); }catch(_){ }
+  if(t === 'ressources' && res.liste === null) chargerRessources(); else rendre();
+  window.scrollTo(0, 0);
+}
+/* ---------------- Ressources : bibliothèque privée VIRAL Admin ----------------
+   Fichiers dans le bucket privé « admin-assets », catalogue dans la table
+   admin_assets. Chaque opération est autorisée par le serveur uniquement si
+   le compte connecté est administrateur (règles RLS + Storage).            */
+var res = { liste: null, urls: {}, msg: '', envoi: false };
+var TYPES_OK = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
+var MAX_OCTETS = 5 * 1024 * 1024, MAX_COTE = 2400;
+
+function slug(t){ return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'ressources'; }
+function uuidv4(){ return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^a-z0-9-]/gi, '').toLowerCase(); }
+
+function chargerRessources(){
+  res.liste = null; rendre();
+  return VB.rest('GET', 'admin_assets?select=id,name,category,path,mime,width,height,bytes,sort,updated_at&order=category.asc,sort.asc,name.asc')
+    .then(function(l){ res.liste = l || []; rendre(); })
+    .catch(function(e){ res.liste = []; res.msg = 'Chargement impossible : ' + e.message; rendre(); });
+}
+function vignette(a){
+  if(res.urls[a.id]) return Promise.resolve(res.urls[a.id]);
+  return VB.storage.download('admin-assets', a.path).then(function(b){ return (res.urls[a.id] = URL.createObjectURL(b)); });
+}
+
+/* validation + optimisation (redimensionne au-delà de 2400 px) */
+function preparer(f){
+  return new Promise(function(ok, ko){
+    var type = f.type;
+    if(!TYPES_OK[type]) return ko(new Error(f.name + ' : format refusé (PNG, JPEG, WebP ou SVG uniquement).'));
+    if(f.size > MAX_OCTETS) return ko(new Error(f.name + ' : plus de 5 Mo.'));
+    if(type === 'image/svg+xml'){
+      f.text().then(function(t){ if(!/<svg[\s>]/i.test(t)) return ko(new Error(f.name + ' : SVG invalide.')); ok({ blob: f, type: type, w: null, h: null }); });
+      return;
+    }
+    var u = URL.createObjectURL(f), im = new Image();
+    im.onload = function(){
+      var w = im.naturalWidth, h = im.naturalHeight; URL.revokeObjectURL(u);
+      if(!w || !h) return ko(new Error(f.name + ' : image illisible.'));
+      var k = Math.min(1, MAX_COTE / Math.max(w, h));
+      if(k === 1) return ok({ blob: f, type: type, w: w, h: h });
+      var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      c.toBlob(function(b){ b ? ok({ blob: b, type: type, w: c.width, h: c.height }) : ko(new Error(f.name + ' : optimisation impossible.')); }, type, 0.9);
+    };
+    im.onerror = function(){ URL.revokeObjectURL(u); ko(new Error(f.name + ' : fichier corrompu ou non reconnu comme image.')); };
+    im.src = u;
+  });
+}
+/* « Catégorie - Nom.png » → catégorie + nom ; sinon la catégorie choisie */
+function nomDepuisFichier(n, catDefaut){
+  var base = n.replace(/\.[a-z0-9]+$/i, '').trim(), i = base.indexOf(' - ');
+  if(i > 0) return { cat: base.slice(0, i).trim().slice(0, 40), nom: base.slice(i + 3).trim().slice(0, 80) };
+  return { cat: catDefaut, nom: base.slice(0, 80) || 'Ressource' };
+}
+function envoyerRessources(){
+  var inp = document.getElementById('resFichiers'), cat = (document.getElementById('resCat').value || '').trim() || 'Ressources';
+  var fichiers = [].slice.call(inp.files || []);
+  if(!fichiers.length){ res.msg = 'Choisis au moins une image.'; rendre(); return; }
+  res.envoi = true; res.msg = 'Envoi de ' + fichiers.length + ' fichier(s)…'; rendre();
+  var ok = 0, erreurs = [];
+  fichiers.reduce(function(p, f){
+    return p.then(function(){
+      var info = nomDepuisFichier(f.name, cat);
+      return preparer(f).then(function(x){
+        var path = slug(info.cat) + '/' + uuidv4() + '.' + TYPES_OK[x.type];
+        return VB.storage.upload('admin-assets', path, x.blob, x.type).then(function(){
+          return VB.rest('POST', 'admin_assets', { name: info.nom, category: info.cat, path: path, mime: x.type, width: x.w, height: x.h, bytes: x.blob.size }, 'return=minimal')
+            .catch(function(e){ return VB.storage.remove('admin-assets', path).catch(function(){}).then(function(){ throw e; }); });
+        });
+      }).then(function(){ ok++; res.msg = ok + ' / ' + fichiers.length + ' envoyé(s)…'; rendre(); })
+        .catch(function(e){ erreurs.push(e.message); });
+    });
+  }, Promise.resolve()).then(function(){
+    res.envoi = false; inp.value = '';
+    res.msg = ok + ' ressource(s) ajoutée(s).' + (erreurs.length ? ' Refusé : ' + erreurs.join(' · ') : '');
+    chargerRessources();
+  });
+}
+function modifierRessource(id){
+  var nom = document.getElementById('rn-' + id).value.trim(), cat = document.getElementById('rc-' + id).value.trim();
+  if(!nom || !cat){ res.msg = 'Le nom et la catégorie sont obligatoires.'; rendre(); return; }
+  VB.rest('PATCH', 'admin_assets?id=eq.' + encodeURIComponent(id), { name: nom.slice(0, 80), category: cat.slice(0, 40) }, 'return=minimal')
+    .then(function(){ res.msg = 'Modifié : ' + nom; chargerRessources(); })
+    .catch(function(e){ res.msg = 'Modification impossible : ' + e.message; rendre(); });
+}
+var _aSupprimer = null;
+function supprimerRessource(id){
+  var a = (res.liste || []).filter(function(x){ return x.id === id; })[0]; if(!a) return;
+  if(_aSupprimer !== id){ _aSupprimer = id; rendre(); return; }   /* 1er appui : demande de confirmation */
+  _aSupprimer = null;
+  /* d'abord le fichier, puis la fiche : jamais de fiche qui pointe vers un fichier absent */
+  VB.storage.remove('admin-assets', a.path)
+    .then(function(){ return VB.rest('DELETE', 'admin_assets?id=eq.' + encodeURIComponent(id), null, 'return=minimal'); })
+    .then(function(){ if(res.urls[id]){ URL.revokeObjectURL(res.urls[id]); delete res.urls[id]; } res.msg = 'Supprimé : ' + a.name; chargerRessources(); })
+    .catch(function(e){ res.msg = 'Suppression impossible : ' + e.message; rendre(); });
+}
+
+function rendreRessources(){
+  var cats = {}, liste = res.liste;
+  (liste || []).forEach(function(a){ (cats[a.category] = cats[a.category] || []).push(a); });
+  var h = '<h2>Bibliothèque privée</h2>'
+    + '<div class="note">Visible uniquement par les comptes administrateurs : le serveur refuse ces fichiers à tous les autres, même avec leur adresse exacte. Dans l’éditeur, ces ressources apparaissent dans <b>Ajouter → Bibliothèque VIRAL</b> quand tu es connecté.</div>'
+    + '<div class="card wide"><div class="k">Ajouter des ressources</div>'
+    + '<input id="resCat" list="resCats" placeholder="Catégorie (ex. Logos)" style="margin-top:10px">'
+    + '<datalist id="resCats">' + Object.keys(cats).map(function(c){ return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>'
+    + '<input id="resFichiers" type="file" multiple accept="image/png,image/jpeg,image/webp,image/svg+xml">'
+    + '<button class="btn" id="resGo"' + (res.envoi ? ' disabled' : '') + ' onclick="envoyerRessources()">Envoyer</button>'
+    + '<div class="s" style="margin-top:8px">PNG, JPEG, WebP ou SVG · 5 Mo max · redimensionnées au-delà de 2400 px. Un fichier nommé « Logos - Logo VIRAL.png » est rangé automatiquement dans « Logos ».</div>'
+    + '<div class="msg" id="resMsg">' + esc(res.msg) + '</div></div>';
+  if(liste === null) h += '<div class="stack" style="margin-top:12px"><div class="skel"></div><div class="skel"></div></div>';
+  else if(!liste.length) h += '<div class="card" style="margin-top:12px"><div class="s">Ta bibliothèque est vide. Ajoute tes ressources ci-dessus.</div></div>';
+  Object.keys(cats).forEach(function(c){
+    h += '<h2 style="font-size:19px">' + esc(c) + ' <span class="s" style="font-family:inherit;font-size:12px">(' + cats[c].length + ')</span></h2><div class="stack">';
+    cats[c].forEach(function(a){
+      var conf = _aSupprimer === a.id;
+      h += '<div class="card res"><div class="res-im"><img alt="" data-id="' + a.id + '"></div><div class="res-f">'
+        + '<input id="rn-' + a.id + '" value="' + esc(a.name) + '" aria-label="Nom">'
+        + '<input id="rc-' + a.id + '" value="' + esc(a.category) + '" list="resCats" aria-label="Catégorie">'
+        + '<div class="s">' + esc(a.mime.replace('image/', '').toUpperCase()) + (a.width ? ' · ' + a.width + '×' + a.height : '') + (a.bytes ? ' · ' + Math.round(a.bytes / 1024) + ' Ko' : '') + '</div>'
+        + '<div class="res-a"><button class="btn ghost" onclick="modifierRessource(\'' + a.id + '\')">Enregistrer</button>'
+        + '<button class="btn ghost' + (conf ? ' danger' : '') + '" onclick="supprimerRessource(\'' + a.id + '\')">' + (conf ? 'Confirmer la suppression' : 'Supprimer') + '</button></div>'
+        + '</div></div>';
+    });
+    h += '</div>';
+  });
+  main.innerHTML = h;
+  (liste || []).forEach(function(a){ vignette(a).then(function(u){ var im = main.querySelector('img[data-id="' + a.id + '"]'); if(im) im.src = u; }).catch(function(){ }); });
+}
 
 /* ---------------- graphiques (SVG, une seule série, survol / toucher) ---------------- */
 function tableHTML(rows, cols){
@@ -278,6 +420,7 @@ function tuile(k, v, s, extra){ return '<div class="card' + (extra || '') + '"><
 function periodeTxt(){ return etat.jours + ' derniers jours'; }
 
 function rendre(){
+  if(etat.onglet === 'ressources'){ rendreRessources(); return; }
   var d = etat.data; if(!d) return;
   var h = '', a = d.activity, u = d.users, c = d.creations, ins = d.installs, se = d.series || [];
   var maj = '<div class="s" style="margin:10px 2px 0">Données réelles · actualisé ' + dateFr(d.generated_at, true) + '</div>';
