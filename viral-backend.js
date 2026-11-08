@@ -90,6 +90,7 @@
 
   /* ---------- statistiques ---------- */
   var FILE = 'viral-events-queue';
+  var GARMENTS_V1 = ['tshirt','sweat','hoodie','puffer','track','cap'];   /* acceptés par le schéma d'origine */
   function statsOn(){ return enabled && lire('viral-stats-off', false) !== true; }
   function track(name, extra){
     if(!statsOn()) return;
@@ -117,6 +118,12 @@
       _envoi = false; if(reste.length) planifierEnvoi();
     }).catch(function(e){
       _envoi = false;
+      /* base pas encore mise à jour pour un nouveau vêtement (ex. combinaisons) :
+         on renvoie le lot sans le nom du vêtement plutôt que de le perdre */
+      if(e && e.status === 400 && lot.some(function(x){ return x.garment && GARMENTS_V1.indexOf(x.garment) < 0; })){
+        var qq = lire(FILE, []); qq.slice(0, lot.length).forEach(function(x){ if(x.garment && GARMENTS_V1.indexOf(x.garment) < 0) x.garment = null; });
+        ecrire(FILE, qq); planifierEnvoi(); return;
+      }
       if(e && e.status >= 400 && e.status < 500 && e.status !== 429){ ecrire(FILE, lire(FILE, []).slice(lot.length)); } /* lot refusé : on ne réessaie pas */
     });
   }

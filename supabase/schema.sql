@@ -61,7 +61,7 @@ create table if not exists public.events (
                'signup',              -- création de compte
                'login'                -- connexion
              )),
-  garment    text check (garment is null or garment in ('tshirt','sweat','hoodie','puffer','track','cap')),
+  garment    text check (garment is null or garment in ('tshirt','sweat','hoodie','puffer','track','cap','jump','jumphood')),
   standalone boolean not null default false,   -- lancée depuis l'écran d'accueil
   platform   text check (platform is null or platform in ('ios','android','desktop','other'))
 );
@@ -107,7 +107,7 @@ create table if not exists public.designs (
   id         uuid primary key default gen_random_uuid(),
   user_id    uuid not null default auth.uid() references auth.users(id) on delete cascade,
   name       text not null check (char_length(name) between 1 and 80),
-  garment    text check (garment is null or garment in ('tshirt','sweat','hoodie','puffer','track','cap')),
+  garment    text check (garment is null or garment in ('tshirt','sweat','hoodie','puffer','track','cap','jump','jumphood')),
   data       jsonb not null check (pg_column_size(data) < 4000000),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
