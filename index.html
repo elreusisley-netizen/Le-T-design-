@@ -152,7 +152,8 @@
   .chip{display:inline-flex;align-items:center;justify-content:center;padding:11px 0;flex:1;border:1px solid var(--line2);border-radius:10px;font-size:14px;cursor:pointer;background:#fbfaf6}
   .chip.on{background:var(--accent);color:#f3efe4;border-color:var(--accent)}
   .toggle{display:flex;gap:8px;margin-bottom:13px}
-  .toggle.fin-chips{flex-wrap:wrap;gap:6px;margin-bottom:0}
+  .toggle.fin-chips{flex-wrap:wrap;gap:8px;margin-bottom:0}
+  .toggle.fin-chips .chip{flex:1 1 calc(50% - 4px);min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 10px;line-height:1.2}
   .empty{color:var(--muted);font-size:13px;line-height:1.55;padding:6px 2px}
   .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
   .sw{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line2),0 1px 3px rgba(0,0,0,.14);cursor:pointer}
@@ -522,7 +523,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='26';
+var APP_VERSION='27';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1025,8 +1026,8 @@ function render(){ const present=new Set();
     { const _s=selectedIds.includes(e.id), _o=_s&&selectedIds.length===1; n.className='el '+(e.type==='text'?'text ':'')+(_s?'selected ':'')+(_o?'solo':''); }
     n.style.left=e.x+'px'; n.style.top=e.y+'px'; n.style.transform=`rotate(${e.rot}deg)`; n.style.zIndex=e.z;
     if(e.type==='text'){ chargerPolice(e.font); n.style.fontFamily=`'${e.font}'`; n.style.fontSize=e.size+'px'; n.style.color=e.color; n.style.fontWeight=e.bold?'700':'400'; n.style.fontStyle=e.italic?'italic':'normal'; n.style.letterSpacing=e.ls+'px';
-      if(e.curve){ const arc=computeArc(e); n.style.whiteSpace='normal'; n.style.padding='0'; n.style.width=arc.width+'px'; n.style.height=arc.height+'px'; n.innerHTML=arc.glyphs.map(g=>`<span style="position:absolute;left:${g.cx}px;top:${g.cy}px;transform:translate(-50%,-50%) rotate(${g.rot}deg);white-space:pre">${g.ch===' '?'\u00a0':escapeHtml(g.ch)}</span>`).join(''); }
-      else { n.style.whiteSpace='nowrap'; n.style.padding=e.box?'0':'2px 4px'; n.style.width='auto'; n.style.height='auto'; if(document.activeElement!==n){ n.textContent=e.text; } }
+      if(e.curve){ const arc=computeArc(e); n.style.whiteSpace='normal'; n.style.padding='0'; n.style.width=arc.width+'px'; n.style.height=arc.height+'px'; n._txt=null; n.innerHTML=arc.glyphs.map(g=>`<span style="position:absolute;left:${g.cx}px;top:${g.cy}px;transform:translate(-50%,-50%) rotate(${g.rot}deg);white-space:pre">${g.ch===' '?'\u00a0':escapeHtml(g.ch)}</span>`).join(''); }
+      else { n.style.whiteSpace='nowrap'; n.style.padding=e.box?'0':'2px 4px'; n.style.width='auto'; n.style.height='auto'; if(document.activeElement!==n && (n._txt!==e.text || !n.firstChild)){ n.textContent=e.text; n._txt=e.text; } }
       setBoxFrame(n,e); ensureHandles(n); majFinitionDOM(n,e);
     } else { n.style.width=e.w+'px'; n.style.height=e.h+'px';
       if(e.type==='rect'){ n.style.background=e.fill; n.style.border=(e.sw>0?`${e.sw}px solid ${e.stroke}`:'none'); n.style.borderRadius='2px'; clearHolders(n); ensureHandles(n); }
@@ -1090,9 +1091,9 @@ function buildProps(){ const p=document.getElementById('props');
   if(e.type==='text'){ h+=`<div class="field"><label>Texte</label><textarea oninput="upd('text',this.value)">${e.text}</textarea></div>`;
     h+=`<div class="field"><label>Police</label><button type="button" class="fp-btn" onclick="ouvrirPolices()"><span class="nom" style="font-family:'${e.font}'">${e.font}</span><span class="fleche">Changer &rsaquo;</span></button></div>`;
     h+=`<div class="inline"><div class="field"><label>Taille ${e.size}</label><input type="range" min="8" max="120" value="${e.size}" oninput="upd('size',+this.value)"></div><div class="field"><label>Interlettrage ${e.ls}</label><input type="range" min="-2" max="16" value="${e.ls}" oninput="upd('ls',+this.value)"></div></div>`;
-    h+=`<div class="field"><label>${(e.finish==='paillettes'||e.finish==='mix')?'Couleur des paillettes':(e.finish==='strass'?'Couleur des strass':'Couleur')}</label><input type="color" value="${e.color}" oninput="upd('color',this.value)"></div>`;
     { const fz=e.finish||'standard';
       h+=`<div class="field"><label>Finition</label><div class="toggle fin-chips">${FINITIONS.map(f=>`<div class="chip ${fz===f[0]?'on':''}" onclick="upd('finish','${f[0]}')">${f[1]}</div>`).join('')}</div></div>`;
+    h+=`<div class="field"><label>${(e.finish==='paillettes'||e.finish==='mix')?'Couleur des paillettes':(e.finish==='strass'?'Couleur des strass':'Couleur')}</label><input type="color" value="${e.color}" oninput="upd('color',this.value)"></div>`;
       if(fz==='mix') h+=`<div class="field"><label>Couleur des strass</label><input type="color" value="${hex6(e.strassColor||'#c8102e')}" oninput="upd('strassColor',this.value)"></div>`;
       if(fz==='strass'||fz==='mix') h+=`<div class="field"><label>Taille des strass ${Math.round((e.stone||1)*100)} %</label><input type="range" min="60" max="180" step="10" value="${Math.round((e.stone||1)*100)}" oninput="upd('stone',this.value/100)"></div>`; }
     h+=`<div class="toggle"><div class="chip ${e.bold?'on':''}" onclick="upd('bold',${!e.bold})">Gras</div><div class="chip ${e.italic?'on':''}" onclick="upd('italic',${!e.italic})">Italique</div></div>`;
@@ -1120,9 +1121,9 @@ function buildProps(){ const p=document.getElementById('props');
   if(e.groupId!=null) h+=`<button class="btn mini" onclick="ungroupSelection()" style="width:100%">⛌ Dégrouper</button>`;
   p.innerHTML=h; }
 function hex6(c){ if(!c)return '#000000'; if(c.length===9)return c.slice(0,7); return c; }
-function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'){buildProps();}else{refreshLabels();} }
+function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'||k==='finish'){buildProps();}else{refreshLabels();} }
 function refreshLabels(){ const e=getSel(); if(!e)return; document.querySelectorAll('#props .field label').forEach(l=>{ const t=l.textContent;
-  if(t.startsWith('Taille'))l.textContent='Taille '+e.size; else if(t.startsWith('Interlettrage'))l.textContent='Interlettrage '+e.ls; else if(t.startsWith('Rotation'))l.textContent='Rotation '+e.rot+'°'; else if(t.startsWith('Courbure'))l.textContent='Courbure (arc) '+(e.curve||0)+'°'; else if(t.startsWith('Bordure ép.'))l.textContent='Bordure ép. '+(e.boxW!=null?e.boxW:2); else if(t.startsWith('Marge'))l.textContent='Marge '+(e.boxPad!=null?e.boxPad:8); else if(t.startsWith('Arrondi'))l.textContent='Arrondi '+(e.boxRadius||0); else if(t.startsWith('Épaisseur contour'))l.textContent='Épaisseur contour '+e.sw; else if(t.startsWith('Épaisseur trait'))l.textContent='Épaisseur trait '+e.sw; else if(t.startsWith('Épaisseur'))l.textContent='Épaisseur '+e.h; }); }
+  if(t.startsWith('Taille des strass'))l.textContent='Taille des strass '+Math.round((e.stone||1)*100)+' %'; else if(t.startsWith('Taille'))l.textContent='Taille '+e.size; else if(t.startsWith('Interlettrage'))l.textContent='Interlettrage '+e.ls; else if(t.startsWith('Rotation'))l.textContent='Rotation '+e.rot+'°'; else if(t.startsWith('Courbure'))l.textContent='Courbure (arc) '+(e.curve||0)+'°'; else if(t.startsWith('Bordure ép.'))l.textContent='Bordure ép. '+(e.boxW!=null?e.boxW:2); else if(t.startsWith('Marge'))l.textContent='Marge '+(e.boxPad!=null?e.boxPad:8); else if(t.startsWith('Arrondi'))l.textContent='Arrondi '+(e.boxRadius||0); else if(t.startsWith('Épaisseur contour'))l.textContent='Épaisseur contour '+e.sw; else if(t.startsWith('Épaisseur trait'))l.textContent='Épaisseur trait '+e.sw; else if(t.startsWith('Épaisseur'))l.textContent='Épaisseur '+e.h; }); }
 function layerMove(d){ const e=getSel(); if(!e)return; pushHistory('layer'); e.z=(e.z||1)+d*2; render(); }
 function dupSel(){ if(!selectedIds.length)return; pushHistory('dup'); const gmap={},nw=[]; selectedIds.slice().forEach(id=>{ const e=els().find(x=>x.id===id); if(!e)return; const c=JSON.parse(JSON.stringify(e)); c.id=uid++; c.x+=16; c.y+=16; c.z=uid; if(e.groupId!=null){ if(gmap[e.groupId]==null)gmap[e.groupId]=uid++; c.groupId=gmap[e.groupId]; } els().push(c); nw.push(c.id); }); selectedIds=nw; selectedId=nw[nw.length-1]||null; render(); buildProps(); }
 function delSel(){ if(!selectedIds.length)return; pushHistory('del'); selectedIds.slice().forEach(id=>{ const i=els().findIndex(x=>x.id===id); if(i>=0)els().splice(i,1); const n=nodes.get(id); if(n){n.remove();nodes.delete(id);} }); selectedIds=[]; selectedId=null; render(); buildProps(); }
@@ -1400,9 +1401,15 @@ function majFinitionDOM(n,e){
   if(!c){ c=document.createElement('canvas'); c.className='fin'; n.appendChild(c); n._finCle=null; }
   c.style.cssText='position:absolute;left:'+(-M)+'px;top:'+(-M)+'px;width:'+(ow+2*M)+'px;height:'+(oh+2*M)+'px;pointer-events:none';
   if(n._finCle===cle) return; n._finCle=cle;
-  c.width=Math.ceil((ow+2*M)*dpr); c.height=Math.ceil((oh+2*M)*dpr);
-  var x=c.getContext('2d'); x.setTransform(1,0,0,1,0,0); x.clearRect(0,0,c.width,c.height); x.translate(M*dpr,M*dpr);
-  drawEl(x,Object.assign({},e,{x:0,y:0,rot:0,_sansCadre:true}),dpr);
+  /* dessin différé : pendant qu'on glisse un curseur ou une couleur, on ne
+     dessine qu'une fois par image (le dernier réglage gagne), pour que l'écran
+     reste réactif au toucher                                                  */
+  var copie=Object.assign({},e,{x:0,y:0,rot:0,_sansCadre:true}), W=Math.ceil((ow+2*M)*dpr), H=Math.ceil((oh+2*M)*dpr);
+  if(n._finRAF) cancelAnimationFrame(n._finRAF);
+  n._finRAF=requestAnimationFrame(function(){ n._finRAF=0; if(n._finCle!==cle) return;
+    var t=document.createElement('canvas'); t.width=W; t.height=H; var x=t.getContext('2d'); x.translate(M*dpr,M*dpr);
+    drawEl(x,copie,dpr);
+    c.width=W; c.height=H; c.getContext('2d').drawImage(t,0,0); });
   var fstr=(e.italic?'italic ':'')+(e.bold?'700 ':'400 ')+'40px \''+e.font+'\'';
   if(document.fonts && !_policeFin[fstr]){ _policeFin[fstr]=1; document.fonts.load(fstr).then(function(){ nodes.forEach(function(nn){ nn._finCle=null; }); render(); }).catch(function(){}); }
 }
@@ -2956,7 +2963,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v13";
+window.VIRAL_VERSION = "v14";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
