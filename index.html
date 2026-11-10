@@ -580,7 +580,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='35';
+var APP_VERSION='36';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1686,7 +1686,11 @@ function ombreVetement(side){
 function _ombrerPieces(o,side,W,H){                    /* plis du vêtement + découpe aux bords */
   var om=ombreVetement(side); if(!om) return;
   o.save(); o.setTransform(1,0,0,1,0,0);
+  /* « multiply » peint aussi là où il n'y a pas de pièce : on garde d'abord
+     la silhouette des pièces pour ne pas recouvrir le vêtement */
+  var forme=document.createElement('canvas'); forme.width=W; forme.height=H; forme.getContext('2d').drawImage(o.canvas,0,0);
   o.globalCompositeOperation='multiply'; o.drawImage(om,0,0,W,H);
+  o.globalCompositeOperation='destination-in'; o.drawImage(forme,0,0);
   o.globalCompositeOperation='destination-in'; o.drawImage(om,0,0,W,H);
   o.restore();
 }
@@ -3378,7 +3382,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "35";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "36";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
