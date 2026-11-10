@@ -3,7 +3,7 @@
    - la page (index.html) vient toujours du réseau ; le cache ne sert que hors ligne ;
    - à chaque nouvelle version de ce fichier, l'ancien cache est supprimé et les
      pages ouvertes sont rechargées automatiquement (aucune action de l'utilisateur). */
-const CACHE = 'byviral-v37';
+const CACHE = 'byviral-v38';
 const CORE = [
   './',
   './index.html',
