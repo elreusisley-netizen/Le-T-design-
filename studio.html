@@ -278,6 +278,7 @@
 .gcard.mini .ds{display:none}
 #sheet-garment .st-grille{grid-template-columns:repeat(3,1fr);gap:8px}
 .col-seg{display:flex;gap:4px;padding:4px;margin:0 auto 14px;max-width:320px;border:1px solid var(--line);border-radius:999px;background:#fff}
+.col-seg:empty{visibility:hidden}
 .col-seg button{flex:1;padding:9px 10px;border:none;border-radius:999px;background:none;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
   letter-spacing:1.5px;color:var(--muted);cursor:pointer}
 .col-seg button.on{background:var(--accent);color:#f3efe4;box-shadow:inset 0 0 0 1px var(--gold)}
@@ -536,7 +537,8 @@
   </div>
 </div>
 
-<div id="studio" aria-label="Studio VIRAL">
+<div id="studio" class="open" aria-label="Studio VIRAL">
+<script>/* l'accueil Studio s'affiche dès le début du chargement (sinon on voyait d'abord le T-shirt de l'éditeur) ; un lien direct vers un vêtement va droit à l'éditeur */ if(/[?&]vetement=/.test(location.search)) document.getElementById('studio').classList.remove('open');</script>
   <div class="st-hero">
     <div class="st-mark">V</div>
     <div class="st-titre">VIRAL DESIGN</div>
@@ -585,7 +587,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='43';
+var APP_VERSION='44';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3454,7 +3456,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "43";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "44";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
