@@ -580,7 +580,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='36';
+var APP_VERSION='37';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1190,7 +1190,7 @@ function buildProps(){ const p=document.getElementById('props');
   if(e.groupId!=null) h+=`<button class="btn mini" onclick="ungroupSelection()" style="width:100%">⛌ Dégrouper</button>`;
   p.innerHTML=h; }
 function hex6(c){ if(!c)return '#000000'; if(c.length===9)return c.slice(0,7); return c; }
-function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='motif'&&v) e.finish='standard'; if(k==='finish'&&v!=='standard') e.motif=''; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'||k==='finish'||k==='motif'||k==='mat'||k==='forme'||k==='couture'){buildProps();}else{refreshLabels();} }
+function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='motif'&&v) e.finish='standard'; if(k==='mat'&&e.type==='piece'){ const tz=_tissu(v); if(tz&&tz.coul) e.color=tz.coul; } if(k==='finish'&&v!=='standard') e.motif=''; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'||k==='finish'||k==='motif'||k==='mat'||k==='forme'||k==='couture'){buildProps();}else{refreshLabels();} }
 function refreshLabels(){ const e=getSel(); if(!e)return; document.querySelectorAll('#props .field label').forEach(l=>{ const t=l.textContent;
   if(e.type==='piece'&&(t.startsWith('Taille du tissu')||t.startsWith('Taille du motif')))l.textContent=t.split(' ').slice(0,3).join(' ')+' '+Math.round((e.ech||1)*100)+' %'; else if(t.startsWith('Taille du motif'))l.textContent='Taille du motif '+Math.round((e.motifScale||1)*100)+' %'; else if(t.startsWith('Taille des strass'))l.textContent='Taille des strass '+Math.round((e.stone||1)*100)+' %'; else if(t.startsWith('Taille'))l.textContent='Taille '+e.size; else if(t.startsWith('Interlettrage'))l.textContent='Interlettrage '+e.ls; else if(t.startsWith('Rotation'))l.textContent='Rotation '+e.rot+'°'; else if(t.startsWith('Courbure'))l.textContent='Courbure (arc) '+(e.curve||0)+'°'; else if(t.startsWith('Bordure ép.'))l.textContent='Bordure ép. '+(e.boxW!=null?e.boxW:2); else if(t.startsWith('Marge'))l.textContent='Marge '+(e.boxPad!=null?e.boxPad:8); else if(t.startsWith('Arrondi'))l.textContent='Arrondi '+(e.boxRadius||0); else if(t.startsWith('Épaisseur contour'))l.textContent='Épaisseur contour '+e.sw; else if(t.startsWith('Épaisseur trait'))l.textContent='Épaisseur trait '+e.sw; else if(t.startsWith('Épaisseur'))l.textContent='Épaisseur '+e.h; }); }
 function layerMove(d){ const e=getSel(); if(!e)return; pushHistory('layer'); e.z=(e.z||1)+d*2; render(); }
@@ -3382,7 +3382,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "36";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "37";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
