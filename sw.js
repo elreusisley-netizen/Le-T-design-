@@ -1,12 +1,13 @@
 /* by viral — service worker
    Règle d'or : une mise à jour publiée arrive TOUTE SEULE chez tout le monde.
-   - la page (index.html) vient toujours du réseau ; le cache ne sert que hors ligne ;
+   - les pages (accueil, studio) viennent toujours du réseau ; le cache ne sert que hors ligne ;
    - à chaque nouvelle version de ce fichier, l'ancien cache est supprimé et les
      pages ouvertes sont rechargées automatiquement (aucune action de l'utilisateur). */
-const CACHE = 'byviral-v42';
+const CACHE = 'byviral-v43';
 const CORE = [
   './',
   './index.html',
+  './studio.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -69,13 +70,15 @@ self.addEventListener('fetch', function (e) {
     }).catch(function () { return caches.match(req, { ignoreSearch: true }); }));
     return;
   }
-  /* la page : réseau d'abord (dernière version publiée), copie pour le hors ligne */
-  if (url.origin === location.origin && (req.mode === 'navigate' || /\/(index\.html)?$/.test(url.pathname))) {
+  /* les pages (accueil, studio) : réseau d'abord (dernière version publiée),
+     copie de chaque page pour le hors ligne */
+  if (url.origin === location.origin && (req.mode === 'navigate' || /\/(index\.html|studio(\.html)?)?$/.test(url.pathname))) {
+    var studio = /\/studio(\.html)?$/.test(url.pathname);
+    var cle = studio ? './studio.html' : (/\/(index\.html)?$/.test(url.pathname) ? './index.html' : null);
     e.respondWith(depuisReseau(url.href).then(function (resp) {
-      var estAppli = /\/(index\.html)?$/.test(url.pathname);   /* les autres pages (vitrine) ne remplacent pas l'appli hors ligne */
-      if (resp && resp.ok && estAppli) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put('./index.html', c); }); }
+      if (resp && resp.ok && cle) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put(cle, c); }); }
       return resp;
-    }).catch(function () { if (!/\/(index\.html)?$/.test(url.pathname)) return caches.match(req, { ignoreSearch: true }); return caches.match('./index.html').then(function (h) { return h || caches.match(req, { ignoreSearch: true }); }); }));
+    }).catch(function () { return (cle ? caches.match(cle) : Promise.resolve(null)).then(function (h) { return h || caches.match(req, { ignoreSearch: true }).then(function (h2) { return h2 || caches.match('./studio.html'); }); }); }));
     return;
   }
   /* le reste (images, modèles 3D, polices) : cache d'abord, réseau sinon */
@@ -85,7 +88,7 @@ self.addEventListener('fetch', function (e) {
       return fetch(req).then(function (resp) {
         try { var clone = resp.clone(); caches.open(CACHE).then(function (c) { c.put(req, clone); }); } catch (_) {}
         return resp;
-      }).catch(function () { if (req.mode === 'navigate') return caches.match('./index.html'); });
+      }).catch(function () { if (req.mode === 'navigate') return caches.match('./studio.html'); });
     })
   );
 });

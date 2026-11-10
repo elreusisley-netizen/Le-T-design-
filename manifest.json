@@ -1,7 +1,7 @@
 {
   "name": "Modelisation by viral",
   "short_name": "by viral",
-  "start_url": "./",
+  "start_url": "./studio",
   "scope": "./",
   "display": "standalone",
   "background_color": "#141d31",
