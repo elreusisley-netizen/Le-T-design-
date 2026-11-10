@@ -575,7 +575,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='31';
+var APP_VERSION='32';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -982,9 +982,9 @@ function setBackground(side){ const tp=document.getElementById('teePath'); const
 
 /* history */
 let history=[],future=[],lastSig=null,lastTime=0;
-function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment,mt:matiere}); }
+function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment,mt:matiere,me:echelleMatiere}); }
 function pushHistory(sig){ const now=Date.now(); if(sig&&sig===lastSig&&now-lastTime<700){lastTime=now;return;} history.push(snapshot()); if(history.length>80)history.shift(); future=[]; lastSig=sig; lastTime=now; updateHistButtons(); }
-function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;matiere=d.mt||'';currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
+function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;matiere=d.mt||''; echelleMatiere=d.me||1;currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
   document.getElementById('teePath').setAttribute('fill',shirtColor); document.getElementById('shirtColor').value=hex6(shirtColor); document.querySelectorAll('.gchip').forEach(function(c){ c.classList.toggle('on', c.getAttribute('data-g')===garment); }); setBackground(currentSide);
   document.getElementById('chip-front').classList.toggle('on',currentSide==='front'); document.getElementById('chip-back').classList.toggle('on',currentSide==='back'); document.getElementById('chip-sleeve').classList.toggle('on',currentSide==='sleeve'); document.getElementById('chip-side').classList.toggle('on',currentSide==='side');
   setBackground(currentSide); render(); buildProps(); updateHistButtons(); }
@@ -1479,7 +1479,7 @@ function nomMotif(id){ var m=MOTIFS.find(function(z){ return z.id===id; }); retu
    Un imprimé = une tuile de couleur (camouflages, léopard… les mêmes motifs que
    pour le texte). En 2D les ombres et les plis de la photo sont conservés ;
    en 3D la texture est projetée sur le modèle (projection triplanaire).      */
-let matiere='';
+let matiere='', echelleMatiere=1;
 function _bruitA(rnd,gx,gy){ var v=new Float32Array(gx*gy); for(var i=0;i<gx*gy;i++) v[i]=rnd();
   return function(u,w){ var x=u*gx, y=w*gy, x0=Math.floor(x), y0=Math.floor(y), fx=x-x0, fy=y-y0;
     fx=fx*fx*(3-2*fx); fy=fy*fy*(3-2*fy);
@@ -1535,7 +1535,7 @@ function nomMatiere(id){ if(!id) return 'Coton (uni)'; var m=_motifDeMatiere(id)
 function teinterMatiere(d,iw,ih,m){
   var mot=_motifDeMatiere(matiere), t=mot?null:_tissu(matiere);
   var tu=mot?_tuileMotif(mot):tuileTissu(matiere); if(!tu) return false;
-  var px=Math.max(8,Math.round(iw*(mot?0.6:(t.t/0.8))));
+  var px=Math.max(8,Math.round(iw*(mot?0.6:(t.t/0.8))*(echelleMatiere||1)));
   var pc=document.createElement('canvas'); pc.width=iw; pc.height=ih; var pcx=pc.getContext('2d');
   var tt=document.createElement('canvas'); tt.width=tt.height=px; var ttx=tt.getContext('2d'); ttx.imageSmoothingEnabled=!(mot&&/^camo-|damier/.test(mot)); ttx.drawImage(tu,0,0,px,px);
   pcx.fillStyle=pcx.createPattern(tt,'repeat'); pcx.fillRect(0,0,iw,ih);
@@ -1560,11 +1560,18 @@ function majTissu3D(){
   matsVetement().forEach(function(mt){ var u=mt.userData.u; if(!u||!u.uTissu) return;
     if(mt.userData.rough0==null) mt.userData.rough0=mt.roughness;
     u.uTissuOn.value=tx?1:0; if(tx) u.uTissu.value=tx;
-    u.uTissuK.value=mot?1/0.55:(t?1/t.t:14);
+    u.uTissuK.value=(mot?1/0.55:(t?1/t.t:14))/(echelleMatiere||1);
     u.uTissuLin.value=mot?1:0;
     u.uTissuGain.value=(tx&&!mot)?1/Math.max(0.3,tuileTissu(matiere)._moy):1;
     mt.roughness=(t&&t.rough)?t.rough:mt.userData.rough0; mt.needsUpdate=false; });
   if(typeof majCouleur3D==='function') majCouleur3D();
+}
+function setEchelleMatiere(v,hist){
+  if(hist) pushHistory('matiere-echelle');
+  echelleMatiere=Math.max(0.3,Math.min(3,+v||1));
+  var l=document.getElementById('echMatLbl'); if(l) l.textContent=Math.round(echelleMatiere*100)+' %';
+  clearTimeout(setEchelleMatiere._t);                /* curseur : on redessine quand le doigt ralentit */
+  setEchelleMatiere._t=setTimeout(function(){ if(typeof composeHoodie==='function') composeHoodie(currentSide); majTissu3D(); if(typeof planifierSauvegarde==='function') planifierSauvegarde(); },60);
 }
 function setMatiere(id,hist){
   if(hist) pushHistory('matiere');
@@ -1587,6 +1594,8 @@ function rendreMatieres(){
     + bt('','', 'Coton (uni)','background:'+shirtColor)
     + TISSUS.map(function(t){ return bt(t.id,vignetteTissu(t),t.nom); }).join('')
     + '</div><div class="empty" style="padding:6px 2px 0">La couleur du vêtement reste modifiable au-dessus.</div></div>'
+    + (cur ? '<div class="field"><label>Taille du '+(_motifDeMatiere(cur)?'motif':'tissu')+' <span id="echMatLbl">'+Math.round((echelleMatiere||1)*100)+' %</span></label>'
+        + '<input type="range" min="30" max="300" step="10" value="'+Math.round((echelleMatiere||1)*100)+'" onpointerdown="pushHistory(\'matiere-echelle\')" oninput="setEchelleMatiere(this.value/100)"></div>' : '')
     + '<div class="field"><label>Imprimé tout-over</label><div class="motifs">'
     + MOTIFS.map(function(m){ return bt('motif:'+m.id,vignetteMotif(m.id),m.nom); }).join('')
     + '</div></div>';
@@ -3240,7 +3249,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v18";
+window.VIRAL_VERSION = "v19";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
