@@ -10,7 +10,10 @@
 <meta name="application-name" content="by viral">
 <meta name="theme-color" content="#1a2740">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="shortcut icon" href="/favicon.ico">
 <link rel="manifest" href="./manifest.json">
 <title>Modélisation by viral</title>
 <meta name="description" content="Créez et personnalisez vos vêtements en 3D avec VIRAL : T-shirts, sweats, hoodies et survêtements, pour homme et femme.">
@@ -580,7 +583,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='39';
+var APP_VERSION='40';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3449,7 +3452,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "39";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "40";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
