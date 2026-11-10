@@ -228,6 +228,23 @@
 .st-titre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;letter-spacing:6px;line-height:1}
 .st-sous{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:18px;margin-top:8px}
 .st-corps{padding:20px 16px calc(28px + var(--sbtm));max-width:620px;width:100%;margin:0 auto;flex:1}
+.inst-pastille{display:flex;align-items:center;gap:6px;margin:0 auto 14px;max-width:420px}
+.inst-pastille[hidden]{display:none}
+.inst-ouvrir{flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--gold);border-radius:999px;background:#fffaf0;color:var(--accent);font:600 13.5px/1.2 inherit;font-family:inherit;cursor:pointer;text-align:left}
+.inst-ico{display:inline-flex;color:var(--gold)}
+.inst-duree{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);background:#f3ecdc;border-radius:999px;padding:3px 8px}
+.inst-x{width:34px;height:34px;flex:none;border:none;border-radius:50%;background:none;color:var(--muted);font-size:20px;cursor:pointer}
+#instDlg{position:fixed;inset:0;z-index:101;display:none;align-items:flex-end;background:rgba(10,16,30,.5)}
+#instDlg.open{display:flex}
+#instDlg .pan{width:100%;background:#fff;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + var(--sbtm));max-width:620px;margin:0 auto}
+#instDlg h3{font-family:'Cormorant Garamond',serif;font-size:24px;margin:0 0 4px;color:var(--accent)}
+.inst-intro{margin:0 0 12px;color:var(--muted);font-size:14px;line-height:1.4}
+.inst-etape{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.inst-num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#f3efe4;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.inst-txt{font-size:14.5px;line-height:1.4;color:var(--ink)}
+.inst-txt b{white-space:nowrap}
+.inst-pict{display:inline-flex;vertical-align:-4px;padding:2px 5px;border:1px solid var(--line);border-radius:6px;color:#0a84ff;background:#f7f7f9}
+.inst-note{margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.4}
 .st-question{font-size:15px;color:var(--ink);text-align:center;margin:2px 0 16px;font-weight:500}
 .st-reprendre{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 16px;padding:12px 14px;border:1px solid var(--gold);
   border-radius:14px;background:#fff;box-shadow:0 0 0 3px var(--goldsoft);cursor:pointer;text-align:left;font-family:inherit;color:var(--ink)}
@@ -402,6 +419,11 @@
     <h4>Export</h4>
     <button class="btn gold" onclick="downloadPNG()">Télécharger en PNG</button>
     <div class="empty" style="padding-top:2px">Exporte la face affichée.</div>
+    <div id="instReglages">
+      <h4>Application</h4>
+      <button class="btn" id="instReglagesBtn" onclick="ouvrirTutoInstall()">Installer l’appli sur mon téléphone</button>
+      <div class="empty" id="instReglagesOk" style="display:none;padding-top:2px">✓ L’appli est installée sur cet appareil.</div>
+    </div>
     <div id="compteBloc" style="display:none">
     <h4>Mon compte</h4>
     <div id="compteOff">
@@ -512,6 +534,10 @@
   </div>
   <div class="st-corps">
     <div id="stReprendre"></div>
+    <div id="stInstall" class="inst-pastille" hidden>
+      <button type="button" class="inst-ouvrir" onclick="ouvrirTutoInstall()"><span class="inst-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span>Installer l’appli sur ton téléphone<span class="inst-duree">10 s</span></button>
+      <button type="button" class="inst-x" aria-label="Masquer" onclick="masquerPastilleInstall()">×</button>
+    </div>
     <div class="st-question">Que souhaites-tu personnaliser aujourd’hui ?</div>
     <div class="col-seg" id="stCol" role="tablist" aria-label="Collection"></div>
     <div class="st-grille" id="stGrille"></div>
@@ -527,6 +553,15 @@
   </div>
 </div>
 
+<div id="instDlg" onclick="if(event.target===this)fermerTutoInstall()">
+  <div class="pan">
+    <h3>Installer VIRAL Design</h3>
+    <p class="inst-intro">L’appli s’ouvre ensuite depuis ton écran d’accueil, en plein écran, comme une vraie appli. Rien à télécharger sur un store.</p>
+    <div id="instEtapes"></div>
+    <button class="st-lien" onclick="fermerTutoInstall()">Fermer</button>
+  </div>
+</div>
+
 <div id="gdlg">
   <div class="pan">
     <h3 id="gdTitre"></h3>
@@ -539,7 +574,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='28';
+var APP_VERSION='29';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3079,7 +3114,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v15";
+window.VIRAL_VERSION = "v16";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3112,6 +3147,62 @@ window.VIRAL_VERSION = "v15";
       }).catch(function(){});
     });
   }
+})();
+</script>
+<script>
+/* =====================================================================
+   INSTALLER L'APPLI : pastille discrète sur l'accueil + tuto adapté au
+   téléphone (iPhone Safari / autre navigateur iPhone / Android / ordinateur).
+   Rien ne s'affiche quand l'appli est déjà ouverte depuis l'écran d'accueil.
+   ===================================================================== */
+(function(){
+  var PART='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>', PLUS='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
+  var invite=null;                                   /* Android/Chrome : vraie fenêtre d'installation */
+  function installee(){ return window.navigator.standalone===true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches); }
+  function appareil(){
+    var ua=navigator.userAgent||'', ios=/iPhone|iPad|iPod/.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+    if(ios) return /CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua) ? 'ios-autre' : (/Instagram|FBAN|FBAV|TikTok|musical_ly|Snapchat/.test(ua) ? 'ios-app' : 'ios');
+    if(/Android/.test(ua)) return 'android';
+    return 'ordi';
+  }
+  function etapes(){
+    var a=appareil(), E=function(l){ return l.map(function(t,i){ return '<div class="inst-etape"><span class="inst-num">'+(i+1)+'</span><div class="inst-txt">'+t+'</div></div>'; }).join(''); };
+    if(invite) return '<button class="btn gold" onclick="installerMaintenant()">Installer maintenant</button><div class="inst-note">Une fenêtre de confirmation s’ouvre : touche <b>Installer</b>.</div>';
+    if(a==='ios') return E([
+      'Touche le bouton <b>Partager</b> <span class="inst-pict">'+PART+'</span><br><span class="inst-note">Sur les iPhone récents, il est dans le menu <b>⋯</b> en bas, à côté de l’adresse.</span>',
+      'Fais défiler et touche <b>Sur l’écran d’accueil</b> <span class="inst-pict">'+PLUS+'</span>',
+      'Laisse <b>Ouvrir comme app web</b> activé s’il apparaît, puis touche <b>Ajouter</b>.',
+      'L’icône <b>VIRAL</b> est sur ton écran d’accueil : ouvre l’appli depuis là.' ]);
+    if(a==='ios-autre') return E([
+      'Touche le bouton <b>Partager</b> <span class="inst-pict">'+PART+'</span> dans la barre d’adresse (ou dans le menu <b>⋯</b>).',
+      'Touche <b>Sur l’écran d’accueil</b> <span class="inst-pict">'+PLUS+'</span> puis <b>Ajouter</b>.',
+      'Tu ne le trouves pas ? Ouvre <b>viraldsgn.fr</b> dans <b>Safari</b> et suis le tuto de nouveau.' ]);
+    if(a==='ios-app') return E([
+      'Tu es dans le navigateur d’une autre appli (Instagram, TikTok…) : il ne permet pas l’installation.',
+      'Touche <b>⋯</b> en haut à droite puis <b>Ouvrir dans le navigateur</b> (Safari).',
+      'Rouvre ce tuto dans Safari : 3 étapes et c’est fait.' ]);
+    if(a==='android') return E([
+      'Touche le menu <b>⋮</b> en haut à droite de Chrome.',
+      'Touche <b>Installer l’application</b> (ou <b>Ajouter à l’écran d’accueil</b>).',
+      'Confirme avec <b>Installer</b> : l’icône <b>VIRAL</b> arrive sur ton écran d’accueil.' ]);
+    return E([
+      'Dans Chrome ou Edge, clique sur l’icône d’installation à droite de la barre d’adresse.',
+      'Sur téléphone, c’est encore mieux : ouvre <b>viraldsgn.fr</b> sur ton iPhone ou ton Android et suis ce tuto.' ]);
+  }
+  window.ouvrirTutoInstall=function(){ document.getElementById('instEtapes').innerHTML=etapes(); document.getElementById('instDlg').classList.add('open'); };
+  window.fermerTutoInstall=function(){ document.getElementById('instDlg').classList.remove('open'); };
+  window.installerMaintenant=function(){ if(!invite) return; var p=invite; invite=null; p.prompt(); (p.userChoice||Promise.resolve()).then(function(){ fermerTutoInstall(); maj(); }); };
+  window.masquerPastilleInstall=function(){ try{ localStorage.setItem('viral-install-masque', String(Date.now())); }catch(_){ } maj(); };
+  function masqueeRecemment(){ try{ var t=+localStorage.getItem('viral-install-masque')||0; return Date.now()-t < 30*24*3600*1000; }catch(_){ return false; } }
+  function maj(){
+    var ok=installee(), p=document.getElementById('stInstall'), b=document.getElementById('instReglagesBtn'), v=document.getElementById('instReglagesOk');
+    if(p) p.hidden = ok || masqueeRecemment();
+    if(b) b.style.display = ok ? 'none' : '';
+    if(v) v.style.display = ok ? '' : 'none';
+  }
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); invite=e; maj(); });
+  window.addEventListener('appinstalled', function(){ invite=null; fermerTutoInstall(); maj(); });
+  maj();
 })();
 </script>
 </body>
