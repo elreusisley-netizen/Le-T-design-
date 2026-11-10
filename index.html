@@ -416,6 +416,7 @@
         <span class="sw" style="background:#20402e" onclick="setShirt('#20402e',true)"></span>
       </div>
     </div>
+    <div id="matieresBloc"></div>
     <h4>Export</h4>
     <button class="btn gold" onclick="downloadPNG()">Télécharger en PNG</button>
     <div class="empty" style="padding-top:2px">Exporte la face affichée.</div>
@@ -574,7 +575,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='30';
+var APP_VERSION='31';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -947,7 +948,7 @@ function imgVet(key){ var f=(coupeDe(garment)==='femme') && _hoodCache['f_'+garm
 function _preloadHood(){ Object.keys(FEMME_IMG).forEach(function(g){ Object.keys(FEMME_IMG[g]).forEach(function(k){ const im=new Image(); im.src=FEMME_IMG[g][k]; _hoodCache['f_'+g+'_'+k]=im; }); }); ['front','back','side'].forEach(function(k){ const a=new Image(); a.src=HOOD_SIL[k]; _hoodCache['sil_sweat_'+k]=a; const c=new Image(); c.src=HOOD_LINE[k]; _hoodCache['line_sweat_'+k]=c; const d=new Image(); d.src=CAP_IMG[k]; _hoodCache['cap_'+k]=d; }); ['front','back','side','sleeve'].forEach(function(k){ const e=new Image(); e.src=TEE_IMG[k]; _hoodCache['tshirt_'+k]=e; if(HOOD_IMG[k]){ const h=new Image(); h.src=HOOD_IMG[k]; _hoodCache['sweat_'+k]=h; } if(PUFFER_IMG[k]){ const q=new Image(); q.src=PUFFER_IMG[k]; _hoodCache['puffer_'+k]=q; } if(TRACK_IMG[k]){ const r=new Image(); r.src=TRACK_IMG[k]; _hoodCache['track_'+k]=r; } if(HOODIE_IMG[k]){ const u=new Image(); u.src=HOODIE_IMG[k]; _hoodCache['hoodie_'+k]=u; } }); }
 function _cToRamp(){ const c=shirtColor; let m=[27,39,64]; if(c&&c.length===7){ m=[parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; } const br=(m[0]+m[1]+m[2])/3; return {m:m, br:br}; }
 function garmentCanvas(key){ const S=4, CW=250*S, CH=270*S; const cv=document.createElement('canvas'); cv.width=CW; cv.height=CH; const cx=cv.getContext('2d');
-  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
+  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
   const sil=_hoodCache['sil_'+garment+'_'+key], ln=_hoodCache['line_'+garment+'_'+key]; if(!sil||!sil.complete||!sil.naturalWidth) return cv; const iw=sil.naturalWidth, ih=sil.naturalHeight; const sc=Math.min(CW*0.94/iw, CH*0.96/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(sil,0,0); tcx.globalCompositeOperation='source-in'; tcx.fillStyle=shirtColor; tcx.fillRect(0,0,iw,ih); cx.drawImage(tc,ox,oy,dw,dh); if(ln&&ln.complete&&ln.naturalWidth)cx.drawImage(ln,ox,oy,dw,dh); return cv; }
 function composeHoodie(key){ const gi=document.getElementById('garmentImg'); if(!gi)return; const ref=(garment==='cap')?_hoodCache['cap_'+key]:((garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment))?imgVet(key):_hoodCache['sil_'+garment+'_'+key]); if(!ref||!ref.complete||!ref.naturalWidth){ if(ref)ref.onload=function(){composeHoodie(key);}; return; } gi.onload=function(){ gi.style.opacity='1'; }; gi.src=garmentCanvas(key).toDataURL('image/png'); }
 function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); ctx.setTransform(S,0,0,S,0,0); ctx.clearRect(0,0,W,H); const arr=[...sides[side]].sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
@@ -981,9 +982,9 @@ function setBackground(side){ const tp=document.getElementById('teePath'); const
 
 /* history */
 let history=[],future=[],lastSig=null,lastTime=0;
-function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment}); }
+function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment,mt:matiere}); }
 function pushHistory(sig){ const now=Date.now(); if(sig&&sig===lastSig&&now-lastTime<700){lastTime=now;return;} history.push(snapshot()); if(history.length>80)history.shift(); future=[]; lastSig=sig; lastTime=now; updateHistButtons(); }
-function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
+function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;matiere=d.mt||'';currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
   document.getElementById('teePath').setAttribute('fill',shirtColor); document.getElementById('shirtColor').value=hex6(shirtColor); document.querySelectorAll('.gchip').forEach(function(c){ c.classList.toggle('on', c.getAttribute('data-g')===garment); }); setBackground(currentSide);
   document.getElementById('chip-front').classList.toggle('on',currentSide==='front'); document.getElementById('chip-back').classList.toggle('on',currentSide==='back'); document.getElementById('chip-sleeve').classList.toggle('on',currentSide==='sleeve'); document.getElementById('chip-side').classList.toggle('on',currentSide==='side');
   setBackground(currentSide); render(); buildProps(); updateHistButtons(); }
@@ -1198,7 +1199,7 @@ function deleteSelected(){ if(!selectedIds.length){ const st=document.getElement
 function switchSide(side,noHist){ if(!noHist)pushHistory('side'); currentSide=side; selectedId=null; selectedIds=[];
   document.getElementById('chip-front').classList.toggle('on',side==='front'); document.getElementById('chip-back').classList.toggle('on',side==='back'); document.getElementById('chip-sleeve').classList.toggle('on',side==='sleeve'); document.getElementById('chip-side').classList.toggle('on',side==='side');
   setBackground(side); nodes.forEach(n=>n.remove()); nodes.clear(); render(); buildProps(); }
-function setShirt(c,hist){ if(hist)pushHistory('shirt'); shirtColor=c; document.getElementById('teePath').setAttribute('fill',c); document.getElementById('shirtColor').value=hex6(c); if((garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment)||garment==='cap'||garment==='tshirt')&&(currentSide==='front'||currentSide==='back'||currentSide==='side'||currentSide==='sleeve'))composeHoodie(currentSide); }
+function setShirt(c,hist){ if(hist)pushHistory('shirt'); shirtColor=c; if(typeof rendreMatieres==='function') setTimeout(rendreMatieres,0); document.getElementById('teePath').setAttribute('fill',c); document.getElementById('shirtColor').value=hex6(c); if((garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment)||garment==='cap'||garment==='tshirt')&&(currentSide==='front'||currentSide==='back'||currentSide==='side'||currentSide==='sleeve'))composeHoodie(currentSide); }
 function copyFaceTo(dst){ if(dst===currentSide){ const st=document.getElementById('aiStatus'); st.textContent="C'est déjà la face affichée."; setTimeout(()=>st.textContent='',2500); return; } pushHistory('copyface'); sides[dst]=sides[currentSide].map(e=>{ const c=JSON.parse(JSON.stringify(e)); c.id=uid++; return c; }); switchSide(dst,true); }
 function swapFaces(){ pushHistory('swap'); const t=sides.front; sides.front=sides.back; sides.back=t; switchSide(currentSide,true); }
 
@@ -1472,6 +1473,124 @@ function _tuileMotifPx(id,px){
 var _vignettesMotif={};
 function vignetteMotif(id){ if(_vignettesMotif[id]) return _vignettesMotif[id]; var t=_tuileMotifPx(id,96); return (_vignettesMotif[id]=t?t.toDataURL():''); }
 function nomMotif(id){ var m=MOTIFS.find(function(z){ return z.id===id; }); return m?m.nom:''; }
+/* ================= MATIÈRES DU VÊTEMENT (Mode créatif, étape 1) =================
+   Un tissu = une texture de relief en niveaux de gris, multipliée par la couleur
+   choisie (le denim reste « recolorable »), + une brillance éventuelle.
+   Un imprimé = une tuile de couleur (camouflages, léopard… les mêmes motifs que
+   pour le texte). En 2D les ombres et les plis de la photo sont conservés ;
+   en 3D la texture est projetée sur le modèle (projection triplanaire).      */
+let matiere='';
+function _bruitA(rnd,gx,gy){ var v=new Float32Array(gx*gy); for(var i=0;i<gx*gy;i++) v[i]=rnd();
+  return function(u,w){ var x=u*gx, y=w*gy, x0=Math.floor(x), y0=Math.floor(y), fx=x-x0, fy=y-y0;
+    fx=fx*fx*(3-2*fx); fy=fy*fy*(3-2*fy);
+    var a=((x0%gx)+gx)%gx, b=(a+1)%gx, c=((y0%gy)+gy)%gy, d=(c+1)%gy;
+    var p=v[c*gx+a]+(v[c*gx+b]-v[c*gx+a])*fx, q=v[d*gx+a]+(v[d*gx+b]-v[d*gx+a])*fx; return p+(q-p)*fy; }; }
+function _gris(x,S,f){ var im=x.createImageData(S,S), d=im.data;
+  for(var j=0;j<S;j++) for(var i=0;i<S;i++){ var g=Math.max(0,Math.min(255,f(i/S,j/S,i,j))), o=(j*S+i)*4; d[o]=d[o+1]=d[o+2]=g; d[o+3]=255; }
+  x.putImageData(im,0,0); }
+function _frac(v){ return v-Math.floor(v); }
+const TISSUS=[
+  {id:'denim', nom:'Denim', coul:'#35507a', t:0.05, g:function(x,S,r){ var sl=_bruitA(r,6,48), n=_fbm(r,[16,32]);
+     _gris(x,S,function(u,w){ var tw=0.5+0.5*Math.sin(2*Math.PI*(u*28+w*28)); var f=r()<0.035?55:0; return 168+44*tw+50*(sl(u,w)-0.5)+20*(n(u,w)-0.5)+f; }); }},
+  {id:'cuir', nom:'Cuir', coul:'#1d1815', t:0.05, brille:0.55, rough:0.5, g:function(x,S,r){ var N=13, P=[];
+     for(var j=0;j<N;j++) for(var i=0;i<N;i++) P.push([(i+0.15+r()*0.7)/N,(j+0.15+r()*0.7)/N]);
+     _gris(x,S,function(u,w){ var d1=9,d2=9; for(var k=0;k<P.length;k++){ var dx=Math.abs(u-P[k][0]), dy=Math.abs(w-P[k][1]); dx=Math.min(dx,1-dx); dy=Math.min(dy,1-dy); var d=dx*dx+dy*dy; if(d<d1){d2=d1;d1=d;} else if(d<d2) d2=d; }
+       var e=Math.sqrt(d2)-Math.sqrt(d1); return 120+110*Math.min(1,e*N*2.2)-25*Math.sqrt(d1)*N; }); }},
+  {id:'daim', nom:'Daim', coul:'#8b5a3c', t:0.06, g:function(x,S,r){ var n=_fbm(r,[16,32,64]), a=_bruitA(r,4,24);
+     _gris(x,S,function(u,w){ return 196+40*(n(u,w)-0.5)+30*(a(u,w)-0.5)+(r()-0.5)*14; }); }},
+  {id:'velours', nom:'Velours côtelé', coul:'#6f4a2c', t:0.06, brille:0.15, g:function(x,S,r){ var n=_fbm(r,[16,32]);
+     _gris(x,S,function(u,w){ var c=Math.pow(Math.sin(Math.PI*_frac(u*14)),0.7); return 120+115*c+22*(n(u,w)-0.5); }); }},
+  {id:'cotes', nom:'Maille côtelée', coul:'#2b2b2b', t:0.05, g:function(x,S,r){
+     _gris(x,S,function(u,w){ var c=Math.abs(Math.sin(Math.PI*u*26)); var v=0.5+0.5*Math.cos(2*Math.PI*(w*40+(_frac(u*26)<0.5?0.25:-0.25))); return 135+80*Math.pow(c,0.6)+18*v; }); }},
+  {id:'polaire', nom:'Polaire / sherpa', coul:'#ede6d7', t:0.06, g:function(x,S,r){ var n=_fbm(r,[16,32,64]), m=_fbm(r,[24,48]);
+     _gris(x,S,function(u,w){ var v=n(u,w); return 165+85*Math.pow(Math.abs(Math.sin(v*14)),0.7)-30*(m(u,w)-0.5); }); }},
+  {id:'satin', nom:'Satin', coul:'#c7a26a', t:0.7, brille:1, rough:0.32, g:function(x,S,r){ var n=_fbm(r,[2,4]);
+     _gris(x,S,function(u,w){ return 180+60*(n(u,w)-0.5)+12*Math.sin(2*Math.PI*(u*2+w*3)); }); }},
+  {id:'lin', nom:'Lin', coul:'#d9cdb4', t:0.05, g:function(x,S,r){ var a=_bruitA(r,4,64), b=_bruitA(r,64,4);
+     _gris(x,S,function(u,w){ var t=0.5+0.5*Math.sin(Math.PI*(u*64))*Math.sin(Math.PI*(w*64)); return 190+14*(a(u,w)-0.5)*2+14*(b(u,w)-0.5)*2+8*t+(r()-0.5)*10; }); }},
+  {id:'mesh', nom:'Mesh / filet', coul:'#151515', t:0.03, g:function(x,S){ x.fillStyle='rgb(225,225,225)'; x.fillRect(0,0,S,S); x.fillStyle='rgb(60,60,60)';
+     var N=8; for(var j=0;j<N;j++) for(var i=0;i<=N;i++){ var X=(i+(j%2?0.5:0))*S/N, Y=(j+0.5)*S/N; for(var o=-1;o<=1;o++){ x.beginPath(); x.ellipse(X+o*S,Y,S/N*0.32,S/N*0.36,0,0,Math.PI*2); x.fill(); } } }},
+  {id:'tweed', nom:'Tweed', coul:'#6c5b49', t:0.06, g:function(x,S,r){ var n=_fbm(r,[8,16,32]);
+     _gris(x,S,function(u,w){ var t=0.5+0.5*Math.sin(2*Math.PI*(u*20+w*20))*Math.sin(2*Math.PI*(u*20-w*20)); return 175+40*(n(u,w)-0.5)+30*t; });
+     for(var k=0;k<380;k++){ var X=r()*S, Y=r()*S, a=r()*Math.PI, l=3+r()*6; x.strokeStyle=r()<0.5?'rgba(255,255,255,.55)':'rgba(0,0,0,.45)'; x.lineWidth=1.3; x.beginPath(); x.moveTo(X,Y); x.lineTo(X+Math.cos(a)*l,Y+Math.sin(a)*l); x.stroke(); } }},
+  {id:'chine', nom:'Jersey chiné', coul:'#9b9b9b', t:0.04, g:function(x,S,r){ var a=_bruitA(r,8,96);
+     _gris(x,S,function(u,w){ return 190+60*(a(u,w)-0.5)+(r()-0.5)*50; }); }},
+  {id:'matelasse', nom:'Matelassé', coul:'#1d2a44', t:0.22, brille:0.35, rough:0.6, g:function(x,S){
+     _gris(x,S,function(u,w){ var a=_frac(u*3+w*3), b=_frac(u*3-w*3); var d=Math.min(a,1-a,b,1-b)*2; return 95+150*Math.pow(Math.min(1,d*2.4),0.55); }); }}
+];
+function _tissu(id){ return TISSUS.find(function(t){ return t.id===id; }); }
+function _motifDeMatiere(id){ return (id||'').indexOf('motif:')===0 ? id.slice(6) : ''; }
+var _tuilesTissu={};
+function tuileTissu(id){                       /* 256 px, niveaux de gris, moyenne mesurée */
+  if(_tuilesTissu[id]) return _tuilesTissu[id];
+  var t=_tissu(id); if(!t) return null;
+  var c=document.createElement('canvas'); c.width=c.height=256; var x=c.getContext('2d');
+  t.g(x,256,_alea(id.length*131+id.charCodeAt(0)*7));
+  var d=x.getImageData(0,0,256,256).data, s=0; for(var i=0;i<d.length;i+=4) s+=d[i];
+  c._moy=s/(d.length/4)/255;
+  return (_tuilesTissu[id]=c);
+}
+function nomMatiere(id){ if(!id) return 'Coton (uni)'; var m=_motifDeMatiere(id); if(m) return 'Imprimé '+nomMotif(m); var t=_tissu(id); return t?t.nom:''; }
+/* habille l'image du vêtement : base = couleur × relief du tissu, ou imprimé */
+function teinterMatiere(d,iw,ih,m){
+  var mot=_motifDeMatiere(matiere), t=mot?null:_tissu(matiere);
+  var tu=mot?_tuileMotif(mot):tuileTissu(matiere); if(!tu) return false;
+  var px=Math.max(8,Math.round(iw*(mot?0.6:(t.t/0.8))));
+  var pc=document.createElement('canvas'); pc.width=iw; pc.height=ih; var pcx=pc.getContext('2d');
+  var tt=document.createElement('canvas'); tt.width=tt.height=px; var ttx=tt.getContext('2d'); ttx.imageSmoothingEnabled=!(mot&&/^camo-|damier/.test(mot)); ttx.drawImage(tu,0,0,px,px);
+  pcx.fillStyle=pcx.createPattern(tt,'repeat'); pcx.fillRect(0,0,iw,ih);
+  var T=pcx.getImageData(0,0,iw,ih).data, br=(t&&t.brille)||0, k=mot?1:1/Math.max(0.3,tu._moy);
+  for(var i=0;i<d.length;i+=4){ if(d[i+3]<=18) continue;
+    var L=(d[i]+d[i+1]+d[i+2])/765, f=0.5+0.7*L, sp=br?br*95*Math.pow(Math.max(0,(L-0.72)/0.28),2):0;
+    if(mot){ d[i]=Math.min(255,T[i]*f+sp); d[i+1]=Math.min(255,T[i+1]*f+sp); d[i+2]=Math.min(255,T[i+2]*f+sp); }
+    else { var g=T[i]/255*k; d[i]=Math.min(255,m[0]*g*f+sp); d[i+1]=Math.min(255,m[1]*g*f+sp); d[i+2]=Math.min(255,m[2]*g*f+sp); } }
+  return true;
+}
+/* ---- 3D : texture projetée ---- */
+var _texTissu3D={};
+function texTissu3D(id){
+  if(_texTissu3D[id]) return _texTissu3D[id];
+  var mot=_motifDeMatiere(id), tu=mot?_tuileMotif(mot):tuileTissu(id); if(!tu||!window.THREE) return null;
+  var tx=new THREE.CanvasTexture(tu); tx.wrapS=tx.wrapT=THREE.RepeatWrapping; tx.anisotropy=4;
+  if(mot && /^camo-|damier/.test(mot)){ tx.magFilter=THREE.NearestFilter; }
+  return (_texTissu3D[id]=tx);
+}
+function majTissu3D(){
+  var mot=_motifDeMatiere(matiere), t=mot?null:_tissu(matiere), tx=matiere?texTissu3D(matiere):null;
+  matsVetement().forEach(function(mt){ var u=mt.userData.u; if(!u||!u.uTissu) return;
+    if(mt.userData.rough0==null) mt.userData.rough0=mt.roughness;
+    u.uTissuOn.value=tx?1:0; if(tx) u.uTissu.value=tx;
+    u.uTissuK.value=mot?1/0.55:(t?1/t.t:14);
+    u.uTissuLin.value=mot?1:0;
+    u.uTissuGain.value=(tx&&!mot)?1/Math.max(0.3,tuileTissu(matiere)._moy):1;
+    mt.roughness=(t&&t.rough)?t.rough:mt.userData.rough0; mt.needsUpdate=false; });
+  if(typeof majCouleur3D==='function') majCouleur3D();
+}
+function setMatiere(id,hist){
+  if(hist) pushHistory('matiere');
+  matiere=id||'';
+  var t=_tissu(matiere); if(hist && t && t.coul) setShirt(t.coul,false);
+  if(typeof composeHoodie==='function') composeHoodie(currentSide);
+  majTissu3D(); rendreMatieres();
+  if(typeof planifierSauvegarde==='function') planifierSauvegarde();
+}
+var _vigTissu={};
+function vignetteTissu(t){ if(_vigTissu[t.id]) return _vigTissu[t.id];
+  var tu=tuileTissu(t.id), c=document.createElement('canvas'); c.width=c.height=96; var x=c.getContext('2d');
+  x.drawImage(tu,0,0,96*(t.t>0.15?1:2),96*(t.t>0.15?1:2)); x.globalCompositeOperation='multiply'; x.fillStyle=t.coul; x.fillRect(0,0,96,96);
+  return (_vigTissu[t.id]=c.toDataURL()); }
+function rendreMatieres(){
+  var b=document.getElementById('matieresBloc'); if(!b) return;
+  var cur=matiere||'';
+  var bt=function(id,img,nom,style){ return '<button type="button" class="motif '+(cur===id?'on':'')+'" onclick="setMatiere(\''+id+'\',true)">'+(img?'<img src="'+img+'" alt="">':'<span class="uni" style="'+style+'"></span>')+'<i>'+nom+'</i></button>'; };
+  b.innerHTML='<div class="field"><label>Matière · '+nomMatiere(cur)+'</label><div class="motifs">'
+    + bt('','', 'Coton (uni)','background:'+shirtColor)
+    + TISSUS.map(function(t){ return bt(t.id,vignetteTissu(t),t.nom); }).join('')
+    + '</div><div class="empty" style="padding:6px 2px 0">La couleur du vêtement reste modifiable au-dessus.</div></div>'
+    + '<div class="field"><label>Imprimé tout-over</label><div class="motifs">'
+    + MOTIFS.map(function(m){ return bt('motif:'+m.id,vignetteMotif(m.id),m.nom); }).join('')
+    + '</div></div>';
+}
 function finitionTexte(ctx,e,sc,tracer,w,h){
   var f=e.finish||'standard';
   if(f==='standard' && !e.motif){ tracer(ctx); return; }
@@ -2243,7 +2362,8 @@ function habillerModele(racine, tex, m){
       uDecM:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Matrix4(); })},
       uDecR:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
       uDecD:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
-      uDecN:{value:0}
+      uDecN:{value:0},
+      uTissu:{value:null}, uTissuOn:{value:0}, uTissuK:{value:14}, uTissuLin:{value:0}, uTissuGain:{value:1}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -2256,6 +2376,7 @@ function habillerModele(racine, tex, m){
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
           'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\nuniform float uUnique;\nuniform float uCote;\n'+
           'uniform mat4 uDecM[8];\nuniform vec4 uDecR[8];\nuniform vec4 uDecD[8];\nuniform float uDecN;\n'+
+          'uniform sampler2D uTissu;\nuniform float uTissuOn;\nuniform float uTissuK;\nuniform float uTissuLin;\nuniform float uTissuGain;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -2269,6 +2390,11 @@ function habillerModele(racine, tex, m){
           '#include <map_fragment>\n'+
           'vec3 q=(vPosL-uMin)/max(uTaille, vec3(1e-5));\n'+
           'vec3 nl=normalize(vNrmL);\n'+
+          /* matière : projection triplanaire de la tuile, en unités du modèle */
+          'if(uTissuOn>0.5){ vec3 wt=pow(abs(nl),vec3(4.0)); wt/=max(wt.x+wt.y+wt.z,1e-4); vec3 pp=vPosL*uTissuK;\n'+
+          '  vec3 tt=texture2D(uTissu,pp.zy).rgb*wt.x+texture2D(uTissu,pp.xz).rgb*wt.y+texture2D(uTissu,pp.xy).rgb*wt.z;\n'+
+          '  if(uTissuLin>0.5) tt=pow(tt,vec3(2.2));\n'+
+          '  diffuseColor.rgb*=tt*uTissuGain; }\n'+
           'vec4 dec=vec4(0.0);\n'+
           /* modèles du studio : le flanc droit (celui de la vue Côté) reçoit le visuel
    dès que la surface regarde plus vers le côté que vers l'avant ou l'arrière */
@@ -2296,7 +2422,7 @@ function habillerModele(racine, tex, m){
     o.material=mat;
     three.matVetement=mat; three.matsVetement.push(mat);
   });
-  appliquerDecals();
+  appliquerDecals(); if(typeof majTissu3D==='function') majTissu3D();
 }
 function appliquerDecals(){
   var L=three.decals||[];
@@ -2308,7 +2434,7 @@ function appliquerDecals(){
 
 /* met à jour les zones sans recharger la scène */
 function couleurTissu(){
-  var c=new THREE.Color(shirtColor||'#ffffff');
+  var c=new THREE.Color(_motifDeMatiere(matiere)?'#ffffff':(shirtColor||'#ffffff'));
   if(c.convertSRGBToLinear) c.convertSRGBToLinear();
   return c;
 }
@@ -3114,7 +3240,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v17";
+window.VIRAL_VERSION = "v18";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3155,6 +3281,8 @@ window.VIRAL_VERSION = "v17";
    téléphone (iPhone Safari / autre navigateur iPhone / Android / ordinateur).
    Rien ne s'affiche quand l'appli est déjà ouverte depuis l'écran d'accueil.
    ===================================================================== */
+/* Réglages : la liste des matières se dessine à l'ouverture */
+var _openSheetM=openSheet; openSheet=function(n){ var r=_openSheetM.apply(this,arguments); if(n==='props') rendreMatieres(); return r; };
 (function(){
   var PART='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>', PLUS='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
   var invite=null;                                   /* Android/Chrome : vraie fenêtre d'installation */
