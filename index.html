@@ -574,7 +574,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='29';
+var APP_VERSION='30';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3114,7 +3114,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v16";
+window.VIRAL_VERSION = "v17";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {

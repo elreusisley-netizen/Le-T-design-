@@ -1,5 +1,5 @@
 /* by viral — service worker (offline, tolerant) */
-const CACHE = 'byviral-v14';
+const CACHE = 'byviral-v15';
 const CORE = [
   './',
   './index.html',
@@ -15,7 +15,9 @@ self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE).then(function (c) {
       return Promise.all(CORE.map(function (u) {
-        return fetch(u).then(function (r) { if (r && r.ok) return c.put(u, r); }).catch(function () {});
+        /* cache:'reload' : on contourne le cache HTTP du navigateur (sinon une
+           version de la page vieille de quelques minutes pouvait être figée ici) */
+        return fetch(u, { cache: 'reload' }).then(function (r) { if (r && r.ok) return c.put(u, r); }).catch(function () {});
       }));
     }).then(function () { return self.skipWaiting(); })
   );
@@ -43,6 +45,15 @@ self.addEventListener('fetch', function (e) {
       if (resp && resp.ok) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put(req, c); }); }
       return resp;
     }).catch(function () { return caches.match(req, { ignoreSearch: true }); }));
+    return;
+  }
+  /* la page elle-même : réseau d'abord (toujours la dernière version publiée),
+     copie en cache pour fonctionner hors ligne */
+  if (url.origin === location.origin && (req.mode === 'navigate' || /\/(index\.html)?$/.test(url.pathname))) {
+    e.respondWith(fetch(req, { cache: 'no-cache' }).then(function (resp) {
+      if (resp && resp.ok) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put('./index.html', c); }); }
+      return resp;
+    }).catch(function () { return caches.match('./index.html').then(function (h) { return h || caches.match(req, { ignoreSearch: true }); }); }));
     return;
   }
   e.respondWith(
