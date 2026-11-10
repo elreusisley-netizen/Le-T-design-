@@ -56,7 +56,7 @@
     background:radial-gradient(130% 100% at 50% 4%,#dedad0,#c6c0b2)}
   #stage{position:relative;width:min(88vw,420px);aspect-ratio:250/270;max-height:100%;filter:drop-shadow(0 16px 26px rgba(10,16,30,.30))}
   #tee{position:absolute;inset:0;width:100%;height:100%}
-  #layer{position:absolute;inset:0}
+  #layer{position:absolute;inset:0;z-index:1}
   .el{position:absolute;transform-origin:center center;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
   .el.text{white-space:nowrap;line-height:1.05;padding:2px 4px}
   .el.selected{outline:1.5px dashed var(--gold);outline-offset:2px}
@@ -162,6 +162,7 @@
   .chip{display:inline-flex;align-items:center;justify-content:center;padding:11px 0;flex:1;border:1px solid var(--line2);border-radius:10px;font-size:14px;cursor:pointer;background:#fbfaf6}
   .chip.on{background:var(--accent);color:#f3efe4;border-color:var(--accent)}
   .toggle{display:flex;gap:8px;margin-bottom:13px}
+  .nv-badge{font:600 10px/1 Inter,sans-serif;letter-spacing:.5px;color:#fff;background:var(--gold);border-radius:999px;padding:3px 7px;vertical-align:2px;margin-left:6px}
   .toggle.fin-chips{flex-wrap:wrap;gap:8px;margin-bottom:0}
   .motifs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .motif{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;font:inherit;color:inherit}
@@ -331,7 +332,7 @@
       <path id="teePath" fill="#e6dcc4" d="M83 14 C83 30 167 30 167 14 L200 30 L246 70 L214 104 L196 88 L196 256 L54 256 L54 88 L36 104 L4 70 L50 30 Z"/>
       <g id="collar"></g>
     </svg>
-    <img id="garmentImg" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;opacity:0;transition:opacity .25s ease"><div id="layer"></div>
+    <img id="garmentImg" alt="" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;opacity:0;transition:opacity .25s ease"><canvas id="piecesCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas><div id="layer"></div>
   </div>
 </div>
 <div class="mhint">Glisse pour déplacer · poignée coin = taille · poignée haute = rotation · double-tap un texte pour l’éditer</div>
@@ -364,6 +365,10 @@
     <button class="btn gold" onclick="addText()">Texte</button>
     <button class="btn" onclick="document.getElementById('fileInput').click()">Importer une image</button>
     <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" multiple style="display:none" onchange="onUpload(event)">
+    <h4>Pièces de tissu <span class="nv-badge">Nouveau</span></h4>
+    <div class="row"><button class="btn mini" onclick="addPiece('libre')">Pièce libre</button><button class="btn mini" onclick="addPiece('poche')">Poche poitrine</button></div>
+    <div class="row"><button class="btn mini" onclick="addPiece('haut')">Empiècement haut</button><button class="btn mini" onclick="addPiece('bas')">Bande en bas</button></div>
+    <div class="row"><button class="btn mini" onclick="addPiece('effiloche')">Patch effiloché</button></div>
     <div id="ajoutAdmin" style="display:none">
       <h4>Bibliothèque VIRAL <span class="adm-badge">Admin</span></h4>
       <div id="biblioAdmin"><div class="empty">Chargement de la bibliothèque…</div></div>
@@ -575,7 +580,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='33';
+var APP_VERSION='34';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -951,7 +956,7 @@ function garmentCanvas(key){ const S=4, CW=250*S, CH=270*S; const cv=document.cr
   if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
   const sil=_hoodCache['sil_'+garment+'_'+key], ln=_hoodCache['line_'+garment+'_'+key]; if(!sil||!sil.complete||!sil.naturalWidth) return cv; const iw=sil.naturalWidth, ih=sil.naturalHeight; const sc=Math.min(CW*0.94/iw, CH*0.96/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(sil,0,0); tcx.globalCompositeOperation='source-in'; tcx.fillStyle=shirtColor; tcx.fillRect(0,0,iw,ih); cx.drawImage(tc,ox,oy,dw,dh); if(ln&&ln.complete&&ln.naturalWidth)cx.drawImage(ln,ox,oy,dw,dh); return cv; }
 function composeHoodie(key){ const gi=document.getElementById('garmentImg'); if(!gi)return; const ref=(garment==='cap')?_hoodCache['cap_'+key]:((garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estCombi(garment))?imgVet(key):_hoodCache['sil_'+garment+'_'+key]); if(!ref||!ref.complete||!ref.naturalWidth){ if(ref)ref.onload=function(){composeHoodie(key);}; return; } gi.onload=function(){ gi.style.opacity='1'; }; gi.src=garmentCanvas(key).toDataURL('image/png'); }
-function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); ctx.setTransform(S,0,0,S,0,0); ctx.clearRect(0,0,W,H); const arr=[...sides[side]].sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
+function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); dessinerPieces(ctx,side,S); ctx.setTransform(S,0,0,S,0,0); const arr=[...sides[side]].filter(e=>e.type!=='piece').sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
 let plancheView='front';
 function renderPlanche(view){ plancheView=view; if(!renderPlanche._busy){ const miss=(sides[view]||[]).some(function(e){ const im=e.type==='image'&&imgCache[e.src]; return e.type==='image'&&!(im&&im.complete&&im.naturalWidth); }); if(miss){ renderPlanche._busy=1; ensureImages().then(function(){ renderPlanche._busy=0; if(plancheView===view) renderPlanche(view); }); } } const S=4,W=250*S,H=270*S; const el=document.getElementById('plancheCanvas'); if(!el)return; el.width=W; el.height=H; const ctx=el.getContext('2d'); ctx.clearRect(0,0,W,H); ctx.drawImage(garmentCanvas(view),0,0); ctx.drawImage(renderDesignCanvas(view),0,0); ['front','side','back'].forEach(function(k){ const b=document.getElementById('pl-'+k); if(b){ b.style.background=(k===view)?'rgba(207,169,78,.35)':''; if(k==='side') b.style.display=deuxFaces(garment)?'none':''; } }); }
 function plancheNav(dir){ const order=deuxFaces(garment)?['front','back']:['front','side','back']; const n=order.length; let i=order.indexOf(plancheView); if(i<0)i=0; i=(i+dir+n)%n; renderPlanche(order[i]); }
@@ -1076,13 +1081,14 @@ function render(){ const present=new Set();
   els().forEach(e=>{ present.add(e.id); let n=nodes.get(e.id);
     if(!n){ n=document.createElement('div'); n.className='el'; n.dataset.id=e.id; layer.appendChild(n); nodes.set(e.id,n); attachDrag(n,e.id); }
     { const _s=selectedIds.includes(e.id), _o=_s&&selectedIds.length===1; n.className='el '+(e.type==='text'?'text ':'')+(_s?'selected ':'')+(_o?'solo':''); }
-    n.style.left=e.x+'px'; n.style.top=e.y+'px'; n.style.transform=`rotate(${e.rot}deg)`; n.style.zIndex=e.z;
+    n.style.left=e.x+'px'; n.style.top=e.y+'px'; n.style.transform=`rotate(${e.rot}deg)`; n.style.zIndex=(e.type==='piece'?e.z-100000:e.z);
     if(e.type==='text'){ chargerPolice(e.font); n.style.fontFamily=`'${e.font}'`; n.style.fontSize=e.size+'px'; n.style.color=e.color; n.style.fontWeight=e.bold?'700':'400'; n.style.fontStyle=e.italic?'italic':'normal'; n.style.letterSpacing=e.ls+'px';
       if(e.curve){ const arc=computeArc(e); n.style.whiteSpace='normal'; n.style.padding='0'; n.style.width=arc.width+'px'; n.style.height=arc.height+'px'; n._txt=null; n.innerHTML=arc.glyphs.map(g=>`<span style="position:absolute;left:${g.cx}px;top:${g.cy}px;transform:translate(-50%,-50%) rotate(${g.rot}deg);white-space:pre">${g.ch===' '?'\u00a0':escapeHtml(g.ch)}</span>`).join(''); }
       else { n.style.whiteSpace='nowrap'; n.style.padding=e.box?'0':'2px 4px'; n.style.width='auto'; n.style.height='auto'; if(document.activeElement!==n && (n._txt!==e.text || !n.firstChild)){ n.textContent=e.text; n._txt=e.text; } }
       setBoxFrame(n,e); ensureHandles(n); majFinitionDOM(n,e);
     } else { n.style.width=e.w+'px'; n.style.height=e.h+'px';
-      if(e.type==='rect'){ n.style.background=e.fill; n.style.border=(e.sw>0?`${e.sw}px solid ${e.stroke}`:'none'); n.style.borderRadius='2px'; clearHolders(n); ensureHandles(n); }
+      if(e.type==='piece'){ n.style.background='transparent'; n.style.border='none'; n.style.borderRadius='0'; clearHolders(n); ensureHandles(n); }
+      else if(e.type==='rect'){ n.style.background=e.fill; n.style.border=(e.sw>0?`${e.sw}px solid ${e.stroke}`:'none'); n.style.borderRadius='2px'; clearHolders(n); ensureHandles(n); }
       else if(e.type==='ellipse'){ n.style.background=e.fill; n.style.border=(e.sw>0?`${e.sw}px solid ${e.stroke}`:'none'); n.style.borderRadius='50%'; clearHolders(n); ensureHandles(n); }
       else if(e.type==='line'){ n.style.background=e.fill; n.style.border='none'; n.style.borderRadius='2px'; clearHolders(n); ensureHandles(n); }
       else if(e.type==='image'){ n.style.background='none'; n.style.border='none'; setImg(n,e.src); }
@@ -1103,7 +1109,7 @@ function getSel(){ return els().find(e=>e.id===selectedId); }
 function groupMembers(id){ const e=els().find(x=>x.id===id); if(e&&e.groupId!=null) return els().filter(x=>x.groupId===e.groupId).map(x=>x.id); return [id]; }
 function groupSelection(){ if(selectedIds.length<2)return; pushHistory('group'); const gid=uid++; selectedIds.forEach(id=>{ const e=els().find(x=>x.id===id); if(e)e.groupId=gid; }); render(); buildProps(); }
 function ungroupSelection(){ pushHistory('ungroup'); const gids=new Set(); selectedIds.forEach(id=>{ const e=els().find(x=>x.id===id); if(e&&e.groupId!=null)gids.add(e.groupId); }); els().forEach(e=>{ if(e.groupId!=null&&gids.has(e.groupId)) delete e.groupId; }); render(); buildProps(); }
-function layerLabel(e){ if(e.type==='text') return '“'+((e.text||'').slice(0,16))+'”'; if(e.type==='image'){ return e.name || 'Image importée'; } return ({shopper:'Shopper',halo:'Auréole',ring:'Anneau interdit',rect:'Rectangle',ellipse:'Cercle',line:'Barre'})[e.type]||e.type; }
+function layerLabel(e){ if(e.type==='piece') return nomPiece(e); if(e.type==='text') return '“'+((e.text||'').slice(0,16))+'”'; if(e.type==='image'){ return e.name || 'Image importée'; } return ({shopper:'Shopper',halo:'Auréole',ring:'Anneau interdit',rect:'Rectangle',ellipse:'Cercle',line:'Barre'})[e.type]||e.type; }
 function toggleLayerSel(id){ id=+id; if(selectedIds.includes(id)) selectedIds=selectedIds.filter(x=>x!==id); else selectedIds=selectedIds.concat([id]); selectedId=selectedIds[selectedIds.length-1]||null; render(); buildProps(); }
 function selectOnlyLayer(id){ select(+id); }
 function renderLayers(){ const c=document.getElementById('layers'); if(!c)return; const arr=els(); if(!arr.length){ c.innerHTML='<div class="empty" style="padding:2px">Aucun élément sur cette face.</div>'; return; } c.innerHTML=arr.map(e=>{ const on=selectedIds.includes(e.id); const g=(e.groupId!=null)?' <span style="color:#cfa94e">●</span>':''; return '<label class="lyr '+(on?'on':'')+'"><input type="checkbox" '+(on?'checked':'')+' onchange="toggleLayerSel('+e.id+')"><span onclick="selectOnlyLayer('+e.id+')">'+layerLabel(e)+g+'</span></label>'; }).join(''); }
@@ -1161,6 +1167,14 @@ function buildProps(){ const p=document.getElementById('props');
       h+=`<div class="inline"><div class="field"><label>Bordure ép. ${e.boxW!=null?e.boxW:2}</label><input type="range" min="0" max="10" value="${e.boxW!=null?e.boxW:2}" oninput="upd('boxW',+this.value)"></div><div class="field"><label>Marge ${e.boxPad!=null?e.boxPad:8}</label><input type="range" min="0" max="30" value="${e.boxPad!=null?e.boxPad:8}" oninput="upd('boxPad',+this.value)"></div></div>`;
       h+=`<div class="field"><label>Arrondi ${e.boxRadius||0}</label><input type="range" min="0" max="30" value="${e.boxRadius||0}" oninput="upd('boxRadius',+this.value)"></div>`;
     }
+  } else if(e.type==='piece'){
+    const mz=e.mat||'', btn=(id,img,nom,st)=>`<button type="button" class="motif ${mz===id?'on':''}" onclick="upd('mat','${id}')">${img?`<img src="${img}" alt="">`:`<span class="uni" style="${st}"></span>`}<i>${nom}</i></button>`;
+    h+=`<div class="field"><label>Forme</label><div class="toggle fin-chips">${FORMES_PIECE.map(f=>`<div class="chip ${(e.forme||'rect')===f[0]?'on':''}" onclick="upd('forme','${f[0]}')">${f[1]}</div>`).join('')}</div></div>`;
+    h+=`<div class="field"><label>Tissu · ${mz?nomMatiere(mz):'Uni'}</label><div class="motifs">${btn('','','Uni','background:'+(e.color||'#c8102e'))}${TISSUS.map(t=>btn(t.id,vignetteTissu(t),t.nom)).join('')}${MOTIFS.map(m=>btn('motif:'+m.id,vignetteMotif(m.id),m.nom)).join('')}</div></div>`;
+    if(!_motifDeMatiere(mz)) h+=`<div class="field"><label>Couleur du tissu</label><input type="color" value="${hex6(e.color||'#c8102e')}" oninput="upd('color',this.value)"></div>`;
+    if(mz) h+=`<div class="field"><label>Taille du ${_motifDeMatiere(mz)?'motif':'tissu'} ${Math.round((e.ech||1)*100)} %</label><input type="range" min="30" max="300" step="10" value="${Math.round((e.ech||1)*100)}" oninput="upd('ech',this.value/100)"></div>`;
+    h+=`<div class="field"><label>Couture</label><div class="toggle fin-chips">${COUTURES.map(c=>`<div class="chip ${(e.couture||'aucune')===c[0]?'on':''}" onclick="upd('couture','${c[0]}')">${c[1]}</div>`).join('')}</div></div>`;
+    if(e.couture==='piqure'||e.couture==='surpiqure') h+=`<div class="field"><label>Couleur du fil</label><input type="color" value="${hex6(e.coutureColor||'#e9c46a')}" oninput="upd('coutureColor',this.value)"></div>`;
   } else if(e.type==='image'){ h+=`<div class="empty">Image VIRAL. Utilise la poignée du coin pour la taille, la poignée du haut pour l'orientation.</div>`;
   } else if(e.type==='rect'||e.type==='ellipse'){ h+=`<div class="field"><label>Remplissage</label><input type="color" value="${hex6(e.fill)}" oninput="upd('fill',this.value)"></div>`;
     h+=`<div class="toggle"><div class="chip ${e.fill.length===9?'on':''}" onclick="upd('fill','#00000000')">Sans fond</div></div>`;
@@ -1176,9 +1190,9 @@ function buildProps(){ const p=document.getElementById('props');
   if(e.groupId!=null) h+=`<button class="btn mini" onclick="ungroupSelection()" style="width:100%">⛌ Dégrouper</button>`;
   p.innerHTML=h; }
 function hex6(c){ if(!c)return '#000000'; if(c.length===9)return c.slice(0,7); return c; }
-function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='motif'&&v) e.finish='standard'; if(k==='finish'&&v!=='standard') e.motif=''; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'||k==='finish'||k==='motif'){buildProps();}else{refreshLabels();} }
+function upd(k,v){ const e=getSel(); if(!e)return; pushHistory('upd-'+selectedId+'-'+k); e[k]=v; if(k==='motif'&&v) e.finish='standard'; if(k==='finish'&&v!=='standard') e.motif=''; if(k==='boxStyle'&&v==='plaque'){ if(!e.boxFill||(e.boxFill.length===9&&e.boxFill.slice(7)==='00'))e.boxFill='#1f5fd0'; if(!e.boxColor||e.boxColor==='#cfa94e')e.boxColor='#f5f2ec'; if(!e.boxRadius)e.boxRadius=10; } render(); if(k==='bold'||k==='italic'||k==='fill'||k==='box'||k==='boxFill'||k==='boxStyle'||k==='finish'||k==='motif'||k==='mat'||k==='forme'||k==='couture'){buildProps();}else{refreshLabels();} }
 function refreshLabels(){ const e=getSel(); if(!e)return; document.querySelectorAll('#props .field label').forEach(l=>{ const t=l.textContent;
-  if(t.startsWith('Taille du motif'))l.textContent='Taille du motif '+Math.round((e.motifScale||1)*100)+' %'; else if(t.startsWith('Taille des strass'))l.textContent='Taille des strass '+Math.round((e.stone||1)*100)+' %'; else if(t.startsWith('Taille'))l.textContent='Taille '+e.size; else if(t.startsWith('Interlettrage'))l.textContent='Interlettrage '+e.ls; else if(t.startsWith('Rotation'))l.textContent='Rotation '+e.rot+'°'; else if(t.startsWith('Courbure'))l.textContent='Courbure (arc) '+(e.curve||0)+'°'; else if(t.startsWith('Bordure ép.'))l.textContent='Bordure ép. '+(e.boxW!=null?e.boxW:2); else if(t.startsWith('Marge'))l.textContent='Marge '+(e.boxPad!=null?e.boxPad:8); else if(t.startsWith('Arrondi'))l.textContent='Arrondi '+(e.boxRadius||0); else if(t.startsWith('Épaisseur contour'))l.textContent='Épaisseur contour '+e.sw; else if(t.startsWith('Épaisseur trait'))l.textContent='Épaisseur trait '+e.sw; else if(t.startsWith('Épaisseur'))l.textContent='Épaisseur '+e.h; }); }
+  if(e.type==='piece'&&(t.startsWith('Taille du tissu')||t.startsWith('Taille du motif')))l.textContent=t.split(' ').slice(0,3).join(' ')+' '+Math.round((e.ech||1)*100)+' %'; else if(t.startsWith('Taille du motif'))l.textContent='Taille du motif '+Math.round((e.motifScale||1)*100)+' %'; else if(t.startsWith('Taille des strass'))l.textContent='Taille des strass '+Math.round((e.stone||1)*100)+' %'; else if(t.startsWith('Taille'))l.textContent='Taille '+e.size; else if(t.startsWith('Interlettrage'))l.textContent='Interlettrage '+e.ls; else if(t.startsWith('Rotation'))l.textContent='Rotation '+e.rot+'°'; else if(t.startsWith('Courbure'))l.textContent='Courbure (arc) '+(e.curve||0)+'°'; else if(t.startsWith('Bordure ép.'))l.textContent='Bordure ép. '+(e.boxW!=null?e.boxW:2); else if(t.startsWith('Marge'))l.textContent='Marge '+(e.boxPad!=null?e.boxPad:8); else if(t.startsWith('Arrondi'))l.textContent='Arrondi '+(e.boxRadius||0); else if(t.startsWith('Épaisseur contour'))l.textContent='Épaisseur contour '+e.sw; else if(t.startsWith('Épaisseur trait'))l.textContent='Épaisseur trait '+e.sw; else if(t.startsWith('Épaisseur'))l.textContent='Épaisseur '+e.h; }); }
 function layerMove(d){ const e=getSel(); if(!e)return; pushHistory('layer'); e.z=(e.z||1)+d*2; render(); }
 function dupSel(){ if(!selectedIds.length)return; pushHistory('dup'); const gmap={},nw=[]; selectedIds.slice().forEach(id=>{ const e=els().find(x=>x.id===id); if(!e)return; const c=JSON.parse(JSON.stringify(e)); c.id=uid++; c.x+=16; c.y+=16; c.z=uid; if(e.groupId!=null){ if(gmap[e.groupId]==null)gmap[e.groupId]=uid++; c.groupId=gmap[e.groupId]; } els().push(c); nw.push(c.id); }); selectedIds=nw; selectedId=nw[nw.length-1]||null; render(); buildProps(); }
 function delSel(){ if(!selectedIds.length)return; pushHistory('del'); selectedIds.slice().forEach(id=>{ const i=els().findIndex(x=>x.id===id); if(i>=0)els().splice(i,1); const n=nodes.get(id); if(n){n.remove();nodes.delete(id);} }); selectedIds=[]; selectedId=null; render(); buildProps(); }
@@ -1600,6 +1614,118 @@ function rendreMatieres(){
     + MOTIFS.map(function(m){ return bt('motif:'+m.id,vignetteMotif(m.id),m.nom); }).join('')
     + '</div></div>';
 }
+/* ================= PIÈCES DE TISSU (Mode créatif, étape 2) =================
+   Une pièce est un élément comme les autres (déplacer, tourner, calques,
+   annuler, 3D), mais elle est « cousue » sur le vêtement : en 2D elle reprend
+   les ombres et les plis de la photo et s'arrête aux bords du vêtement.     */
+const FORMES_PIECE=[['rect','Rectangle',14],['arrondi','Arrondi',5],['rond','Rond',2],['losange','Losange',1]];
+const COUTURES=[['aucune','Sans couture'],['piqure','Piqûre'],['surpiqure','Double surpiqûre'],['effiloche','Bord effiloché']];
+function _expForme(f){ var x=FORMES_PIECE.find(function(z){ return z[0]===f; }); return x?x[2]:14; }
+function _contour(f,W,H,ins,n,rnd,jit){                 /* superellipse : rectangle → losange */
+  var p=_expForme(f), a=W/2-ins, b=H/2-ins, pts=[]; n=n||160;
+  for(var i=0;i<n;i++){ var t=i/n*Math.PI*2, c=Math.cos(t), s=Math.sin(t);
+    var x=a*Math.sign(c)*Math.pow(Math.abs(c),2/p), y=b*Math.sign(s)*Math.pow(Math.abs(s),2/p);
+    if(jit){ var r=1+(rnd()-0.5)*jit; x*=r; y*=r; }
+    pts.push([W/2+x,H/2+y]); }
+  return pts; }
+function _trace(c,pts){ c.beginPath(); pts.forEach(function(q,i){ i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]); }); c.closePath(); }
+function nomPiece(e){ return 'Pièce · '+(e.mat?nomMatiere(e.mat).replace('Imprimé ',''):'Uni'); }
+function dessinerPiece(ctx,e,sc){
+  var w=e.w*sc, h=e.h*sc;
+  ctx.save(); ctx.translate((e.x+e.w/2)*sc,(e.y+e.h/2)*sc); ctx.rotate((e.rot||0)*Math.PI/180);
+  var T=ctx.getTransform(), k=Math.hypot(T.a,T.b)||1;
+  if(w*h*k*k>8e6) k=Math.sqrt(8e6/(w*h));
+  var W=Math.max(2,Math.ceil(w*k)), H=Math.max(2,Math.ceil(h*k)), u=sc*k;      /* u : pixels par unité d'éditeur */
+  var oc=document.createElement('canvas'); oc.width=W; oc.height=H; var o=oc.getContext('2d'), rnd=_alea((e.id||1)*17+3);
+  var effil=e.couture==='effiloche', bord=_contour(e.forme,W,H,effil?3*u:0,Math.max(60,Math.round((W+H)/(effil?1.2:4))),rnd,effil?0.02:0);
+  o.save(); _trace(o,bord); o.clip();
+  /* le tissu */
+  var mot=_motifDeMatiere(e.mat), t=mot?null:_tissu(e.mat), ech=(e.ech||1), larg=230*u;  /* largeur d'un vêtement ≈ 230 unités */
+  if(mot){ var tm=_tuileMotifPx(mot, larg*0.6*ech); o.fillStyle=o.createPattern(tm,'repeat'); o.fillRect(0,0,W,H); }
+  else if(t){ var tu=tuileTissu(t.id), px=Math.max(6,Math.round(larg*(t.t/0.8)*ech)), tt=document.createElement('canvas'); tt.width=tt.height=px; tt.getContext('2d').drawImage(tu,0,0,px,px);
+    var cl=_rgb(e.color||t.coul), g=1/Math.max(0.3,tu._moy); o.fillStyle='rgb('+Math.min(255,cl[0]*g)+','+Math.min(255,cl[1]*g)+','+Math.min(255,cl[2]*g)+')'; o.fillRect(0,0,W,H);
+    o.globalCompositeOperation='multiply'; o.fillStyle=o.createPattern(tt,'repeat'); o.fillRect(0,0,W,H); o.globalCompositeOperation='source-over'; }
+  else { o.fillStyle=e.color||'#c8102e'; o.fillRect(0,0,W,H); }
+  /* épaisseur : bord légèrement ombré à l'intérieur */
+  o.lineWidth=2.4*u; o.strokeStyle='rgba(0,0,0,0.22)'; _trace(o,bord); o.stroke();
+  /* coutures */
+  var cc=e.coutureColor||'#f2efe6';
+  if(e.couture==='piqure'||e.couture==='surpiqure'){
+    var lignes=e.couture==='piqure'?[[3.2,0.9]]:[[3,1.25],[6,1.25]];
+    lignes.forEach(function(L){ o.setLineDash([3.2*u,2.2*u]); o.lineWidth=L[1]*u; o.strokeStyle='rgba(0,0,0,0.35)';
+      _trace(o,_contour(e.forme,W,H,L[0]*u,180)); o.save(); o.translate(0.5*u,0.6*u); o.stroke(); o.restore();
+      o.strokeStyle=cc; _trace(o,_contour(e.forme,W,H,L[0]*u,180)); o.stroke(); });
+    o.setLineDash([]);
+  }
+  o.restore();
+  if(effil){                                            /* fils qui dépassent du bord */
+    o.lineCap='round'; var cl2=_rgb(mot?'#d8d2c4':(e.color||'#c8102e'));
+    bord.forEach(function(q,i){ if(rnd()<0.55) return; var nx=q[0]-W/2, ny=q[1]-H/2, l=Math.hypot(nx,ny)||1, L=(1.5+rnd()*3.2)*u;
+      o.strokeStyle='rgba('+Math.min(255,cl2[0]+40)+','+Math.min(255,cl2[1]+40)+','+Math.min(255,cl2[2]+40)+','+(0.55+rnd()*0.4)+')'; o.lineWidth=(0.5+rnd()*0.5)*u;
+      o.beginPath(); o.moveTo(q[0],q[1]); o.lineTo(q[0]+nx/l*L+(rnd()-0.5)*u, q[1]+ny/l*L+(rnd()-0.5)*u); o.stroke(); });
+  }
+  ctx.shadowColor='rgba(0,0,0,0.30)'; ctx.shadowBlur=Math.max(1,2.2*u); ctx.shadowOffsetY=Math.max(0.5,0.8*u);
+  ctx.drawImage(oc,-w/2,-h/2,w,h);
+  ctx.restore();
+}
+/* ombres et contour du vêtement, dans le repère 250×270 de l'éditeur (×4) */
+var _ombres={};
+function ombreVetement(side){
+  var img=(typeof imgVet==='function')?imgVet(side):null; if(!img||!img.complete||!img.naturalWidth) return null;
+  var cle=garment+'|'+coupeDe(garment)+'|'+side+'|'+img.src.length; if(_ombres[cle]) return _ombres[cle];
+  var CW=1000, CH=1080, iw=img.naturalWidth, ih=img.naturalHeight, maxH=(garment==='cap')?0.66:0.96;
+  var s=Math.min(CW*0.92/iw, CH*maxH/ih), dw=iw*s, dh=ih*s;
+  var t=document.createElement('canvas'); t.width=iw; t.height=ih; var tx=t.getContext('2d'); tx.drawImage(img,0,0);
+  var id=tx.getImageData(0,0,iw,ih), d=id.data;
+  for(var i=0;i<d.length;i+=4){ var L=(d[i]+d[i+1]+d[i+2])/765, f=Math.min(255,255*(0.5+0.7*L)/1.13); d[i]=d[i+1]=d[i+2]=f; }
+  tx.putImageData(id,0,0);
+  var c=document.createElement('canvas'); c.width=CW; c.height=CH; c.getContext('2d').drawImage(t,(CW-dw)/2,(CH-dh)/2,dw,dh);
+  var ks=Object.keys(_ombres); if(ks.length>12) delete _ombres[ks[0]];
+  return (_ombres[cle]=c);
+}
+function _ombrerPieces(o,side,W,H){                    /* plis du vêtement + découpe aux bords */
+  var om=ombreVetement(side); if(!om) return;
+  o.save(); o.setTransform(1,0,0,1,0,0);
+  o.globalCompositeOperation='multiply'; o.drawImage(om,0,0,W,H);
+  o.globalCompositeOperation='destination-in'; o.drawImage(om,0,0,W,H);
+  o.restore();
+}
+function dessinerPieces(ctx,side,S){                   /* S : pixels par unité (250 de large) */
+  var arr=(sides[side]||[]).filter(function(e){ return e.type==='piece'; }).sort(function(a,b){ return (a.z||0)-(b.z||0); });
+  if(!arr.length) return;
+  var W=Math.ceil(250*S), H=Math.ceil(270*S), c=document.createElement('canvas'); c.width=W; c.height=H; var o=c.getContext('2d');
+  o.setTransform(S,0,0,S,0,0); var sc=250/stageSize().w;
+  arr.forEach(function(e){ dessinerPiece(o,e,sc); });
+  _ombrerPieces(o,side,W,H);
+  ctx.drawImage(c,0,0);
+}
+function majCouchePieces(){
+  var cv=document.getElementById('piecesCanvas'); if(!cv) return;
+  var s=stageSize(), dpr=Math.min(3,window.devicePixelRatio||1);
+  var arr=(sides[currentSide]||[]).filter(function(e){ return e.type==='piece'; });
+  var gi=document.getElementById('garmentImg'), img=(typeof imgVet==='function')?imgVet(currentSide):null;
+  var cle=JSON.stringify(arr)+'|'+currentSide+'|'+garment+'|'+coupeDe(garment)+'|'+s.w+'|'+(img&&img.naturalWidth);
+  if(cv._cle===cle) return; cv._cle=cle;
+  cv.width=Math.round(s.w*dpr); cv.height=Math.round(s.h*dpr);
+  var c=cv.getContext('2d'); c.clearRect(0,0,cv.width,cv.height);
+  if(!arr.length) return;
+  dessinerPieces(c,currentSide,cv.width/250);
+  if(img && !img.naturalWidth){ img.addEventListener('load',function(){ cv._cle=null; majCouchePieces(); },{once:true}); }
+}
+function addPiece(type){
+  pushHistory('add'); var s=stageSize(), k=s.w/250, b=boiteImage2D(currentSide)||{ox:30,oy:25,dw:190,dh:220};
+  var e={id:uid++,type:'piece',rot:0,forme:'rect',mat:'denim',color:'#35507a',couture:'piqure',coutureColor:'#e9c46a',ech:1,z:1};
+  if(type==='poche'){ Object.assign(e,{forme:'arrondi',w:b.dw*0.17,h:b.dw*0.19,x:b.ox+b.dw*0.6,y:b.oy+b.dh*0.26}); }
+  else if(type==='bas'){ Object.assign(e,{w:b.dw*1.1,h:b.dh*0.17,x:b.ox-b.dw*0.05,y:b.oy+b.dh*0.86}); }
+  else if(type==='haut'){ Object.assign(e,{w:b.dw*1.1,h:b.dh*0.3,x:b.ox-b.dw*0.05,y:b.oy-b.dh*0.02,mat:'cuir',color:'#1d1815',couture:'surpiqure'}); }
+  else if(type==='effiloche'){ Object.assign(e,{forme:'rect',w:b.dw*0.32,h:b.dw*0.26,x:b.ox+b.dw*0.34,y:b.oy+b.dh*0.42,mat:'motif:camo-vert',couture:'effiloche'}); }
+  else { Object.assign(e,{w:b.dw*0.36,h:b.dw*0.3,x:b.ox+b.dw*0.32,y:b.oy+b.dh*0.4}); }
+  e.x*=k; e.y*=k; e.w*=k; e.h*=k;
+  /* une pièce reste toujours sous les textes et logos (couche « tissu ») ;
+     entre pièces, la dernière ajoutée passe au-dessus */
+  e.z=e.id;
+  els().push(e); render(); select(e.id); closeSheets();
+}
 function finitionTexte(ctx,e,sc,tracer,w,h){
   var f=e.finish||'standard';
   if(f==='standard' && !e.motif){ tracer(ctx); return; }
@@ -1693,6 +1819,7 @@ function majFinitionDOM(n,e){
   if(document.fonts && !_policeFin[fstr]){ _policeFin[fstr]=1; document.fonts.load(fstr).then(function(){ nodes.forEach(function(nn){ nn._finCle=null; }); render(); }).catch(function(){}); }
 }
 function drawEl(ctx,e,sc){
+  if(e.type==='piece'){ dessinerPiece(ctx,e,sc); return; }
   if(e.type==='text'){ if(e.curve){ const arc=computeArc(e); ctx.save(); ctx.font=`${e.italic?'italic ':''}${e.bold?'700':'400'} ${e.size*sc}px '${e.font}'`; ctx.fillStyle=e.color; ctx.textAlign='center'; ctx.textBaseline='middle'; const W=arc.width*sc,H=arc.height*sc; ctx.translate(e.x*sc+W/2,e.y*sc+H/2); ctx.rotate(e.rot*Math.PI/180); if(e.box&&!e._sansCadre)drawTextBox(ctx,W,H,e,sc); finitionTexte(ctx,e,sc,(c,meth)=>arc.glyphs.forEach(g=>{ c.save(); c.translate((g.cx-arc.width/2)*sc,(g.cy-arc.height/2)*sc); c.rotate(g.rot*Math.PI/180); c[meth||'fillText'](g.ch,0,0); c.restore(); }),W,H); ctx.restore(); return; } ctx.save(); ctx.font=`${e.italic?'italic ':''}${e.bold?'700':'400'} ${e.size*sc}px '${e.font}'`; ctx.textBaseline='top'; ctx.textAlign='left'; ctx.fillStyle=e.color;
     try{ if('letterSpacing' in ctx) ctx.letterSpacing=(e.ls*sc)+'px'; }catch(_){}
     const lines=(e.text||'').split('\n'); let tw=0; lines.forEach(l=>{tw=Math.max(tw,ctx.measureText(l).width);});
@@ -2174,10 +2301,11 @@ function _versModele(R,x,y){
   return { u:x3/R.W3, v:y3/R.H3, k:Math.sqrt(kx*ky) };
 }
 /* un élément seul, rendu à part pour connaître sa vraie emprise */
-function _elementSeul(e){
+function _elementSeul(e,face){
   var SC=4, cv=document.createElement('canvas'); cv.width=250*SC; cv.height=270*SC;
   var c=cv.getContext('2d'); c.setTransform(SC,0,0,SC,0,0);
   drawEl(c,e,250/stageSize().w);
+  if(e.type==='piece'){ var om=ombreVetement(face||currentSide); if(om){ c.save(); c.setTransform(1,0,0,1,0,0); c.globalCompositeOperation='destination-in'; c.drawImage(om,0,0,cv.width,cv.height); c.restore(); } }
   var d=c.getImageData(0,0,cv.width,cv.height).data, x0=1e9,y0=1e9,x1=-1,y1=-1;
   for(var y=0;y<cv.height;y+=2){ var o=y*cv.width*4;
     for(var x=0;x<cv.width;x+=2) if(d[o+x*4+3]>8){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
@@ -2187,12 +2315,12 @@ function _elementSeul(e){
 }
 function poserRecale(ctx, R, face, qx, qy, Q){
   if(!R) return;
-  var arr=[...(sides[face]||[])].sort(function(a,b){ return (a.z||0)-(b.z||0); });
+  var arr=[...(sides[face]||[])].sort(function(a,b){ return ((a.type==='piece')-(b.type==='piece'))*-1e9+(a.z||0)-(b.z||0); });
   /* échelle physique : moyenne des rapports de taille 3D / 2D (sans déformer) */
   var P2=R.P2, P3=R.P3;
   var s=Math.sqrt(((P3.x1-P3.x0)/Math.max(1,P2.x1-P2.x0))*((P3.y1-P3.y0)/Math.max(1,P2.y1-P2.y0)));
   arr.forEach(function(e){
-    var el=_elementSeul(e); if(!el) return;
+    var el=_elementSeul(e,face); if(!el) return;
     var p=_versModele(R, el.cx, el.cy);
     var w=el.w*R.K*p.k*Q/R.W3, h=el.h*R.K*p.k*Q/R.H3;
     ctx.save(); ctx.beginPath(); ctx.rect(qx*Q,qy*Q,Q,Q); ctx.clip();
@@ -2234,7 +2362,7 @@ function calculerDecals(ctx,R,Q,T,racine){
       var RR=R[face]; if(!RR) return;
       [...(sides[face]||[])].sort(function(a,b2){ return (a.z||0)-(b2.z||0); }).forEach(function(e){
         if(slot>=8) return;
-        var el=_elementSeul(e); if(!el) return;
+        var el=_elementSeul(e,face); if(!el) return;
         var p=_versModele(RR, el.cx, el.cy);
         var uz=cote>0 ? 1-p.u : p.u;
         var z=b.min.z+uz*t.z, y=b.min.y+(1-p.v)*t.y;
@@ -3249,7 +3377,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v20";
+window.VIRAL_VERSION = "v21";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3290,6 +3418,7 @@ window.VIRAL_VERSION = "v20";
    téléphone (iPhone Safari / autre navigateur iPhone / Android / ordinateur).
    Rien ne s'affiche quand l'appli est déjà ouverte depuis l'écran d'accueil.
    ===================================================================== */
+var _renderPieces=render; render=function(){ var r=_renderPieces.apply(this,arguments); try{ majCouchePieces(); }catch(_){ } return r; };
 /* Réglages : la liste des matières se dessine à l'ouverture */
 var _openSheetM=openSheet; openSheet=function(n){ var r=_openSheetM.apply(this,arguments); if(n==='props') rendreMatieres(); return r; };
 (function(){
