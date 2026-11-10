@@ -575,7 +575,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='32';
+var APP_VERSION='33';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1413,16 +1413,16 @@ function _camoDigital(pal){ return function(x,S,rnd){ var N=32, c=S/N, f1=_fbm(r
 function _camoTaches(pal){ return function(x,S,rnd){ var f1=_fbm(rnd,[3,6,12]), f2=_fbm(rnd,[4,8,16]), cs=pal.map(_rgb);
   _parPixel(x,S,function(u,w){ var v=f1(u,w), k=v<0.43?0:v<0.52?1:v<0.6?2:3; if(f2(u,w)>0.64) k=(k+2)%4; return cs[k]; }); }; }
 const MOTIFS=[
-  {id:'camo-vert',    nom:'Camo digital vert',   g:_camoDigital(['#2c3620','#56672b','#94a039','#c9b84c'])},
-  {id:'camo-desert',  nom:'Camo désert',         g:_camoDigital(['#7b684a','#a68b61','#c9b38a','#e2d5b4'])},
-  {id:'camo-urbain',  nom:'Camo urbain',         g:_camoDigital(['#2a2c2e','#5c6063','#8e9396','#c8cbce'])},
-  {id:'camo-marine',  nom:'Camo marine',         g:_camoDigital(['#0e1a30','#24385c','#4b6994','#8aa1c3'])},
-  {id:'camo-neige',   nom:'Camo neige',          g:_camoDigital(['#6e767c','#a8afb4','#d8dcdf','#ffffff'])},
-  {id:'camo-rose',    nom:'Camo rose',           g:_camoDigital(['#8a2d58','#c35884','#e889ad','#f7c2d5'])},
-  {id:'camo-rouge',   nom:'Camo rouge',          g:_camoDigital(['#3a0d0d','#7a1717','#b52a22','#d9634a'])},
-  {id:'woodland',     nom:'Woodland',            g:_camoTaches(['#1c1c15','#4a5a2b','#5c4631','#8e895a'])},
+  {id:'camo-vert',    nom:'Camo digital vert',   g:_camoDigital(['#3a3f2e','#5d6643','#82875a','#a3a276'])},
+  {id:'camo-desert',  nom:'Camo désert',         g:_camoDigital(['#857660','#a1927a','#bbad93','#d2c7b0'])},
+  {id:'camo-urbain',  nom:'Camo urbain',         g:_camoDigital(['#4a4d50','#6a6e71','#8b8f92','#adb0b2'])},
+  {id:'camo-marine',  nom:'Camo marine',         g:_camoDigital(['#283349','#3b4a64','#556784','#7787a1'])},
+  {id:'camo-neige',   nom:'Camo neige',          g:_camoDigital(['#959ca1','#b5babe','#d1d5d7','#e9ebec'])},
+  {id:'camo-rose',    nom:'Camo rose',           g:_camoDigital(['#9c6178','#b57f93','#cda1b1','#e2c4cf'])},
+  {id:'camo-rouge',   nom:'Camo rouge',          g:_camoDigital(['#4a2724','#68342f','#86473f','#a3665a'])},
+  {id:'woodland',     nom:'Woodland',            g:_camoTaches(['#2f2f27','#4f5a3b','#62513e','#878360'])},
   {id:'woodland-sable',nom:'Woodland sable',     g:_camoTaches(['#6b5236','#9c8156','#c8b386','#e3d6b3'])},
-  {id:'tigre',        nom:'Tiger stripe',        g:function(x,S,rnd){ var f=_fbm(rnd,[3,6,12]), f2=_fbm(rnd,[5,10]), a=_rgb('#8f8a4c'), b=_rgb('#17170f'), c=_rgb('#4a5a2c');
+  {id:'tigre',        nom:'Tiger stripe',        g:function(x,S,rnd){ var f=_fbm(rnd,[3,6,12]), f2=_fbm(rnd,[5,10]), a=_rgb('#8a8660'), b=_rgb('#2c2c22'), c=_rgb('#545d3e');
      _parPixel(x,S,function(u,w){ var s=Math.sin(2*Math.PI*(4*w+0.9*f(u,w)+0.15*u*0)); var t=s+(f2(u,w)-0.5)*1.2; return t>0.55?b:(t>0.15?c:a); }); }},
   {id:'leopard',      nom:'Léopard',             g:function(x,S,rnd){ x.fillStyle='#d4a257'; x.fillRect(0,0,S,S); var f=_fbm(rnd,[4,8]);
      _parPixel(x,S,function(u,w){ var v=f(u,w); return v>0.6?[226,183,108]:v<0.38?[196,140,70]:[212,162,87]; });
@@ -3249,7 +3249,7 @@ verifierRole();
    dépôt sur GitHub. On compare donc la version embarquée à celle enregistrée :
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
-window.VIRAL_VERSION = "v19";
+window.VIRAL_VERSION = "v20";
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
