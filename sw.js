@@ -3,7 +3,7 @@
    - la page (index.html) vient toujours du réseau ; le cache ne sert que hors ligne ;
    - à chaque nouvelle version de ce fichier, l'ancien cache est supprimé et les
      pages ouvertes sont rechargées automatiquement (aucune action de l'utilisateur). */
-const CACHE = 'byviral-v40';
+const CACHE = 'byviral-v42';
 const CORE = [
   './',
   './index.html',
@@ -72,9 +72,10 @@ self.addEventListener('fetch', function (e) {
   /* la page : réseau d'abord (dernière version publiée), copie pour le hors ligne */
   if (url.origin === location.origin && (req.mode === 'navigate' || /\/(index\.html)?$/.test(url.pathname))) {
     e.respondWith(depuisReseau(url.href).then(function (resp) {
-      if (resp && resp.ok) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put('./index.html', c); }); }
+      var estAppli = /\/(index\.html)?$/.test(url.pathname);   /* les autres pages (vitrine) ne remplacent pas l'appli hors ligne */
+      if (resp && resp.ok && estAppli) { var c = resp.clone(); caches.open(CACHE).then(function (k) { k.put('./index.html', c); }); }
       return resp;
-    }).catch(function () { return caches.match('./index.html').then(function (h) { return h || caches.match(req, { ignoreSearch: true }); }); }));
+    }).catch(function () { if (!/\/(index\.html)?$/.test(url.pathname)) return caches.match(req, { ignoreSearch: true }); return caches.match('./index.html').then(function (h) { return h || caches.match(req, { ignoreSearch: true }); }); }));
     return;
   }
   /* le reste (images, modèles 3D, polices) : cache d'abord, réseau sinon */

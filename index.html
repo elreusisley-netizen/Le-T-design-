@@ -232,6 +232,7 @@
 .st-titre{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;letter-spacing:6px;line-height:1}
 .st-sous{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:18px;margin-top:8px}
 .st-corps{padding:20px 16px calc(28px + var(--sbtm));max-width:620px;width:100%;margin:0 auto;flex:1}
+.st-decouvrir{display:block;text-align:center;margin:14px auto 0;font-size:13.5px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .inst-pastille{display:flex;align-items:center;gap:6px;margin:0 auto 14px;max-width:420px}
 .inst-pastille[hidden]{display:none}
 .inst-ouvrir{flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--gold);border-radius:999px;background:#fffaf0;color:var(--accent);font:600 13.5px/1.2 inherit;font-family:inherit;cursor:pointer;text-align:left}
@@ -550,6 +551,7 @@
     <div class="st-question">Que souhaites-tu personnaliser aujourd’hui ?</div>
     <div class="col-seg" id="stCol" role="tablist" aria-label="Collection"></div>
     <div class="st-grille" id="stGrille"></div>
+    <a href="/creer-son-vetement" class="st-decouvrir">Découvrir tout ce que tu peux créer →</a>
   </div>
 </div>
 
@@ -583,7 +585,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='40';
+var APP_VERSION='42';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3452,7 +3454,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "40";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "42";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3518,6 +3520,16 @@ window.APP_VERSION_PUBLIEE = "40";   /* doit être égal à version.json */
    Rien ne s'affiche quand l'appli est déjà ouverte depuis l'écran d'accueil.
    ===================================================================== */
 var _renderPieces=render; render=function(){ var r=_renderPieces.apply(this,arguments); try{ majCouchePieces(); }catch(_){ } return r; };
+/* lien direct depuis la page « Créer son vêtement » : /?vetement=cap ou /?vetement=tshirt&coupe=femme
+   → l'éditeur s'ouvre directement sur ce vêtement */
+(function(){
+  var q=new URLSearchParams(location.search), g=q.get('vetement'), cp=q.get('coupe')||undefined;
+  if(!g || !FACES_VETEMENT[g]) return;
+  window.addEventListener('load', function(){ setTimeout(function(){
+    try{ ouvrirEditeur(g, undefined, cp); }catch(_){ }
+    try{ q.delete('vetement'); q.delete('coupe'); window.history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash); }catch(_){ }
+  }, 60); });
+})();
 /* Réglages : la liste des matières se dessine à l'ouverture */
 var _openSheetM=openSheet; openSheet=function(n){ var r=_openSheetM.apply(this,arguments); if(n==='props') rendreMatieres(); return r; };
 (function(){
