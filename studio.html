@@ -233,6 +233,21 @@
 .st-sous{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:18px;margin-top:8px}
 .st-corps{padding:20px 16px calc(28px + var(--sbtm));max-width:620px;width:100%;margin:0 auto;flex:1}
 .st-decouvrir{display:block;text-align:center;margin:14px auto 0;font-size:13.5px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.iconbtn.partage{flex:none}
+@media (max-width:360px){ #btnRedo{display:none} }   /* petits écrans : place pour le bouton Partager */
+.iconbtn.partage{color:#d6b05c;border-color:rgba(214,176,92,.55)}
+#partDlg{position:fixed;inset:0;z-index:102;display:none;align-items:flex-end;background:rgba(10,16,30,.55)}
+#partDlg.open{display:flex}
+#partDlg .pan{width:100%;max-width:620px;margin:0 auto;background:#fff;border-radius:22px 22px 0 0;padding:12px 16px calc(18px + var(--sbtm))}
+#partDlg .poignee{width:44px;height:5px;border-radius:3px;background:#ddd5c5;margin:0 auto 10px}
+#partDlg h3{font:600 24px 'Cormorant Garamond',serif;color:var(--accent);margin:0 0 10px}
+#partFmts{display:flex;gap:8px;margin-bottom:12px}
+#partFmts button{flex:1;padding:9px 6px;border-radius:999px;border:1px solid var(--line);background:#fff;font:500 13px Inter,sans-serif;color:var(--ink);cursor:pointer}
+#partFmts button.on{background:var(--accent);color:#f3efe4;border-color:var(--accent);font-weight:600}
+#partImg{display:block;max-height:46vh;max-width:100%;margin:0 auto 14px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);background:#16223a;min-height:120px}
+.part-act{display:flex;gap:10px}
+.part-act button{flex:1;padding:14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--accent);font:600 15px Inter,sans-serif;cursor:pointer}
+.part-act button.pri{border:none;background:linear-gradient(145deg,#e1bf6c,#b38c3a);color:#16223a}
 .inst-pastille{display:flex;align-items:center;gap:6px;margin:0 auto 14px;max-width:420px}
 .inst-pastille[hidden]{display:none}
 .inst-ouvrir{flex:1;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--gold);border-radius:999px;background:#fffaf0;color:var(--accent);font:600 13.5px/1.2 inherit;font-family:inherit;cursor:pointer;text-align:left}
@@ -324,6 +339,7 @@
   <div class="brand"><button class="mark" onclick="ouvrirStudio()" aria-label="Accueil Studio VIRAL"></button><button class="gpill" id="gpill" onclick="ouvrirFeuilleVetement()" aria-label="Changer de vêtement"><span class="k">Vêtement</span><span class="v"><span id="gpillNom">T-shirt</span><i>▾</i></span></button></div>
   <button class="iconbtn" id="btnUndo" onclick="undo()">&#8630;</button>
   <button class="iconbtn" id="btnRedo" onclick="redo()">&#8631;</button>
+  <button class="iconbtn partage" id="btnPartage" onclick="ouvrirPartage()" aria-label="Partager ma création"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></button>
   <button class="btn3d" onclick="closeSheets();openPreview()">Aperçu</button>
 </div>
 <div class="mfaces">
@@ -566,6 +582,16 @@
   </div>
 </div>
 
+<div id="partDlg" onclick="if(event.target===this)fermerPartage()">
+  <div class="pan">
+    <div class="poignee"></div>
+    <h3>Partager ma création</h3>
+    <div id="partFmts"><button type="button" data-f="story" onclick="choisirFormatPartage('story')">Story 9:16</button><button type="button" data-f="carre" onclick="choisirFormatPartage('carre')">Carré 1:1</button><button type="button" data-f="recto" onclick="choisirFormatPartage('recto')">Devant + dos</button></div>
+    <img id="partImg" alt="Aperçu de l’image partagée">
+    <div class="part-act"><button type="button" class="pri" onclick="partagerMaintenant()">Partager…</button><button type="button" onclick="enregistrerPartage()">Enregistrer l’image</button></div>
+  </div>
+</div>
+
 <div id="instDlg" onclick="if(event.target===this)fermerTutoInstall()">
   <div class="pan">
     <h3>Installer VIRAL Design</h3>
@@ -587,7 +613,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='44';
+var APP_VERSION='45';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3456,7 +3482,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "44";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "45";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3582,6 +3608,73 @@ var _openSheetM=openSheet; openSheet=function(n){ var r=_openSheetM.apply(this,a
   window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); invite=e; maj(); });
   window.addEventListener('appinstalled', function(){ invite=null; fermerTutoInstall(); maj(); });
   maj();
+})();
+</script>
+<script>
+/* =====================================================================
+   PARTAGER MA CRÉATION : image soignée (story 9:16, carré 1:1, devant + dos)
+   avec le logo VIRAL et viraldsgn.fr, envoyée par le menu de partage du
+   téléphone, ou enregistrée. L'image est préparée à l'avance pour que le
+   partage parte directement au toucher (exigence de Safari).
+   ===================================================================== */
+(function(){
+  var fmt='story', fichier=null, urlImg=null;
+  function faceVisuel(s){ var c=document.createElement('canvas'); c.width=1000; c.height=1080; var x=c.getContext('2d'); x.drawImage(garmentCanvas(s),0,0); x.drawImage(renderDesignCanvas(s),0,0); return c; }
+  function fond(x,W,H){ var g=x.createRadialGradient(W*0.55,H*0.32,60,W*0.5,H*0.5,Math.max(W,H)*0.8); g.addColorStop(0,'#2a3d66'); g.addColorStop(0.5,'#16223a'); g.addColorStop(1,'#0b1226'); x.fillStyle=g; x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(214,176,92,.55)'; x.lineWidth=3; x.strokeRect(46,46,W-92,H-92); }
+  function arrondi(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+  function logo(x,W,y,t){ var lg=x.createLinearGradient(0,y,0,y+t); lg.addColorStop(0,'#e1bf6c'); lg.addColorStop(1,'#a8812f'); x.fillStyle=lg; arrondi(x,W/2-t/2,y,t,t,t*0.24); x.fill();
+    x.textAlign='center'; x.textBaseline='middle'; x.fillStyle='#16223a'; x.font='700 '+Math.round(t*0.7)+'px "Cormorant Garamond", Georgia, serif'; x.fillText('V',W/2,y+t*0.53);
+    x.fillStyle='#f3efe4'; x.font='600 '+Math.round(t*0.48)+'px "Cormorant Garamond", Georgia, serif'; var s='V I R A L   D E S I G N'; x.fillText(s,W/2,y+t*1.65); }
+  function pied(x,W,y,k){ x.textAlign='center'; x.textBaseline='middle';
+    x.fillStyle='#d6b05c'; x.font='italic 500 '+Math.round(64*k)+'px "Cormorant Garamond", Georgia, serif'; x.fillText('Ma création',W/2,y);
+    x.fillStyle='#cfd5e2'; x.font='400 '+Math.round(34*k)+'px Inter, system-ui, sans-serif'; x.fillText('Crée la tienne en 3D',W/2,y+78*k);
+    x.fillStyle='#e1bf6c'; arrondi(x,W/2-230*k,y+130*k,460*k,96*k,48*k); x.fill();
+    x.fillStyle='#16223a'; x.font='600 '+Math.round(40*k)+'px Inter, system-ui, sans-serif'; x.fillText('viraldsgn.fr',W/2,y+178*k); }
+  function ombre(x,img,X,Y,w,h){ x.save(); x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=60; x.shadowOffsetY=30; x.drawImage(img,X,Y,w,h); x.restore(); }
+  function aFaces(){ return (FACES_VETEMENT[garment]||['front']).filter(function(k){ return k==='front'||k==='back'; }); }
+  window.imagePartage=function(f){
+    var cv=document.createElement('canvas'), x=cv.getContext('2d'), W, H;
+    if(f==='carre'){ W=H=1080; cv.width=W; cv.height=H; fond(x,W,H); logo(x,W,90,74); ombre(x,faceVisuel(currentSide==='sleeve'?'front':currentSide),250,255,580,626); 
+      x.textAlign='center'; x.fillStyle='#e1bf6c'; arrondi(x,W/2-180,925,360,76,38); x.fill(); x.fillStyle='#16223a'; x.font='600 32px Inter, system-ui, sans-serif'; x.textBaseline='middle'; x.fillText('viraldsgn.fr',W/2,963); }
+    else if(f==='recto'){ W=1080; H=1350; cv.width=W; cv.height=H; fond(x,W,H); logo(x,W,100,80);
+      var fs=aFaces(); if(fs.length<2) fs=['front'];
+      if(fs.length===2){ ombre(x,faceVisuel('front'),40,330,500,540); ombre(x,faceVisuel('back'),540,330,500,540);
+        x.fillStyle='#aeb7c9'; x.font='500 28px Inter, system-ui, sans-serif'; x.textAlign='center'; x.fillText('DEVANT',290,900); x.fillText('DOS',790,900); }
+      else ombre(x,faceVisuel('front'),190,300,700,756);
+      pied(x,W,1020,0.9); }
+    else { W=1080; H=1920; cv.width=W; cv.height=H; fond(x,W,H); logo(x,W,120,110); ombre(x,faceVisuel(currentSide==='sleeve'?'front':currentSide),40,420,1000,1080); pied(x,W,1590,1); }
+    return cv;
+  };
+  function preparer(){
+    var cv=imagePartage(fmt); fichier=null;
+    if(urlImg){ try{ URL.revokeObjectURL(urlImg); }catch(_){ } urlImg=null; }
+    var im=document.getElementById('partImg'); im.src=cv.toDataURL('image/jpeg',0.8);
+    cv.toBlob(function(b){ if(!b) return; urlImg=URL.createObjectURL(b);
+      try{ fichier=new File([b],'viral-design-'+(fmt==='story'?'story':fmt)+'.png',{type:'image/png'}); }catch(_){ fichier=null; } },'image/png');
+    document.querySelectorAll('#partFmts button').forEach(function(bt){ bt.classList.toggle('on',bt.getAttribute('data-f')===fmt); });
+  }
+  window.ouvrirPartage=function(){
+    closeSheets(); try{ deselect(); }catch(_){ }
+    var d=document.getElementById('partDlg'), recto=aFaces().length>1;
+    document.getElementById('partFmts').querySelector('[data-f="recto"]').style.display=recto?'':'none';
+    if(!recto && fmt==='recto') fmt='story';
+    d.classList.add('open'); setTimeout(preparer,30);
+  };
+  window.fermerPartage=function(){ document.getElementById('partDlg').classList.remove('open'); };
+  window.choisirFormatPartage=function(f){ fmt=f; preparer(); };
+  window.partagerMaintenant=function(){
+    var texte='Ma création VIRAL Design. Crée la tienne en 3D : https://viraldsgn.fr';
+    try{ if(window.VB&&VB.track) VB.track('export_file',{garment:garment}); }catch(_){ }
+    if(fichier && navigator.canShare && navigator.canShare({files:[fichier]})){
+      navigator.share({files:[fichier],title:'Ma création VIRAL Design',text:texte}).catch(function(){}); return; }
+    if(navigator.share){ navigator.share({title:'Ma création VIRAL Design',text:texte,url:'https://viraldsgn.fr'}).catch(function(){}); return; }
+    enregistrerPartage();
+  };
+  window.enregistrerPartage=function(){
+    if(!urlImg) return; var a=document.createElement('a'); a.href=urlImg; a.download='viral-design-'+fmt+'.png'; document.body.appendChild(a); a.click(); a.remove();
+    try{ if(window.VB&&VB.track) VB.track('export_png',{garment:garment}); }catch(_){ }
+  };
 })();
 </script>
 </body>
