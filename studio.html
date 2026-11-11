@@ -442,6 +442,7 @@
         <span class="sw" style="background:#20402e" onclick="setShirt('#20402e',true)"></span>
       </div>
     </div>
+    <div id="degradeBloc"></div>
     <div id="matieresBloc"></div>
     <h4>Export</h4>
     <button class="btn gold" onclick="downloadPNG()">Télécharger en PNG</button>
@@ -993,7 +994,7 @@ function imgVet(key){ var f=(coupeDe(garment)==='femme') && _hoodCache['f_'+garm
 function _preloadHood(){ Object.keys(NOUV_IMG).forEach(function(g){ Object.keys(NOUV_IMG[g]).forEach(function(k){ const im=new Image(); im.src=NOUV_IMG[g][k]; _hoodCache[g+'_'+k]=im; }); }); Object.keys(FEMME_IMG).forEach(function(g){ Object.keys(FEMME_IMG[g]).forEach(function(k){ const im=new Image(); im.src=FEMME_IMG[g][k]; _hoodCache['f_'+g+'_'+k]=im; }); }); ['front','back','side'].forEach(function(k){ const a=new Image(); a.src=HOOD_SIL[k]; _hoodCache['sil_sweat_'+k]=a; const c=new Image(); c.src=HOOD_LINE[k]; _hoodCache['line_sweat_'+k]=c; const d=new Image(); d.src=CAP_IMG[k]; _hoodCache['cap_'+k]=d; const dp=new Image(); dp.src=CAP_PARTS[k]; _hoodCache['capparts_'+k]=dp; }); ['front','back','side','sleeve'].forEach(function(k){ const e=new Image(); e.src=TEE_IMG[k]; _hoodCache['tshirt_'+k]=e; if(HOOD_IMG[k]){ const h=new Image(); h.src=HOOD_IMG[k]; _hoodCache['sweat_'+k]=h; } if(PUFFER_IMG[k]){ const q=new Image(); q.src=PUFFER_IMG[k]; _hoodCache['puffer_'+k]=q; } if(TRACK_IMG[k]){ const r=new Image(); r.src=TRACK_IMG[k]; _hoodCache['track_'+k]=r; } if(HOODIE_IMG[k]){ const u=new Image(); u.src=HOODIE_IMG[k]; _hoodCache['hoodie_'+k]=u; } }); }
 function _cToRamp(){ const c=shirtColor; let m=[27,39,64]; if(c&&c.length===7){ m=[parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; } const br=(m[0]+m[1]+m[2])/3; return {m:m, br:br}; }
 function garmentCanvas(key){ const S=4, CW=250*S, CH=270*S; const cv=document.createElement('canvas'); cv.width=CW; cv.height=CH; const cx=cv.getContext('2d');
-  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
+  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; const DG=degradeActif()?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; if(DG){ const q=DG[i>>2], c=[rp.m[0]+(m2[0]-rp.m[0])*q, rp.m[1]+(m2[1]-rp.m[1])*q, rp.m[2]+(m2[2]-rp.m[2])*q]; d[i]=c[0]*(0.5+0.7*L); d[i+1]=c[1]*(0.5+0.7*L); d[i+2]=c[2]*(0.5+0.7*L); continue; } d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
   const sil=_hoodCache['sil_'+garment+'_'+key], ln=_hoodCache['line_'+garment+'_'+key]; if(!sil||!sil.complete||!sil.naturalWidth) return cv; const iw=sil.naturalWidth, ih=sil.naturalHeight; const sc=Math.min(CW*0.94/iw, CH*0.96/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(sil,0,0); tcx.globalCompositeOperation='source-in'; tcx.fillStyle=shirtColor; tcx.fillRect(0,0,iw,ih); cx.drawImage(tc,ox,oy,dw,dh); if(ln&&ln.complete&&ln.naturalWidth)cx.drawImage(ln,ox,oy,dw,dh); return cv; }
 function composeHoodie(key){ const gi=document.getElementById('garmentImg'); if(!gi)return; const ref=(garment==='cap')?_hoodCache['cap_'+key]:((garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment))?imgVet(key):_hoodCache['sil_'+garment+'_'+key]); if(!ref||!ref.complete||!ref.naturalWidth){ if(ref)ref.onload=function(){composeHoodie(key);}; return; } gi.onload=function(){ gi.style.opacity='1'; }; gi.src=garmentCanvas(key).toDataURL('image/png'); }
 function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); dessinerPieces(ctx,side,S); ctx.setTransform(S,0,0,S,0,0); const arr=[...sides[side]].filter(e=>e.type!=='piece').sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
@@ -1027,9 +1028,9 @@ function setBackground(side){ const tp=document.getElementById('teePath'); const
 
 /* history */
 let history=[],future=[],lastSig=null,lastTime=0;
-function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment,mt:matiere,me:echelleMatiere,cq:optsCasquette}); }
+function snapshot(){ return JSON.stringify({f:sides.front,b:sides.back,sl:sides.sleeve,si:sides.side,c:shirtColor,s:currentSide,u:uid,g:garment,mt:matiere,me:echelleMatiere,cq:optsCasquette,dg:degrade}); }
 function pushHistory(sig){ const now=Date.now(); if(sig&&sig===lastSig&&now-lastTime<700){lastTime=now;return;} history.push(snapshot()); if(history.length>80)history.shift(); future=[]; lastSig=sig; lastTime=now; updateHistButtons(); }
-function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;matiere=d.mt||''; echelleMatiere=d.me||1; optsCasquette=d.cq||{};currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
+function restore(json){ const d=JSON.parse(json); sides.front=d.f;sides.back=d.b;sides.sleeve=d.sl||[];sides.side=d.si||[];shirtColor=d.c;matiere=d.mt||''; echelleMatiere=d.me||1; optsCasquette=d.cq||{}; degrade=d.dg||null;currentSide=d.s;uid=d.u;garment=d.g||'tshirt';selectedId=null;selectedIds=[]; nodes.forEach(n=>n.remove()); nodes.clear();
   document.getElementById('teePath').setAttribute('fill',shirtColor); document.getElementById('shirtColor').value=hex6(shirtColor); document.querySelectorAll('.gchip').forEach(function(c){ c.classList.toggle('on', c.getAttribute('data-g')===garment); }); setBackground(currentSide);
   document.getElementById('chip-front').classList.toggle('on',currentSide==='front'); document.getElementById('chip-back').classList.toggle('on',currentSide==='back'); document.getElementById('chip-sleeve').classList.toggle('on',currentSide==='sleeve'); document.getElementById('chip-side').classList.toggle('on',currentSide==='side');
   setBackground(currentSide); render(); buildProps(); updateHistButtons(); }
@@ -1570,8 +1571,60 @@ const TISSUS=[
   {id:'chine', nom:'Jersey chiné', coul:'#9b9b9b', t:0.04, g:function(x,S,r){ var a=_bruitA(r,8,96);
      _gris(x,S,function(u,w){ return 190+60*(a(u,w)-0.5)+(r()-0.5)*50; }); }},
   {id:'matelasse', nom:'Matelassé', coul:'#1d2a44', t:0.22, brille:0.35, rough:0.6, g:function(x,S){
-     _gris(x,S,function(u,w){ var a=_frac(u*3+w*3), b=_frac(u*3-w*3); var d=Math.min(a,1-a,b,1-b)*2; return 95+150*Math.pow(Math.min(1,d*2.4),0.55); }); }}
+     _gris(x,S,function(u,w){ var a=_frac(u*3+w*3), b=_frac(u*3-w*3); var d=Math.min(a,1-a,b,1-b)*2; return 95+150*Math.pow(Math.min(1,d*2.4),0.55); }); }},
+  /* grosse maille : mailles en « V », losanges en relief (côtes de point de riz), fibres duveteuses */
+  {id:'tricot', nom:'Maille tricot', coul:'#cfcbc2', t:0.30, rough:0.95, g:function(x,S,r){ var n=_fbm(r,[16,32,64]), NC=10, NR=13;
+     var H=function(u,w){ var a=_frac(u*2+w*2), b=_frac(u*2-w*2), e=Math.min(a,1-a,b,1-b); return Math.exp(-Math.pow(e/0.045,2)); };   /* côtes en losanges, en relief */
+     _gris(x,S,function(u,w){
+       var cu=_frac(u*NC), cw=_frac(w*NR), dy=cw-0.5, dx=Math.min(cu,1-cu)-0.27;              /* deux jambes du V, bombées */
+       var al=dx*0.41+dy*0.91, ac=-dx*0.91+dy*0.41, dome=1-Math.pow(al/0.56,2)-Math.pow(ac/0.21,2);
+       var maille=Math.pow(Math.max(0,dome),0.55);
+       var h=H(u,w), pente=(H(u,w+0.006)-H(u,w-0.006))*1.3;                           /* lumière venant d'en haut */
+       var riz=((Math.floor(u*NC*2)+Math.floor(w*NR*2))%2)?14:-14;                         /* point de riz sur la côte */
+       var v=200+(1-h)*(70*maille-38)+h*riz+110*pente;
+       return v+16*(n(u,w)-0.5)+(r()-0.5)*12; });
+     for(var k=0;k<900;k++){ var X=r()*S, Y=r()*S, A=r()*Math.PI*2, l=2+r()*5;              /* duvet */
+       x.strokeStyle='rgba(255,255,255,'+(0.06+r()*0.10)+')'; x.lineWidth=0.7; x.beginPath(); x.moveTo(X,Y); x.quadraticCurveTo(X+Math.cos(A+1)*l*0.6,Y+Math.sin(A+1)*l*0.6,X+Math.cos(A)*l,Y+Math.sin(A)*l); x.stroke(); } }}
 ];
+/* ---- dégradé de la couleur du vêtement : couleur 1 = shirtColor, couleur 2 = degrade.c ---- */
+var degrade=null;                                   /* {c:'#hex', s:'bas'|'haut'|'diag', w:0.05..1} */
+function degradeActif(){ return !!(degrade && degrade.c && !_motifDeMatiere(matiere)); }
+function _hexRGB(c){ c=(c||'#000000'); return [parseInt(c.substr(1,2),16)||0,parseInt(c.substr(3,2),16)||0,parseInt(c.substr(5,2),16)||0]; }
+/* renvoie, pour chaque pixel, la position 0..1 dans le dégradé (cadrée sur la silhouette du vêtement) */
+function _champDegrade(d,iw,ih){
+  var x0=iw,x1=0,y0=ih,y1=0;
+  for(var y=0;y<ih;y+=2) for(var x=0;x<iw;x+=2){ if(d[(y*iw+x)*4+3]>18){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+  if(x1<=x0||y1<=y0) return null;
+  var W=Math.max(0.05,Math.min(1,degrade.w==null?0.8:degrade.w)), a0=0.5-W/2, a1=0.5+W/2, s=degrade.s||'bas';
+  var T=new Float32Array(iw*ih);
+  for(var y=0;y<ih;y++){ var v=Math.max(0,Math.min(1,(y-y0)/(y1-y0)));
+    for(var x=0;x<iw;x++){ var t=s==='haut'?1-v:(s==='diag'?Math.max(0,Math.min(1,((x-x0)/(x1-x0)+v)/2)):v);
+      t=Math.max(0,Math.min(1,(t-a0)/(a1-a0))); T[y*iw+x]=t*t*(3-2*t); } }
+  return T;
+}
+function setDegrade(o,hist){
+  if(hist) pushHistory('degrade');
+  degrade=o?Object.assign({c:'#20402e',s:'bas',w:0.8},degrade||{},o):null;
+  if(typeof composeHoodie==='function') composeHoodie(currentSide);
+  if(typeof majCouleur3D==='function' && window.THREE) majCouleur3D();
+  if(typeof planifierSauvegarde==='function') planifierSauvegarde();
+}
+function choisirDegrade(on){ setDegrade(on?{}:null,true); rendreDegrade(); }
+function rendreDegrade(){
+  var b=document.getElementById('degradeBloc'); if(!b) return;
+  if(_motifDeMatiere(matiere)){ b.innerHTML=''; return; }
+  var on=!!degrade, sw=['#20402e','#111111','#f5f2ec','#1b2740','#7a1f1f','#b9a27a','#6b7280'];
+  var h='<div class="toggle"><div class="chip '+(on?'':'on')+'" onclick="choisirDegrade(false)">Couleur unie</div><div class="chip '+(on?'on':'')+'" onclick="choisirDegrade(true)">Dégradé</div></div>';
+  if(on){
+    h+='<div class="field"><label>Deuxième couleur</label><input type="color" value="'+hex6(degrade.c)+'" oninput="setDegrade({c:this.value},true)">'
+     + '<div class="swatches">'+sw.map(function(c){ return '<span class="sw" style="background:'+c+'" onclick="setDegrade({c:\''+c+'\'},true);rendreDegrade()"></span>'; }).join('')+'</div></div>'
+     + '<div class="field"><label>Sens</label><div class="toggle">'
+     + [['bas','Haut → bas'],['haut','Bas → haut'],['diag','Diagonale']].map(function(z){ return '<div class="chip '+((degrade.s||'bas')===z[0]?'on':'')+'" onclick="setDegrade({s:\''+z[0]+'\'},true);rendreDegrade()">'+z[1]+'</div>'; }).join('')+'</div></div>'
+     + '<div class="field"><label>Transition <span id="degWLbl">'+(degrade.w<0.35?'nette':(degrade.w<0.7?'moyenne':'douce'))+'</span></label>'
+     + '<input type="range" min="5" max="100" step="5" value="'+Math.round((degrade.w==null?0.8:degrade.w)*100)+'" onpointerdown="pushHistory(\'degrade-w\')" oninput="var v=this.value/100; document.getElementById(\'degWLbl\').textContent=v<0.35?\'nette\':(v<0.7?\'moyenne\':\'douce\'); clearTimeout(rendreDegrade._t); rendreDegrade._t=setTimeout(function(){ setDegrade({w:v}); },60)"></div>';
+  }
+  b.innerHTML=h;
+}
 function _tissu(id){ return TISSUS.find(function(t){ return t.id===id; }); }
 function _motifDeMatiere(id){ return (id||'').indexOf('motif:')===0 ? id.slice(6) : ''; }
 var _tuilesTissu={};
@@ -1594,10 +1647,13 @@ function teinterMatiere(d,iw,ih,m){
   var tt=document.createElement('canvas'); tt.width=tt.height=px; var ttx=tt.getContext('2d'); ttx.imageSmoothingEnabled=!(mot&&/^camo-|damier/.test(mot)); ttx.drawImage(tu,0,0,px,px);
   pcx.fillStyle=pcx.createPattern(tt,'repeat'); pcx.fillRect(0,0,iw,ih);
   var T=pcx.getImageData(0,0,iw,ih).data, br=(t&&t.brille)||0, k=mot?1:1/Math.max(0.3,tu._moy);
+  var DG=(!mot&&degradeActif())?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null;
   for(var i=0;i<d.length;i+=4){ if(d[i+3]<=18) continue;
     var L=(d[i]+d[i+1]+d[i+2])/765, f=0.5+0.7*L, sp=br?br*95*Math.pow(Math.max(0,(L-0.72)/0.28),2):0;
     if(mot){ d[i]=Math.min(255,T[i]*f+sp); d[i+1]=Math.min(255,T[i+1]*f+sp); d[i+2]=Math.min(255,T[i+2]*f+sp); }
-    else { var g=T[i]/255*k; d[i]=Math.min(255,m[0]*g*f+sp); d[i+1]=Math.min(255,m[1]*g*f+sp); d[i+2]=Math.min(255,m[2]*g*f+sp); } }
+    else { var g=T[i]/255*k, c0=m[0],c1=m[1],c2=m[2];
+      if(DG){ var q=DG[i>>2]; c0+=(m2[0]-c0)*q; c1+=(m2[1]-c1)*q; c2+=(m2[2]-c2)*q; }
+      d[i]=Math.min(255,c0*g*f+sp); d[i+1]=Math.min(255,c1*g*f+sp); d[i+2]=Math.min(255,c2*g*f+sp); } }
   return true;
 }
 /* ---- 3D : texture projetée ---- */
@@ -1645,6 +1701,7 @@ function vignetteTissu(t){ if(_vigTissu[t.id]) return _vigTissu[t.id];
   x.drawImage(tu,0,0,96*(t.t>0.15?1:2),96*(t.t>0.15?1:2)); x.globalCompositeOperation='multiply'; x.fillStyle=t.coul; x.fillRect(0,0,96,96);
   return (_vigTissu[t.id]=c.toDataURL()); }
 function rendreMatieres(){
+  rendreDegrade();
   var b=document.getElementById('matieresBloc'); if(!b) return;
   var cur=matiere||'';
   var bt=function(id,img,nom,style){ return '<button type="button" class="motif '+(cur===id?'on':'')+'" onclick="setMatiere(\''+id+'\',true)">'+(img?'<img src="'+img+'" alt="">':'<span class="uni" style="'+style+'"></span>')+'<i>'+nom+'</i></button>'; };
@@ -2615,7 +2672,8 @@ function habillerModele(racine, tex, m){
       uDecR:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
       uDecD:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
       uDecN:{value:0},
-      uTissu:{value:null}, uTissuOn:{value:0}, uTissuK:{value:14}, uTissuLin:{value:0}, uTissuGain:{value:1}
+      uTissu:{value:null}, uTissuOn:{value:0}, uTissuK:{value:14}, uTissuLin:{value:0}, uTissuGain:{value:1},
+      uDegOn:{value:0}, uDegC:{value:new THREE.Color(1,1,1)}, uDegS:{value:0}, uDegW:{value:0.8}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -2628,7 +2686,7 @@ function habillerModele(racine, tex, m){
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
           'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\nuniform float uUnique;\nuniform float uCote;\n'+
           'uniform mat4 uDecM[8];\nuniform vec4 uDecR[8];\nuniform vec4 uDecD[8];\nuniform float uDecN;\n'+
-          'uniform sampler2D uTissu;\nuniform float uTissuOn;\nuniform float uTissuK;\nuniform float uTissuLin;\nuniform float uTissuGain;\n'+
+          'uniform sampler2D uTissu;\nuniform float uTissuOn;\nuniform float uTissuK;\nuniform float uTissuLin;\nuniform float uTissuGain;\nuniform float uDegOn;\nuniform vec3 uDegC;\nuniform float uDegS;\nuniform float uDegW;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -2642,6 +2700,9 @@ function habillerModele(racine, tex, m){
           '#include <map_fragment>\n'+
           'vec3 q=(vPosL-uMin)/max(uTaille, vec3(1e-5));\n'+
           'vec3 nl=normalize(vNrmL);\n'+
+          /* dégradé : couleur 1 (matériau) → couleur 2, sur la hauteur du modèle */
+          'if(uDegOn>0.5){ float tg=uDegS<0.5?1.0-q.y:(uDegS<1.5?q.y:clamp((q.x+1.0-q.y)*0.5,0.0,1.0));\n'+
+          '  tg=smoothstep(0.5-uDegW*0.5,0.5+uDegW*0.5,tg); diffuseColor.rgb=mix(diffuseColor.rgb,uDegC*(diffuseColor.rgb/max(diffuse,vec3(1e-3))),tg); }\n'+
           /* matière : projection triplanaire de la tuile, en unités du modèle */
           'if(uTissuOn>0.5){ vec3 wt=pow(abs(nl),vec3(4.0)); wt/=max(wt.x+wt.y+wt.z,1e-4); vec3 pp=vPosL*uTissuK;\n'+
           '  vec3 tt=texture2D(uTissu,pp.zy).rgb*wt.x+texture2D(uTissu,pp.xz).rgb*wt.y+texture2D(uTissu,pp.xy).rgb*wt.z;\n'+
@@ -2691,7 +2752,12 @@ function couleurTissu(){
   return c;
 }
 function majCouleur3D(){
-  matsVetement().forEach(function(mt){ mt.color.copy(_couleurPart3D(mt)||couleurTissu()); });
+  var on=degradeActif(), c2=null;
+  if(!window.THREE) return;
+  if(on){ c2=new THREE.Color(degrade.c); if(c2.convertSRGBToLinear) c2.convertSRGBToLinear(); }
+  matsVetement().forEach(function(mt){ var p=_couleurPart3D(mt); mt.color.copy(p||couleurTissu());
+    var u=mt.userData.u; if(!u||!u.uDegOn) return;
+    u.uDegOn.value=(on&&!p)?1:0; if(on){ u.uDegC.value.copy(c2); u.uDegS.value=degrade.s==='haut'?1:(degrade.s==='diag'?2:0); u.uDegW.value=Math.max(0.05,Math.min(1,degrade.w==null?0.8:degrade.w)); } });
 }
 
 function majZonesProj(){
