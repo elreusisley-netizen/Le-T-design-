@@ -615,7 +615,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='52';
+var APP_VERSION='53';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -994,7 +994,7 @@ function imgVet(key){ var f=(coupeDe(garment)==='femme') && _hoodCache['f_'+garm
 function _preloadHood(){ Object.keys(NOUV_IMG).forEach(function(g){ Object.keys(NOUV_IMG[g]).forEach(function(k){ const im=new Image(); im.src=NOUV_IMG[g][k]; _hoodCache[g+'_'+k]=im; }); }); Object.keys(FEMME_IMG).forEach(function(g){ Object.keys(FEMME_IMG[g]).forEach(function(k){ const im=new Image(); im.src=FEMME_IMG[g][k]; _hoodCache['f_'+g+'_'+k]=im; }); }); ['front','back','side'].forEach(function(k){ const a=new Image(); a.src=HOOD_SIL[k]; _hoodCache['sil_sweat_'+k]=a; const c=new Image(); c.src=HOOD_LINE[k]; _hoodCache['line_sweat_'+k]=c; const d=new Image(); d.src=CAP_IMG[k]; _hoodCache['cap_'+k]=d; const dp=new Image(); dp.src=CAP_PARTS[k]; _hoodCache['capparts_'+k]=dp; }); ['front','back','side','sleeve'].forEach(function(k){ const e=new Image(); e.src=TEE_IMG[k]; _hoodCache['tshirt_'+k]=e; if(HOOD_IMG[k]){ const h=new Image(); h.src=HOOD_IMG[k]; _hoodCache['sweat_'+k]=h; } if(PUFFER_IMG[k]){ const q=new Image(); q.src=PUFFER_IMG[k]; _hoodCache['puffer_'+k]=q; } if(TRACK_IMG[k]){ const r=new Image(); r.src=TRACK_IMG[k]; _hoodCache['track_'+k]=r; } if(HOODIE_IMG[k]){ const u=new Image(); u.src=HOODIE_IMG[k]; _hoodCache['hoodie_'+k]=u; } }); }
 function _cToRamp(){ const c=shirtColor; let m=[27,39,64]; if(c&&c.length===7){ m=[parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; } const br=(m[0]+m[1]+m[2])/3; return {m:m, br:br}; }
 function garmentCanvas(key){ const S=4, CW=250*S, CH=270*S; const cv=document.createElement('canvas'); cv.width=CW; cv.height=CH; const cx=cv.getContext('2d');
-  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; const DG=degradeActif()?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; if(DG){ const q=DG[i>>2], c=[rp.m[0]+(m2[0]-rp.m[0])*q, rp.m[1]+(m2[1]-rp.m[1])*q, rp.m[2]+(m2[2]-rp.m[2])*q]; d[i]=c[0]*(0.5+0.7*L); d[i+1]=c[1]*(0.5+0.7*L); d[i+2]=c[2]*(0.5+0.7*L); continue; } d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); if(garment==='cap') sangle2D(cx,key,ox,oy,sc); return cv; }
+  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; const DG=degradeActif()?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; if(DG){ const q=DG[i>>2], c=[rp.m[0]+(m2[0]-rp.m[0])*q, rp.m[1]+(m2[1]-rp.m[1])*q, rp.m[2]+(m2[2]-rp.m[2])*q]; d[i]=c[0]*(0.5+0.7*L); d[i+1]=c[1]*(0.5+0.7*L); d[i+2]=c[2]*(0.5+0.7*L); continue; } d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
   const sil=_hoodCache['sil_'+garment+'_'+key], ln=_hoodCache['line_'+garment+'_'+key]; if(!sil||!sil.complete||!sil.naturalWidth) return cv; const iw=sil.naturalWidth, ih=sil.naturalHeight; const sc=Math.min(CW*0.94/iw, CH*0.96/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(sil,0,0); tcx.globalCompositeOperation='source-in'; tcx.fillStyle=shirtColor; tcx.fillRect(0,0,iw,ih); cx.drawImage(tc,ox,oy,dw,dh); if(ln&&ln.complete&&ln.naturalWidth)cx.drawImage(ln,ox,oy,dw,dh); return cv; }
 function composeHoodie(key){ const gi=document.getElementById('garmentImg'); if(!gi)return; const ref=(garment==='cap')?_hoodCache['cap_'+key]:((garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment))?imgVet(key):_hoodCache['sil_'+garment+'_'+key]); if(!ref||!ref.complete||!ref.naturalWidth){ if(ref)ref.onload=function(){composeHoodie(key);}; return; } gi.onload=function(){ gi.style.opacity='1'; }; gi.src=garmentCanvas(key).toDataURL('image/png'); }
 function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); dessinerPieces(ctx,side,S); ctx.setTransform(S,0,0,S,0,0); const arr=[...sides[side]].filter(e=>e.type!=='piece').sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
@@ -1119,6 +1119,7 @@ function ringSVG(s,w){return `<svg width="100%" height="100%" viewBox="0 0 100 1
 
 /* render */
 function render(){ const present=new Set();
+  if(garment==='cap'){ migrerSangle(); if(currentSide==='back') els().forEach(function(e){ if(e.sangle && e.type==='text') placerTexteSangle(e); }); }
   els().forEach(e=>{ present.add(e.id); let n=nodes.get(e.id);
     if(!n){ n=document.createElement('div'); n.className='el'; n.dataset.id=e.id; layer.appendChild(n); nodes.set(e.id,n); attachDrag(n,e.id); }
     { const _s=selectedIds.includes(e.id), _o=_s&&selectedIds.length===1; n.className='el '+(e.type==='text'?'text ':'')+(_s?'selected ':'')+(_o?'solo':''); }
@@ -1875,28 +1876,23 @@ var SANGLE_POLICES=[['Montserrat','Bâton'],['Cormorant Garamond','Élégant'],[
 var BOUCLES={argent:['#c9ccd1','Argent'],or:['#c9a24a','Doré'],noir:['#232326','Noir mat'],bronze:['#8a6a45','Bronze']};
 function couleurSangle(){ var o=optsCasquette||{}; return o.pat||((o.patMat&&_tissu(o.patMat))?_tissu(o.patMat).coul:shirtColor); }
 function _assombrir(h,k){ var c=_hexRGB(hex6(h)); return 'rgb('+c.map(function(v){ return Math.round(v*k); }).join(',')+')'; }
-/* le texte de la sangle, dessiné sur une bande W×H (fond transparent) */
+/* le texte de la sangle est un vrai texte (face Dos, marqué sangle:true) : mêmes polices,
+   finitions, motifs et couleurs que partout ailleurs. Il se cale tout seul sur la sangle. */
+function elSangle(){ return garment==='cap' ? ((sides.back||[]).filter(function(e){ return e.type==='text' && e.sangle; })[0]||null) : null; }
+var _ctxMesure=null;
+function _mesureTexte(e,size){ _ctxMesure=_ctxMesure||document.createElement('canvas').getContext('2d');
+  _ctxMesure.font=(e.italic?'italic ':'')+(e.bold?'700':'400')+' '+size+'px \''+e.font+'\'';
+  try{ if('letterSpacing' in _ctxMesure) _ctxMesure.letterSpacing=(e.ls||0)+'px'; }catch(_){ }
+  var tw=0; (e.text||'').split('\n').forEach(function(l){ tw=Math.max(tw,_ctxMesure.measureText(l).width); }); return tw; }
+/* taille et position pour tenir dans un rectangle (unités de l'éditeur) */
+function _calerTexte(e,R){ var n=Math.max(1,(e.text||'').split('\n').length), m=R.h*0.12, ww=R.w-2*m, hh=R.h-2*m;
+  var size=hh/(1.05*n), tw=_mesureTexte(e,size); if(tw+8>ww) size*=Math.max(0.2,(ww-8)/(tw+8));
+  size=Math.max(2,Math.round(size*10)/10); tw=_mesureTexte(e,size); var th=size*1.05*n;
+  e.size=size; e.rot=0; e.curve=0; e.box=false; e.x=R.x+R.w/2-tw/2-4; e.y=R.y+R.h/2-th/2-2; }
 function texteSangleCanvas(W,H){
-  var o=optsCasquette||{}, t=(o.sgT||'').trim(); if(!t) return null;
+  var e=elSangle(); if(!e || !(e.text||'').trim()) return null;
   var c=document.createElement('canvas'); c.width=W; c.height=H; var x=c.getContext('2d');
-  var pol=o.sgP||'Montserrat', gras=/Montserrat|Bebas|Playfair/.test(pol)?'700 ':'600 ', fs=H*0.62;
-  var setF=function(){ x.font=gras+fs+'px "'+pol+'"'; }; setF();
-  try{ x.letterSpacing=(pol==='Montserrat'||pol==='Bebas Neue')?(fs*0.12)+'px':'0px'; }catch(_){ }
-  var w=x.measureText(t).width; if(w>W*0.88){ fs*=W*0.88/w; setF(); }
-  x.textAlign='center'; x.textBaseline='middle'; var cx=W/2, cy=H/2+fs*0.04, st=o.sgS||'brode';
-  if(st==='grave'){                                       /* gravé / embossé dans la matière */
-    x.fillStyle='rgba(255,255,255,0.28)'; x.fillText(t,cx,cy+fs*0.05);
-    x.fillStyle=_assombrir(couleurSangle(),0.45); x.fillText(t,cx,cy);
-  } else {
-    var col=o.sgC||'#f3eee4';
-    x.shadowColor='rgba(0,0,0,0.45)'; x.shadowBlur=fs*0.08; x.shadowOffsetY=fs*0.05; x.fillStyle=col; x.fillText(t,cx,cy);
-    x.shadowColor='transparent';
-    if(st==='brode'){                                     /* fil brodé : fines rayures obliques */
-      x.globalCompositeOperation='source-atop'; x.strokeStyle='rgba(0,0,0,0.22)'; x.lineWidth=Math.max(1,fs*0.035);
-      for(var k=-H;k<W+H;k+=fs*0.11){ x.beginPath(); x.moveTo(k,0); x.lineTo(k+H*0.7,H); x.stroke(); }
-      x.strokeStyle='rgba(255,255,255,0.18)'; for(var k2=-H+fs*0.05;k2<W+H;k2+=fs*0.11){ x.beginPath(); x.moveTo(k2,0); x.lineTo(k2+H*0.7,H); x.stroke(); }
-      x.globalCompositeOperation='source-over'; }
-  }
+  var copie=Object.assign({},e); _calerTexte(copie,{x:0,y:0,w:W,h:H}); drawEl(x,copie,1);
   return c;
 }
 /* zones de la sangle sur la photo de dos : bande longue (texte) et boucle */
@@ -1916,13 +1912,27 @@ function zonesSangle2D(key){
   if(segs.length>1){ var R2=segs[1], g0=Math.min(L[1],R2[1])+1, g1=Math.max(L[0],R2[0])-1; if(g1>g0) z.boucle={x:g0,y:y0-4,w:g1-g0+1,h:y1-y0+10}; }
   return (_zonesSangle[key]=z);
 }
-/* dessin du texte sur la sangle, directement sur le rendu final (net à toute taille) */
-function sangle2D(cx,key,ox,oy,sc){
-  var o=optsCasquette||{}; if(!(o.sgT||'').trim()) return;
-  var z=zonesSangle2D(key); if(!z) return; var r=z.txt;
-  var W=r.w*sc, H=r.h*sc, m=H*0.12, tc=texteSangleCanvas(Math.round((W-2*m)*2),Math.round((H-2*m)*2)); if(!tc) return;
-  cx.drawImage(tc,ox+r.x*sc+m,oy+r.y*sc+m,W-2*m,H-2*m);
+/* rectangle de la sangle (partie longue) en coordonnées de l'éditeur, vue Dos */
+function rectSangleStage(){
+  var z=zonesSangle2D('back'); if(!z) return null;
+  var CW=1000, CH=1080, s4=Math.min(CW*0.92/z.iw, CH*0.66/z.ih), ox=(CW-z.iw*s4)/2, oy=(CH-z.ih*s4)/2, k=stageSize().w/1000, r=z.txt;
+  return {x:(ox+r.x*s4)*k, y:(oy+r.y*s4)*k, w:r.w*s4*k, h:r.h*s4*k};
 }
+function placerTexteSangle(e){ var R=rectSangleStage(); if(R) _calerTexte(e,R); }
+/* anciennes créations (texte de sangle simple) → vrai texte */
+function migrerSangle(){
+  var o=optsCasquette||{}; if(garment!=='cap' || !o.sgT) return;
+  if(!elSangle()){ sides.back=sides.back||[]; sides.back.push({id:uid++,type:'text',sangle:true,x:0,y:0,rot:0,text:o.sgT,font:o.sgP||'Montserrat',size:10,color:o.sgC||'#f3eee4',bold:true,italic:false,ls:1,z:uid}); }
+  optsCasquette=Object.assign({},o); ['sgT','sgS','sgP','sgC'].forEach(function(k){ delete optsCasquette[k]; });
+}
+function ajouterTexteSangle(){
+  if(garment!=='cap') return; var e=elSangle();
+  if(!e){ pushHistory('sangle-texte'); e={id:uid++,type:'text',sangle:true,x:0,y:0,rot:0,text:'VIRAL',font:'Montserrat',size:10,color:'#f3eee4',bold:true,italic:false,ls:1,z:uid}; sides.back=sides.back||[]; sides.back.push(e); }
+  if(typeof closeSheets==='function') closeSheets();
+  if(currentSide!=='back') switchSide('back',true);
+  render(); select(e.id); if(window.THREE) majSangle3D(); if(typeof planifierSauvegarde==='function') planifierSauvegarde();
+}
+function retirerTexteSangle(){ var e=elSangle(); if(!e) return; pushHistory('sangle-texte'); sides.back=sides.back.filter(function(x){ return x!==e; }); render(); if(window.THREE) majSangle3D(); rendreMatieres(); if(typeof planifierSauvegarde==='function') planifierSauvegarde(); }
 function teinterCasquette(d,orig,iw,ih,key){
   var o=optsCasquette||{}; if(!o.vis&&!o.visMat&&!o.lis&&!o.bou&&!o.pat&&!o.patMat&&!o.bcl) return;
   var pm=_hoodCache['capparts_'+key]; if(!pm||!pm.complete||!pm.naturalWidth) return;
@@ -1996,7 +2006,7 @@ function majSangle3D(){
   (three.matsBoucle||[]).forEach(function(m){ var k=(optsCasquette||{}).bcl;
     if(k && BOUCLES[k]){ var c=new THREE.Color(BOUCLES[k][0]); if(c.convertSRGBToLinear) c.convertSRGBToLinear(); m.color.copy(c); m.metalness=k==='noir'?0.4:0.9; m.roughness=k==='noir'?0.55:0.3; }
     else if(m.userData.c0){ m.color.copy(m.userData.c0); } m.needsUpdate=true; });
-  var o=optsCasquette||{}, bb=three.bbSangle||{}, P=bb.patte, B=bb.boucle, on=garment==='cap'&&!!(o.sgT||'').trim()&&P;
+  var bb=three.bbSangle||{}, P=bb.patte, B=bb.boucle, es=elSangle(), on=!!(es&&(es.text||'').trim()&&P);
   var box=null, tex=null;
   if(on){ var x0=P.min.x+0.003, x1=(B?Math.min(B.min.x,P.max.x):P.max.x)-0.004, hy=P.max.y-P.min.y, y0=P.min.y+hy*0.16, y1=P.max.y-hy*0.16;
     if(B && (B.min.x-P.min.x)<(P.max.x-B.max.x)){ x0=B.max.x+0.004; x1=P.max.x-0.003; }      /* la partie la plus longue reçoit le texte */
@@ -2032,7 +2042,7 @@ function blocCasquetteHTML(){
     + blocSangleHTML();
 }
 function blocSangleHTML(){
-  var o=optsCasquette||{}, pm=o.patMat||'', st=o.sgS||'brode', pol=o.sgP||'Montserrat';
+  var o=optsCasquette||{}, pm=o.patMat||'';
   var chip=function(on,js,lib,style){ return '<div class="chip '+(on?'on':'')+'" onclick="'+js+'"'+(style?' style="'+style+'"':'')+'>'+lib+'</div>'; };
   var bt=function(id,img,nom,st2){ return '<button type="button" class="motif '+(pm===id?'on':'')+'" onclick="setOptCasquette(\'patMat\',\''+id+'\',true)">'+(img?'<img src="'+img+'" alt="">':'<span class="uni" style="'+st2+'"></span>')+'<i>'+nom+'</i></button>'; };
   var mats=['cuir','daim','denim','velours','tweed','satin','lin','mesh','chine','polaire'];
@@ -2044,15 +2054,11 @@ function blocSangleHTML(){
     + (o.pat?'<button type="button" class="btn ghost" style="padding:6px 10px" onclick="setOptCasquette(\'pat\',\'\',true)">Par défaut</button>':'')+'</div></div>'
     + '<div class="field"><label>Boucle</label><div class="toggle">'
     + Object.keys(BOUCLES).map(function(k){ return chip((o.bcl||'argent')===k,"setOptCasquette('bcl','"+k+"',true)",'<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:'+BOUCLES[k][0]+'"></span>'+BOUCLES[k][1]); }).join('') + '</div></div>'
-    + '<div class="field"><label>Texte sur la sangle</label><input type="text" maxlength="18" placeholder="Ex. VIRAL" value="'+String(o.sgT||'').replace(/"/g,'&quot;')+'" oninput="clearTimeout(blocSangleHTML._t); var v=this.value; blocSangleHTML._t=setTimeout(function(){ setOptCasquette(\'sgT\',v,false,true); },120)" onfocus="pushHistory(\'casq-sgT\')" onchange="rendreMatieres()"></div>';
-  if((o.sgT||'').trim()){
-    h+='<div class="field"><label>Style</label><div class="toggle">'
-      + chip(st==='brode',"setOptCasquette('sgS','brode',true)",'Brodé') + chip(st==='grave',"setOptCasquette('sgS','grave',true)",'Gravé') + chip(st==='imprime',"setOptCasquette('sgS','imprime',true)",'Imprimé') + '</div></div>'
-      + '<div class="field"><label>Police</label><div class="toggle">'
-      + SANGLE_POLICES.map(function(f){ return chip(pol===f[0],"setOptCasquette('sgP','"+f[0]+"',true)",f[1],'font-family:\''+f[0]+'\''); }).join('') + '</div></div>'
-      + (st==='grave'?'':'<div class="field"><label>Couleur du texte</label><input type="color" value="'+hex6(o.sgC||'#f3eee4')+'" onpointerdown="pushHistory(\'casq-sgC\')" oninput="setOptCasquette(\'sgC\',this.value,false,true)"></div>')
-      + '<div class="empty" style="padding:6px 2px 0">Le texte se place tout seul sur la partie longue de la sangle. Passe en vue Dos pour le voir.</div>';
-  }
+    + (function(){ var e=elSangle();
+        return '<div class="field"><label>Texte sur la sangle'+(e?' · « '+escapeHtml(e.text||'')+' »':'')+'</label><div class="row" style="gap:8px;flex-wrap:wrap">'
+          + '<button type="button" class="btn" onclick="ajouterTexteSangle()">'+(e?'Modifier le texte':'Ajouter un texte')+'</button>'
+          + (e?'<button type="button" class="btn ghost" onclick="retirerTexteSangle()">Retirer</button>':'') + '</div>'
+          + '<div class="empty" style="padding:6px 2px 0">Mêmes choix que les autres textes : police, couleur, strass, paillettes, motifs… Il se cale tout seul sur la sangle.</div></div>'; })();
   return h;
 }
 function finitionTexte(ctx,e,sc,tracer,w,h){
@@ -2179,12 +2185,12 @@ function drawEl(ctx,e,sc){
 function renderSideCanvas(side){ const sc=250/stageSize().w; const SC=4,W=250,H=270;
   const cv=document.createElement('canvas'); cv.width=W*SC; cv.height=H*SC; const ctx=cv.getContext('2d'); ctx.setTransform(SC,0,0,SC,0,0); ctx.clearRect(0,0,W,H);
   drawCollarCanvas(ctx,side);
-  const arr=[...sides[side]].sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
+  const arr=[...sides[side]].filter(e=>!(garment==='cap' && e.sangle)).sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }   /* le texte de sangle est posé sur la sangle 3D */
 
 /* Rendu du design SEUL : fond transparent, sans le col ni l'aplat de couleur.
    Les fonctions renderSideCanvas / renderSleeve3D ne sont pas touchées :
    la vue 3D continue de les utiliser telles quelles.                      */
-function renderDesignSeul(side){
+function renderDesignSeul(side,pour3D){
   const sc=250/stageSize().w;
   /* La face « Épaule » n'occupe qu'une petite région de la zone de travail :
      il faut la recadrer exactement comme le fait l'éditeur, sinon le design
@@ -2195,7 +2201,7 @@ function renderDesignSeul(side){
   const ctx=cv.getContext('2d');
   ctx.setTransform(z.SC,0,0,z.SC,-z.ox*z.SC,-z.oy*z.SC);
   ctx.clearRect(z.ox,z.oy,z.w,z.h);
-  const arr=[...(sides[side]||[])].sort((a,b)=>(a.z||0)-(b.z||0));
+  const arr=[...(sides[side]||[])].filter(e=>!(pour3D && garment==='cap' && e.sangle)).sort((a,b)=>(a.z||0)-(b.z||0));
   for(const e of arr) drawEl(ctx,e,sc);
   return cv;
 }
@@ -2650,7 +2656,7 @@ function _elementSeul(e,face){
 }
 function poserRecale(ctx, R, face, qx, qy, Q){
   if(!R) return;
-  var arr=[...(sides[face]||[])].sort(function(a,b){ return ((a.type==='piece')-(b.type==='piece'))*-1e9+(a.z||0)-(b.z||0); });
+  var arr=[...(sides[face]||[])].filter(function(e){ return !(garment==='cap' && e.sangle); }).sort(function(a,b){ return ((a.type==='piece')-(b.type==='piece'))*-1e9+(a.z||0)-(b.z||0); });
   /* échelle physique : moyenne des rapports de taille 3D / 2D (sans déformer) */
   var P2=R.P2, P3=R.P3;
   var s=Math.sqrt(((P3.x1-P3.x0)/Math.max(1,P2.x1-P2.x0))*((P3.y1-P3.y0)/Math.max(1,P2.y1-P2.y0)));
@@ -2773,7 +2779,7 @@ function atlasDesign(){
     return t0;
   }
   try{ poser(renderDesignSeul('front'), 0,0, true); }catch(_){ }
-  try{ poser(renderDesignSeul('back'),  1,0, true); }catch(_){ }
+  try{ poser(renderDesignSeul('back',true),  1,0, true); }catch(_){ }
   try{ poser(renderDesignSeul('sleeve'), 0,1); }catch(_){ }   /* les deux manches */
   try{ poser(renderDesignSeul('side'),   1,1); }catch(_){ }   /* les deux flancs  */
   var tex=new THREE.CanvasTexture(cv);
@@ -3741,7 +3747,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "52";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "53";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
