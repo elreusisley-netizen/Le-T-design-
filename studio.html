@@ -615,7 +615,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='48';
+var APP_VERSION='49';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3565,7 +3565,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "48";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "49";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
