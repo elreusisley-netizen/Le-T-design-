@@ -615,7 +615,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='50';
+var APP_VERSION='51';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -994,7 +994,7 @@ function imgVet(key){ var f=(coupeDe(garment)==='femme') && _hoodCache['f_'+garm
 function _preloadHood(){ Object.keys(NOUV_IMG).forEach(function(g){ Object.keys(NOUV_IMG[g]).forEach(function(k){ const im=new Image(); im.src=NOUV_IMG[g][k]; _hoodCache[g+'_'+k]=im; }); }); Object.keys(FEMME_IMG).forEach(function(g){ Object.keys(FEMME_IMG[g]).forEach(function(k){ const im=new Image(); im.src=FEMME_IMG[g][k]; _hoodCache['f_'+g+'_'+k]=im; }); }); ['front','back','side'].forEach(function(k){ const a=new Image(); a.src=HOOD_SIL[k]; _hoodCache['sil_sweat_'+k]=a; const c=new Image(); c.src=HOOD_LINE[k]; _hoodCache['line_sweat_'+k]=c; const d=new Image(); d.src=CAP_IMG[k]; _hoodCache['cap_'+k]=d; const dp=new Image(); dp.src=CAP_PARTS[k]; _hoodCache['capparts_'+k]=dp; }); ['front','back','side','sleeve'].forEach(function(k){ const e=new Image(); e.src=TEE_IMG[k]; _hoodCache['tshirt_'+k]=e; if(HOOD_IMG[k]){ const h=new Image(); h.src=HOOD_IMG[k]; _hoodCache['sweat_'+k]=h; } if(PUFFER_IMG[k]){ const q=new Image(); q.src=PUFFER_IMG[k]; _hoodCache['puffer_'+k]=q; } if(TRACK_IMG[k]){ const r=new Image(); r.src=TRACK_IMG[k]; _hoodCache['track_'+k]=r; } if(HOODIE_IMG[k]){ const u=new Image(); u.src=HOODIE_IMG[k]; _hoodCache['hoodie_'+k]=u; } }); }
 function _cToRamp(){ const c=shirtColor; let m=[27,39,64]; if(c&&c.length===7){ m=[parseInt(c.substr(1,2),16),parseInt(c.substr(3,2),16),parseInt(c.substr(5,2),16)]; } const br=(m[0]+m[1]+m[2])/3; return {m:m, br:br}; }
 function garmentCanvas(key){ const S=4, CW=250*S, CH=270*S; const cv=document.createElement('canvas'); cv.width=CW; cv.height=CH; const cx=cv.getContext('2d');
-  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; const DG=degradeActif()?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; if(DG){ const q=DG[i>>2], c=[rp.m[0]+(m2[0]-rp.m[0])*q, rp.m[1]+(m2[1]-rp.m[1])*q, rp.m[2]+(m2[2]-rp.m[2])*q]; d[i]=c[0]*(0.5+0.7*L); d[i+1]=c[1]*(0.5+0.7*L); d[i+2]=c[2]*(0.5+0.7*L); continue; } d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); return cv; }
+  if(garment==='cap'||garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment)){ const img=imgVet(key); if(!img||!img.complete||!img.naturalWidth) return cv; const iw=img.naturalWidth, ih=img.naturalHeight; const maxH=(garment==='cap')?0.66:0.96; const sc=Math.min(CW*0.92/iw, CH*maxH/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(img,0,0); const rp=_cToRamp(); { const id=tcx.getImageData(0,0,iw,ih), d=id.data; const orig=(garment==='cap')?d.slice():null; if(!(matiere&&teinterMatiere(d,iw,ih,rp.m))) { const sh=[rp.m[0]*0.5,rp.m[1]*0.5,rp.m[2]*0.5], hi=[Math.min(255,rp.m[0]*1.2),Math.min(255,rp.m[1]*1.2),Math.min(255,rp.m[2]*1.2)]; const DG=degradeActif()?_champDegrade(d,iw,ih):null, m2=DG?_hexRGB(degrade.c):null; for(let i=0;i<d.length;i+=4){ if(d[i+3]>18){ const L=(d[i]+d[i+1]+d[i+2])/765; if(DG){ const q=DG[i>>2], c=[rp.m[0]+(m2[0]-rp.m[0])*q, rp.m[1]+(m2[1]-rp.m[1])*q, rp.m[2]+(m2[2]-rp.m[2])*q]; d[i]=c[0]*(0.5+0.7*L); d[i+1]=c[1]*(0.5+0.7*L); d[i+2]=c[2]*(0.5+0.7*L); continue; } d[i]=sh[0]+(hi[0]-sh[0])*L; d[i+1]=sh[1]+(hi[1]-sh[1])*L; d[i+2]=sh[2]+(hi[2]-sh[2])*L; } } } if(orig) teinterCasquette(d,orig,iw,ih,key); tcx.putImageData(id,0,0); } cx.drawImage(tc,ox,oy,dw,dh); if(garment==='cap') sangle2D(cx,key,ox,oy,sc); return cv; }
   const sil=_hoodCache['sil_'+garment+'_'+key], ln=_hoodCache['line_'+garment+'_'+key]; if(!sil||!sil.complete||!sil.naturalWidth) return cv; const iw=sil.naturalWidth, ih=sil.naturalHeight; const sc=Math.min(CW*0.94/iw, CH*0.96/ih); const dw=iw*sc, dh=ih*sc, ox=(CW-dw)/2, oy=(CH-dh)/2; const tc=document.createElement('canvas'); tc.width=iw; tc.height=ih; const tcx=tc.getContext('2d'); tcx.drawImage(sil,0,0); tcx.globalCompositeOperation='source-in'; tcx.fillStyle=shirtColor; tcx.fillRect(0,0,iw,ih); cx.drawImage(tc,ox,oy,dw,dh); if(ln&&ln.complete&&ln.naturalWidth)cx.drawImage(ln,ox,oy,dw,dh); return cv; }
 function composeHoodie(key){ const gi=document.getElementById('garmentImg'); if(!gi)return; const ref=(garment==='cap')?_hoodCache['cap_'+key]:((garment==='tshirt'||garment==='sweat'||garment==='puffer'||garment==='track'||garment==='hoodie'||estPhoto(garment))?imgVet(key):_hoodCache['sil_'+garment+'_'+key]); if(!ref||!ref.complete||!ref.naturalWidth){ if(ref)ref.onload=function(){composeHoodie(key);}; return; } gi.onload=function(){ gi.style.opacity='1'; }; gi.src=garmentCanvas(key).toDataURL('image/png'); }
 function renderDesignCanvas(side){ const sc=250/stageSize().w; const S=4,W=250,H=270; const cv=document.createElement('canvas'); cv.width=W*S; cv.height=H*S; const ctx=cv.getContext('2d'); dessinerPieces(ctx,side,S); ctx.setTransform(S,0,0,S,0,0); const arr=[...sides[side]].filter(e=>e.type!=='piece').sort((a,b)=>(a.z||0)-(b.z||0)); for(const e of arr) drawEl(ctx,e,sc); return cv; }
@@ -1698,6 +1698,11 @@ function majTissu3D(){
     if(vm && mt.userData.part==='vis'){ var m2=_motifDeMatiere(vm), t2=m2?null:_tissu(vm), tx2=texTissu3D(vm);
       u.uTissuOn.value=tx2?1:0; if(tx2) u.uTissu.value=tx2; u.uTissuK.value=m2?1/0.09:(t2?1/(t2.t*0.75):14); u.uTissuLin.value=m2?1:0;
       u.uTissuGain.value=(tx2&&!m2)?1/Math.max(0.3,tuileTissu(vm)._moy):1; mt.roughness=Math.max(0.78,(t2&&t2.rough)?t2.rough:mt.userData.rough0); return; }   /* visière : pas de reflet blanc sur le dessus */
+    var pmat=(garment==='cap'&&optsCasquette&&optsCasquette.patMat)||'';
+    if(mt.userData.part==='bcl'){ u.uTissuOn.value=0; return; }
+    if(pmat && mt.userData.part==='pat'){ var m3=_motifDeMatiere(pmat), t3=m3?null:_tissu(pmat), tx3=texTissu3D(pmat);
+      u.uTissuOn.value=tx3?1:0; if(tx3) u.uTissu.value=tx3; u.uTissuK.value=m3?1/0.06:(t3?1/(t3.t*0.5):14); u.uTissuLin.value=m3?1:0;
+      u.uTissuGain.value=(tx3&&!m3)?1/Math.max(0.3,tuileTissu(pmat)._moy):1; mt.roughness=(t3&&t3.rough)?t3.rough:mt.userData.rough0; return; }
     u.uTissuOn.value=tx?1:0; if(tx) u.uTissu.value=tx;
     u.uTissuK.value=(garment==='cap'?(mot?1/0.09:(t?1/(t.t*0.75):14)):(mot?1/0.55:(t?1/t.t:14)))/(echelleMatiere||1);
     u.uTissuLin.value=mot?1:0;
@@ -1863,10 +1868,63 @@ function addPiece(type){
    patte arrière. Valeur vide = comme le reste de la casquette.
    2D : zones repérées sur les photos (masques CAP_PARTS) ; 3D : par pièce du modèle. */
 let optsCasquette={};
-function _partCasquette(nom){ return /^Visiere_(dessus|dessous)$/.test(nom)?'vis':nom==='Visiere_bord'?'lis':nom==='Bouton'?'bou':(nom==='Patte_arriere'||nom==='Bande_interieure')?'pat':''; }
+function _partCasquette(nom){ return /^Visiere_(dessus|dessous)$/.test(nom)?'vis':nom==='Visiere_bord'?'lis':nom==='Bouton'?'bou':(nom==='Patte_arriere'||nom==='Bande_interieure')?'pat':/^Boucle/.test(nom)?'bcl':''; }
 function _cleCasq(o){ return JSON.stringify(o||{}); }
+/* ---- SANGLE ARRIÈRE : matière, couleur, boucle, texte ---- */
+var SANGLE_POLICES=[['Montserrat','Bâton'],['Cormorant Garamond','Élégant'],['Playfair Display','Classique'],['Bebas Neue','Condensé'],['Dancing Script','Signature'],['Special Elite','Machine']];
+var BOUCLES={argent:['#c9ccd1','Argent'],or:['#c9a24a','Doré'],noir:['#232326','Noir mat'],bronze:['#8a6a45','Bronze']};
+function couleurSangle(){ var o=optsCasquette||{}; return o.pat||((o.patMat&&_tissu(o.patMat))?_tissu(o.patMat).coul:shirtColor); }
+function _assombrir(h,k){ var c=_hexRGB(hex6(h)); return 'rgb('+c.map(function(v){ return Math.round(v*k); }).join(',')+')'; }
+/* le texte de la sangle, dessiné sur une bande W×H (fond transparent) */
+function texteSangleCanvas(W,H){
+  var o=optsCasquette||{}, t=(o.sgT||'').trim(); if(!t) return null;
+  var c=document.createElement('canvas'); c.width=W; c.height=H; var x=c.getContext('2d');
+  var pol=o.sgP||'Montserrat', gras=/Montserrat|Bebas|Playfair/.test(pol)?'700 ':'600 ', fs=H*0.62;
+  var setF=function(){ x.font=gras+fs+'px "'+pol+'"'; }; setF();
+  try{ x.letterSpacing=(pol==='Montserrat'||pol==='Bebas Neue')?(fs*0.12)+'px':'0px'; }catch(_){ }
+  var w=x.measureText(t).width; if(w>W*0.88){ fs*=W*0.88/w; setF(); }
+  x.textAlign='center'; x.textBaseline='middle'; var cx=W/2, cy=H/2+fs*0.04, st=o.sgS||'brode';
+  if(st==='grave'){                                       /* gravé / embossé dans la matière */
+    x.fillStyle='rgba(255,255,255,0.28)'; x.fillText(t,cx,cy+fs*0.05);
+    x.fillStyle=_assombrir(couleurSangle(),0.45); x.fillText(t,cx,cy);
+  } else {
+    var col=o.sgC||'#f3eee4';
+    x.shadowColor='rgba(0,0,0,0.45)'; x.shadowBlur=fs*0.08; x.shadowOffsetY=fs*0.05; x.fillStyle=col; x.fillText(t,cx,cy);
+    x.shadowColor='transparent';
+    if(st==='brode'){                                     /* fil brodé : fines rayures obliques */
+      x.globalCompositeOperation='source-atop'; x.strokeStyle='rgba(0,0,0,0.22)'; x.lineWidth=Math.max(1,fs*0.035);
+      for(var k=-H;k<W+H;k+=fs*0.11){ x.beginPath(); x.moveTo(k,0); x.lineTo(k+H*0.7,H); x.stroke(); }
+      x.strokeStyle='rgba(255,255,255,0.18)'; for(var k2=-H+fs*0.05;k2<W+H;k2+=fs*0.11){ x.beginPath(); x.moveTo(k2,0); x.lineTo(k2+H*0.7,H); x.stroke(); }
+      x.globalCompositeOperation='source-over'; }
+  }
+  return c;
+}
+/* zones de la sangle sur la photo de dos : bande longue (texte) et boucle */
+var _zonesSangle={};
+function zonesSangle2D(key){
+  if(_zonesSangle[key]!==undefined) return _zonesSangle[key];
+  var pm=_hoodCache['capparts_'+key], img=imgVet(key); if(!pm||!pm.complete||!pm.naturalWidth||!img||!img.naturalWidth) return null;
+  var iw=img.naturalWidth, ih=img.naturalHeight, c=document.createElement('canvas'); c.width=iw; c.height=ih; var x=c.getContext('2d'); x.imageSmoothingEnabled=false;
+  x.drawImage(pm,0,0,iw,ih); var P=x.getImageData(0,0,iw,ih).data, col=new Array(iw).fill(0), y0=ih, y1=0;
+  for(var y=0;y<ih;y++) for(var i=0;i<iw;i++){ var k=(y*iw+i)*4, b=P[k+2]; if(b>90&&b<170&&P[k]<128&&P[k+1]<=128){ col[i]++; if(y<y0)y0=y; if(y>y1)y1=y; } }
+  var segs=[], a=-1; for(var i2=0;i2<=iw;i2++){ var on=i2<iw&&col[i2]>2; if(on&&a<0)a=i2; if(!on&&a>=0){ if(i2-a>6) segs.push([a,i2-1]); a=-1; } }
+  if(!segs.length) return (_zonesSangle[key]=null);
+  segs.sort(function(p,q){ return (q[1]-q[0])-(p[1]-p[0]); });
+  var L=segs[0], tops=[], bots=[]; for(var i3=L[0];i3<=L[1];i3++){ var t=-1,bm=-1; for(var y2=y0;y2<=y1;y2++){ var k2=(y2*iw+i3)*4, b2=P[k2+2]; if(b2>90&&b2<170&&P[k2]<128){ if(t<0)t=y2; bm=y2; } } if(t>=0){ tops.push(t); bots.push(bm); } }
+  tops.sort(function(p,q){return p-q;}); bots.sort(function(p,q){return p-q;});
+  var z={iw:iw,ih:ih,txt:{x:L[0],y:tops[Math.floor(tops.length*0.5)],w:L[1]-L[0]+1,h:bots[Math.floor(bots.length*0.5)]-tops[Math.floor(tops.length*0.5)]+1},boucle:null};
+  if(segs.length>1){ var R2=segs[1], g0=Math.min(L[1],R2[1])+1, g1=Math.max(L[0],R2[0])-1; if(g1>g0) z.boucle={x:g0,y:y0-4,w:g1-g0+1,h:y1-y0+10}; }
+  return (_zonesSangle[key]=z);
+}
+/* dessin du texte sur la sangle, directement sur le rendu final (net à toute taille) */
+function sangle2D(cx,key,ox,oy,sc){
+  var o=optsCasquette||{}; if(!(o.sgT||'').trim()) return;
+  var z=zonesSangle2D(key); if(!z) return; var r=z.txt;
+  var W=r.w*sc, H=r.h*sc, m=H*0.12, tc=texteSangleCanvas(Math.round((W-2*m)*2),Math.round((H-2*m)*2)); if(!tc) return;
+  cx.drawImage(tc,ox+r.x*sc+m,oy+r.y*sc+m,W-2*m,H-2*m);
+}
 function teinterCasquette(d,orig,iw,ih,key){
-  var o=optsCasquette||{}; if(!o.vis&&!o.visMat&&!o.lis&&!o.bou&&!o.pat) return;
+  var o=optsCasquette||{}; if(!o.vis&&!o.visMat&&!o.lis&&!o.bou&&!o.pat&&!o.patMat&&!o.bcl) return;
   var pm=_hoodCache['capparts_'+key]; if(!pm||!pm.complete||!pm.naturalWidth) return;
   var c=document.createElement('canvas'); c.width=iw; c.height=ih; var x=c.getContext('2d'); x.imageSmoothingEnabled=false; x.drawImage(pm,0,0,iw,ih);
   var P=x.getImageData(0,0,iw,ih).data, T=null, tk=1, mot='', tis=null;
@@ -1877,31 +1935,63 @@ function teinterCasquette(d,orig,iw,ih,key){
       var pc=document.createElement('canvas'); pc.width=iw; pc.height=ih; var pcx=pc.getContext('2d'); pcx.fillStyle=pcx.createPattern(tt,'repeat'); pcx.fillRect(0,0,iw,ih);
       T=pcx.getImageData(0,0,iw,ih).data; tk=mot?1:1/Math.max(0.3,tu._moy); }
   }
-  var cv=o.vis?_rgb(o.vis):(tis&&tis.coul?_rgb(tis.coul):_rgb(shirtColor)), cl=o.lis?_rgb(o.lis):null, cb=o.bou?_rgb(o.bou):null, cp=o.pat?_rgb(o.pat):null;
+  var T2=null, tk2=1, mot2='';
+  if(o.patMat){ mot2=_motifDeMatiere(o.patMat); var tis2=mot2?null:_tissu(o.patMat), tu2=mot2?_tuileMotif(mot2):tuileTissu(o.patMat);
+    if(tu2){ var px2=Math.max(8,Math.round(iw*(mot2?0.3:Math.min(0.5,tis2.t/0.8*1.5)))), t2c=document.createElement('canvas'); t2c.width=t2c.height=px2; t2c.getContext('2d').drawImage(tu2,0,0,px2,px2);
+      var p2=document.createElement('canvas'); p2.width=iw; p2.height=ih; var p2x=p2.getContext('2d'); p2x.fillStyle=p2x.createPattern(t2c,'repeat'); p2x.fillRect(0,0,iw,ih);
+      T2=p2x.getImageData(0,0,iw,ih).data; tk2=mot2?1:1/Math.max(0.3,tu2._moy); } }
+  var zb=o.bcl?zonesSangle2D(key):null, bx=zb&&zb.boucle, cbc=o.bcl&&BOUCLES[o.bcl]?_rgb(BOUCLES[o.bcl][0]):null;
+  var cv=o.vis?_rgb(o.vis):(tis&&tis.coul?_rgb(tis.coul):_rgb(shirtColor)), cl=o.lis?_rgb(o.lis):null, cb=o.bou?_rgb(o.bou):null, cp=(o.pat||o.patMat)?_rgb(couleurSangle()):null;
   for(var i=0;i<d.length;i+=4){ if(d[i+3]<=18) continue;
     var r=P[i], g=P[i+1], b=P[i+2], col=null, tex=false;
     if(g>128 && cl) col=cl;
     else if(r>128 && (o.vis||o.visMat)){ col=cv; tex=!!T; }
     else if(b>200 && cb) col=cb;
-    else if(b>90 && b<170 && cp) col=cp;
+    else if(b>90 && b<170 && cp){ col=cp;
+      if(T2){ var L2=(orig[i]+orig[i+1]+orig[i+2])/765, f2=0.5+0.7*L2;
+        if(mot2){ d[i]=Math.min(255,T2[i]*f2); d[i+1]=Math.min(255,T2[i+1]*f2); d[i+2]=Math.min(255,T2[i+2]*f2); }
+        else { var k3=T2[i]/255*tk2; d[i]=Math.min(255,cp[0]*k3*f2); d[i+1]=Math.min(255,cp[1]*k3*f2); d[i+2]=Math.min(255,cp[2]*k3*f2); }
+        continue; } }
+    else if(cbc && bx && r<20 && g<20 && b<20){ var pi=(i>>2)%iw, pj=Math.floor((i>>2)/iw);   /* boucle : métal teinté */
+      if(pi>=bx.x && pi<bx.x+bx.w && pj>=bx.y && pj<bx.y+bx.h){ var L3=(orig[i]+orig[i+1]+orig[i+2])/765, f3=0.35+0.95*L3;
+        d[i]=Math.min(255,cbc[0]*f3); d[i+1]=Math.min(255,cbc[1]*f3); d[i+2]=Math.min(255,cbc[2]*f3); } continue; }
     if(!col) continue;
     var L=(orig[i]+orig[i+1]+orig[i+2])/765, f=0.5+0.7*L;
     if(tex && mot){ d[i]=Math.min(255,T[i]*f); d[i+1]=Math.min(255,T[i+1]*f); d[i+2]=Math.min(255,T[i+2]*f); }
     else { var k=tex?T[i]/255*tk:1; d[i]=Math.min(255,col[0]*k*f); d[i+1]=Math.min(255,col[1]*k*f); d[i+2]=Math.min(255,col[2]*k*f); }
   }
 }
-function setOptCasquette(cle,val,hist){
+function setOptCasquette(cle,val,hist,sansRendu){
   if(hist) pushHistory('casq-'+cle);
   optsCasquette=Object.assign({},optsCasquette); if(val) optsCasquette[cle]=val; else delete optsCasquette[cle];
   if(cle==='visMat' && val && !optsCasquette.vis){ var tz=_tissu(val); }
   if(typeof composeHoodie==='function') composeHoodie(currentSide);
-  if(typeof majCouleur3D==='function') majCouleur3D(); majTissu3D(); rendreMatieres();
+  if(typeof majCouleur3D==='function' && window.THREE) majCouleur3D(); if(window.THREE){ majTissu3D(); majSangle3D(); } if(!sansRendu) rendreMatieres();
+  if(/^sg/.test(cle) && optsCasquette.sgP && document.fonts){ document.fonts.load('600 40px "'+optsCasquette.sgP+'"').then(function(){ composeHoodie(currentSide); if(window.THREE) majSangle3D(); }).catch(function(){}); }
   if(typeof planifierSauvegarde==='function') planifierSauvegarde();
+}
+function majSangle3D(){
+  if(!window.THREE || !three || !three.matsVetement) return;
+  (three.matsBoucle||[]).forEach(function(m){ var k=(optsCasquette||{}).bcl;
+    if(k && BOUCLES[k]){ var c=new THREE.Color(BOUCLES[k][0]); if(c.convertSRGBToLinear) c.convertSRGBToLinear(); m.color.copy(c); m.metalness=k==='noir'?0.4:0.9; m.roughness=k==='noir'?0.55:0.3; }
+    else if(m.userData.c0){ m.color.copy(m.userData.c0); } m.needsUpdate=true; });
+  var o=optsCasquette||{}, bb=three.bbSangle||{}, P=bb.patte, B=bb.boucle, on=garment==='cap'&&!!(o.sgT||'').trim()&&P;
+  var box=null, tex=null;
+  if(on){ var x0=P.min.x+0.003, x1=(B?Math.min(B.min.x,P.max.x):P.max.x)-0.004, hy=P.max.y-P.min.y, y0=P.min.y+hy*0.16, y1=P.max.y-hy*0.16;
+    if(B && (B.min.x-P.min.x)<(P.max.x-B.max.x)){ x0=B.max.x+0.004; x1=P.max.x-0.003; }      /* la partie la plus longue reçoit le texte */
+    box=new THREE.Vector4(x0,y0,x1-x0,y1-y0);
+    var H=160, W=Math.max(200,Math.round(H*(x1-x0)/(y1-y0))), c=texteSangleCanvas(W,H);
+    if(c){ tex=new THREE.CanvasTexture(c); tex.anisotropy=4; } else on=false; }
+  if(three._texSangle){ three._texSangle.dispose(); three._texSangle=null; }
+  three._texSangle=tex;
+  three.matsVetement.forEach(function(mt){ var u=mt.userData.u; if(!u||!u.uSgOn) return;
+    var ici=on && mt.userData.nom==='Patte_arriere'; u.uSgOn.value=ici?1:0; if(ici){ u.uSgTex.value=tex; u.uSgBox.value.copy(box); } });
 }
 function _couleurPart3D(mt){
   var p=mt.userData.part||'', o=optsCasquette||{}, h=null;
   if(garment==='cap'){ if(p==='vis') h=o.vis||((o.visMat&&_tissu(o.visMat))?_tissu(o.visMat).coul:null)||(_motifDeMatiere(o.visMat)?'#ffffff':null);
-    else if(p==='lis') h=o.lis; else if(p==='bou') h=o.bou; else if(p==='pat') h=o.pat; }
+    else if(p==='lis') h=o.lis; else if(p==='bou') h=o.bou; else if(p==='pat') h=(o.pat||o.patMat)?couleurSangle():null;
+    else if(p==='bcl') h=BOUCLES[o.bcl||'argent'][0]; }
   if(!h) return null; var c=new THREE.Color(h); if(c.convertSRGBToLinear) c.convertSRGBToLinear(); return c;
 }
 function blocCasquetteHTML(){
@@ -1916,7 +2006,31 @@ function blocCasquetteHTML(){
     + (_motifDeMatiere(cur)?'':coul('vis','Couleur de la visière',(cur&&_tissu(cur)?_tissu(cur).coul:shirtColor)))
     + coul('lis','Liseré du bord de visière','#e8b4a0')
     + coul('bou','Bouton du dessus',shirtColor)
-    + coul('pat','Patte de réglage arrière',shirtColor);
+    + blocSangleHTML();
+}
+function blocSangleHTML(){
+  var o=optsCasquette||{}, pm=o.patMat||'', st=o.sgS||'brode', pol=o.sgP||'Montserrat';
+  var chip=function(on,js,lib,style){ return '<div class="chip '+(on?'on':'')+'" onclick="'+js+'"'+(style?' style="'+style+'"':'')+'>'+lib+'</div>'; };
+  var bt=function(id,img,nom,st2){ return '<button type="button" class="motif '+(pm===id?'on':'')+'" onclick="setOptCasquette(\'patMat\',\''+id+'\',true)">'+(img?'<img src="'+img+'" alt="">':'<span class="uni" style="'+st2+'"></span>')+'<i>'+nom+'</i></button>'; };
+  var mats=['cuir','daim','denim','velours','tweed','satin','lin','mesh','chine','polaire'];
+  var h='<h4 style="margin-top:18px">Sangle arrière</h4>'
+    + '<div class="field"><label>Matière · '+(pm?nomMatiere(pm):'comme la casquette')+'</label><div class="motifs">'
+    + bt('','','Comme la casquette','background:'+shirtColor)
+    + tissusDuVetement().filter(function(t){ return mats.indexOf(t.id)>=0; }).map(function(t){ return bt(t.id,vignetteTissu(t),t.nom); }).join('') + '</div></div>'
+    + '<div class="field"><label>Couleur de la sangle</label><div class="row" style="align-items:center;gap:8px"><input type="color" value="'+hex6(couleurSangle())+'" onpointerdown="pushHistory(\'casq-pat\')" oninput="setOptCasquette(\'pat\',this.value,false,true)" onchange="rendreMatieres()">'
+    + (o.pat?'<button type="button" class="btn ghost" style="padding:6px 10px" onclick="setOptCasquette(\'pat\',\'\',true)">Par défaut</button>':'')+'</div></div>'
+    + '<div class="field"><label>Boucle</label><div class="toggle">'
+    + Object.keys(BOUCLES).map(function(k){ return chip((o.bcl||'argent')===k,"setOptCasquette('bcl','"+k+"',true)",'<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:'+BOUCLES[k][0]+'"></span>'+BOUCLES[k][1]); }).join('') + '</div></div>'
+    + '<div class="field"><label>Texte sur la sangle</label><input type="text" maxlength="18" placeholder="Ex. VIRAL" value="'+String(o.sgT||'').replace(/"/g,'&quot;')+'" oninput="clearTimeout(blocSangleHTML._t); var v=this.value; blocSangleHTML._t=setTimeout(function(){ setOptCasquette(\'sgT\',v,false,true); },120)" onfocus="pushHistory(\'casq-sgT\')" onchange="rendreMatieres()"></div>';
+  if((o.sgT||'').trim()){
+    h+='<div class="field"><label>Style</label><div class="toggle">'
+      + chip(st==='brode',"setOptCasquette('sgS','brode',true)",'Brodé') + chip(st==='grave',"setOptCasquette('sgS','grave',true)",'Gravé') + chip(st==='imprime',"setOptCasquette('sgS','imprime',true)",'Imprimé') + '</div></div>'
+      + '<div class="field"><label>Police</label><div class="toggle">'
+      + SANGLE_POLICES.map(function(f){ return chip(pol===f[0],"setOptCasquette('sgP','"+f[0]+"',true)",f[1],'font-family:\''+f[0]+'\''); }).join('') + '</div></div>'
+      + (st==='grave'?'':'<div class="field"><label>Couleur du texte</label><input type="color" value="'+hex6(o.sgC||'#f3eee4')+'" onpointerdown="pushHistory(\'casq-sgC\')" oninput="setOptCasquette(\'sgC\',this.value,false,true)"></div>')
+      + '<div class="empty" style="padding:6px 2px 0">Le texte se place tout seul sur la partie longue de la sangle. Passe en vue Dos pour le voir.</div>';
+  }
+  return h;
 }
 function finitionTexte(ctx,e,sc,tracer,w,h){
   var f=e.finish||'standard';
@@ -2648,7 +2762,7 @@ function atlasDesign(){
 
 /* Habille le modèle : matière coton, et injection de la projection. */
 function habillerModele(racine, tex, m){
-  three.matsVetement=[];
+  three.matsVetement=[]; three.matsBoucle=[]; three.bbSangle={};
   if(m && m.auto){
     var b0=new THREE.Box3().setFromObject(racine);
     three.autoZones=three.autoZones||{}; three.autoZones[m.id]=zonesAuto(b0.getSize(new THREE.Vector3()));
@@ -2671,6 +2785,11 @@ function habillerModele(racine, tex, m){
     o.castShadow=true; o.receiveShadow=true;
     var ancien=o.material||{}, nomMat=ancien.name||'';
     /* fermeture éclair, tirette, embouts : on garde leur matière métal */
+    /* boucle de la casquette : on garde son métal, teinté selon la finition choisie */
+    if(/^Boucle/.test(o.name||'')){ o.geometry.computeBoundingBox(); three.bbSangle=three.bbSangle||{};
+      three.bbSangle.boucle=three.bbSangle.boucle?three.bbSangle.boucle.union(o.geometry.boundingBox):o.geometry.boundingBox.clone();
+      if(o.material && !o.material.userData.c0){ o.material=o.material.clone(); o.material.userData.c0=o.material.color.clone(); }
+      (three.matsBoucle=three.matsBoucle||[]).push(o.material); return; }
     if(multi && /^(Zip_metal|Zip|Metal)$/.test(nomMat)) return;
 
     var mat=new THREE.MeshStandardMaterial({
@@ -2684,7 +2803,9 @@ function habillerModele(racine, tex, m){
     });
     /* les modèles du studio portent coutures, matelassage et côtes dans leur
        texture (sur fond blanc) : elle se multiplie à la couleur choisie */
-    mat.userData.part=_partCasquette(o.name||'');
+    mat.userData.part=_partCasquette(o.name||''); mat.userData.nom=o.name||'';
+    if(mat.userData.part==='bcl'){ mat.metalness=0.85; mat.roughness=0.32; mat.envMapIntensity=1.0; mat.normalMap=null; }
+    if(o.name==='Patte_arriere'){ o.geometry.computeBoundingBox(); three.bbSangle=three.bbSangle||{}; three.bbSangle.patte=o.geometry.boundingBox.clone(); }
     if(multi && ancien.map){ mat.map=ancien.map; if(THREE.sRGBEncoding) mat.map.encoding=THREE.sRGBEncoding; }
     if(multi && /Puffer|doudoune/i.test(racine.name||'')){ mat.roughness=0.62; mat.envMapIntensity=0.35; }
     mat.userData.u={
@@ -2700,7 +2821,8 @@ function habillerModele(racine, tex, m){
       uDecD:{value:[0,1,2,3,4,5,6,7].map(function(){ return new THREE.Vector4(); })},
       uDecN:{value:0},
       uTissu:{value:null}, uTissuOn:{value:0}, uTissuK:{value:14}, uTissuLin:{value:0}, uTissuGain:{value:1},
-      uDegOn:{value:0}, uDegC:{value:new THREE.Color(1,1,1)}, uDegS:{value:0}, uDegW:{value:0.8}
+      uDegOn:{value:0}, uDegC:{value:new THREE.Color(1,1,1)}, uDegS:{value:0}, uDegW:{value:0.8},
+      uSgOn:{value:0}, uSgTex:{value:null}, uSgBox:{value:new THREE.Vector4(0,0,1,1)}
     };
     mat.onBeforeCompile=function(sh){
       Object.keys(mat.userData.u).forEach(function(k){ sh.uniforms[k]=mat.userData.u[k]; });
@@ -2713,7 +2835,7 @@ function habillerModele(racine, tex, m){
           'uniform sampler2D uDecal;\nuniform vec3 uMin;\nuniform vec3 uTaille;\n'+
           'uniform vec4 uFront;\nuniform vec4 uBack;\nuniform vec4 uSleeve;\nuniform vec4 uSide;\nuniform float uRepere;\nuniform float uSeuil;\nuniform float uUnique;\nuniform float uCote;\n'+
           'uniform mat4 uDecM[8];\nuniform vec4 uDecR[8];\nuniform vec4 uDecD[8];\nuniform float uDecN;\n'+
-          'uniform sampler2D uTissu;\nuniform float uTissuOn;\nuniform float uTissuK;\nuniform float uTissuLin;\nuniform float uTissuGain;\nuniform float uDegOn;\nuniform vec3 uDegC;\nuniform float uDegS;\nuniform float uDegW;\n'+
+          'uniform sampler2D uTissu;\nuniform float uTissuOn;\nuniform float uTissuK;\nuniform float uTissuLin;\nuniform float uTissuGain;\nuniform float uDegOn;\nuniform vec3 uDegC;\nuniform float uDegS;\nuniform float uDegW;\nuniform float uSgOn;\nuniform sampler2D uSgTex;\nuniform vec4 uSgBox;\n'+
           'vec4 lireZone(vec2 c, vec4 z, vec2 quad){\n'+
           '  vec2 t=(c-z.xy)/z.zw;\n'+
           '  if(t.x<0.0||t.x>1.0||t.y<0.0||t.y>1.0) return vec4(0.0);\n'+
@@ -2756,13 +2878,16 @@ function habillerModele(racine, tex, m){
           '                                   : lireZone(vec2(1.0-q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
           'else if(nl.x<-0.45 && uUnique<0.5) dec = q.y>uSeuil ? lireZone(vec2(q.z,q.y), uSleeve, vec2(0.0,1.0))\n'+
           '                                   : lireZone(vec2(q.z,q.y), uSide,   vec2(1.0,1.0));\n'+
-          'diffuseColor.rgb=mix(diffuseColor.rgb, dec.rgb, dec.a);');
+          'diffuseColor.rgb=mix(diffuseColor.rgb, dec.rgb, dec.a);\n'+
+          /* texte de la sangle arrière (face extérieure, vue de dos : +x à gauche) */
+          'if(uSgOn>0.5 && nl.z<-0.2){ vec2 ts=vec2((uSgBox.x+uSgBox.z-vPosL.x)/uSgBox.z,(vPosL.y-uSgBox.y)/uSgBox.w);\n'+
+          '  if(ts.x>0.0&&ts.x<1.0&&ts.y>0.0&&ts.y<1.0){ vec4 s4=texture2D(uSgTex,ts); s4.rgb=pow(s4.rgb,vec3(2.2)); diffuseColor.rgb=mix(diffuseColor.rgb,s4.rgb,s4.a); } }');
     };
     if(o.material && o.material.dispose) o.material.dispose();
     o.material=mat;
     three.matVetement=mat; three.matsVetement.push(mat);
   });
-  appliquerDecals(); if(typeof majTissu3D==='function') majTissu3D();
+  appliquerDecals(); if(typeof majTissu3D==='function') majTissu3D(); if(typeof majSangle3D==='function') majSangle3D();
 }
 function appliquerDecals(){
   var L=three.decals||[];
@@ -3592,7 +3717,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "50";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "51";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
