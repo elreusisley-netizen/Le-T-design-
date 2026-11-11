@@ -450,6 +450,7 @@
       <h4>Application</h4>
       <button class="btn" id="instReglagesBtn" onclick="ouvrirTutoInstall()">Installer l’appli sur mon téléphone</button>
       <div class="empty" id="instReglagesOk" style="display:none;padding-top:2px">✓ L’appli est installée sur cet appareil.</div>
+      <div class="empty" id="versionAppli" style="padding-top:2px;opacity:.75">Version <span id="versionNum"></span> · se met à jour toute seule</div>
     </div>
     <div id="compteBloc" style="display:none">
     <h4>Mon compte</h4>
@@ -613,7 +614,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='45';
+var APP_VERSION='46';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -3482,7 +3483,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "45";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "46";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
@@ -3513,26 +3514,47 @@ window.APP_VERSION_PUBLIEE = "45";   /* doit être égal à version.json */
      2) en plus, l'appli compare sa version à version.json (jamais en cache)
         à l'ouverture, au retour sur l'appli et toutes les 15 min : si une
         version plus récente est publiée, elle vide ses caches et se recharge. */
+  /* tentatives limitées (3 en 10 min) : si un rechargement retombe encore sur
+     l'ancienne copie, on réessaie au lieu de rester bloqué */
+  function tentative(cible){
+    try{ var t=JSON.parse(localStorage.getItem('viral-maj-essais')||'{}');
+      if(t.v!==cible || Date.now()-(t.t||0)>10*60*1000) t={v:cible,n:0,t:Date.now()};
+      if(t.n>=3) return false; t.n++; localStorage.setItem('viral-maj-essais',JSON.stringify(t)); return true;
+    }catch(_){ return true; } }
+  function bandeau(){ try{ var b=document.createElement('div'); b.textContent='Mise à jour de l’appli…';
+    b.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:9999;background:#16223a;color:#f3efe4;border:1px solid #b38c3a;border-radius:999px;padding:9px 16px;font:600 13px Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.3)';
+    document.body.appendChild(b); }catch(_){ } }
   function purgerEtRecharger(cible){
+    if(!tentative(cible)) return;
     try{ if (typeof sauverSession==='function') sauverSession(); }catch(_){}      /* le design en cours est gardé */
-    try{ if(sessionStorage.getItem('viral-maj-faite')===cible) return; sessionStorage.setItem('viral-maj-faite',cible); }catch(_){}
+    bandeau();
     var t=[];
     if (window.caches && caches.keys) t.push(caches.keys().then(function(n){ return Promise.all(n.map(function(k){ return caches.delete(k); })); }));
     if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) t.push(navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.update().catch(function(){}); })); }));
-    Promise.all(t).catch(function(){}).then(function(){ location.reload(); });
+    /* adresse neuve (?maj=…) : aucune copie (téléphone, appli installée, serveur) ne peut répondre à sa place */
+    Promise.all(t).catch(function(){}).then(function(){ var q=new URLSearchParams(location.search); q.set('maj',cible); location.replace(location.pathname+'?'+q.toString()+location.hash); });
   }
+  /* après la mise à jour, on retire ?maj= de l'adresse */
+  try{ var q0=new URLSearchParams(location.search); if(q0.has('maj')){ q0.delete('maj'); window.history.replaceState(null,'',location.pathname+(q0.toString()?'?'+q0:'')+location.hash); } }catch(_){ }
+  var dernier=0;
   function verifierVersion(){
-    if (!window.fetch) return;
+    if (!window.fetch || Date.now()-dernier<20000) return; dernier=Date.now();
     fetch('./version.json?t='+Date.now(), { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(v){
       if (v && v.version && String(v.version) !== String(window.APP_VERSION_PUBLIEE)) purgerEtRecharger(String(v.version));
     }).catch(function(){});
   }
-  window.addEventListener('load', function(){ setTimeout(verifierVersion, 1500); });
+  /* l'appli installée sur iPhone revient souvent sans être rechargée :
+     on vérifie à l'ouverture, au retour, au retour du réseau, et toutes les 5 min */
+  window.addEventListener('load', function(){ setTimeout(verifierVersion, 1200); });
+  window.addEventListener('pageshow', function(){ verifierVersion(); });
+  window.addEventListener('focus', verifierVersion);
+  window.addEventListener('online', verifierVersion);
   document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') verifierVersion(); });
-  setInterval(verifierVersion, 15*60*1000);
+  setInterval(function(){ if (document.visibilityState === 'visible') verifierVersion(); }, 5*60*1000);
+  try{ document.getElementById('versionNum').textContent=window.APP_VERSION_PUBLIEE; }catch(_){ }
 
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.addEventListener('message', function(ev){ if (ev.data && ev.data.type === 'viral-maj') purgerEtRecharger('sw'); });
+    navigator.serviceWorker.addEventListener('message', function(ev){ if (ev.data && ev.data.type === 'viral-maj') purgerEtRecharger('sw-'+Date.now().toString(36).slice(0,5)); });
     window.addEventListener("load", function(){
       navigator.serviceWorker.register("./sw.js", { updateViaCache: 'none' }).then(function(reg){
         reg.update();                       /* cherche une version plus récente */
