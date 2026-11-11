@@ -615,7 +615,7 @@
 /* Version de l'app : quand une nouvelle version est publiée, le navigateur
    peut garder l'ancienne en cache plusieurs minutes. On vérifie au démarrage
    et on recharge une seule fois si une version plus récente existe.        */
-var APP_VERSION='51';
+var APP_VERSION='52';
 (function(){
   try{
     if(!window.fetch || location.protocol==='file:') return;
@@ -1966,9 +1966,30 @@ function setOptCasquette(cle,val,hist,sansRendu){
   optsCasquette=Object.assign({},optsCasquette); if(val) optsCasquette[cle]=val; else delete optsCasquette[cle];
   if(cle==='visMat' && val && !optsCasquette.vis){ var tz=_tissu(val); }
   if(typeof composeHoodie==='function') composeHoodie(currentSide);
-  if(typeof majCouleur3D==='function' && window.THREE) majCouleur3D(); if(window.THREE){ majTissu3D(); majSangle3D(); } if(!sansRendu) rendreMatieres();
+  if(typeof majCouleur3D==='function' && window.THREE) majCouleur3D(); if(window.THREE){ majTissu3D(); majSangle3D(); if(cle==='courbe') majCourbeVisiere(); } if(!sansRendu) rendreMatieres();
   if(/^sg/.test(cle) && optsCasquette.sgP && document.fonts){ document.fonts.load('600 40px "'+optsCasquette.sgP+'"').then(function(){ composeHoodie(currentSide); if(window.THREE) majSangle3D(); }).catch(function(){}); }
   if(typeof planifierSauvegarde==='function') planifierSauvegarde();
+}
+/* courbure de la visière : les côtés descendent, de plus en plus vers la pointe ;
+   la couture avec la casquette ne bouge pas (déformation calculée depuis la forme d'origine) */
+var COURBES_VISIERE={plate:[0,'Plate'],legere:[0.014,'Légère'],courbee:[0.03,'Courbée']};
+function majCourbeVisiere(){
+  var L=(window.THREE&&three&&three.geoVisiere)||[]; if(!L.length) return;
+  var A=COURBES_VISIERE[(optsCasquette||{}).courbe||'courbee'][0];
+  L.forEach(function(v){ var pa=v.geo.attributes.position; if(!v.geo.userData.p0) v.geo.userData.p0=pa.array.slice(); });
+  var ref=(L.filter(function(v){ return v.nom==='Visiere_dessus'; })[0]||L[0]).geo.userData.p0;
+  var N=41, xm=0, zb=new Array(N).fill(1e9), zt=new Array(N).fill(-1e9);
+  for(var i=0;i<ref.length;i+=3) xm=Math.max(xm,Math.abs(ref[i]));
+  var bin=function(x){ return Math.max(0,Math.min(N-1,Math.round((x/xm*0.5+0.5)*(N-1)))); };
+  for(var i2=0;i2<ref.length;i2+=3){ var k=bin(ref[i2]); zb[k]=Math.min(zb[k],ref[i2+2]); zt[k]=Math.max(zt[k],ref[i2+2]); }
+  for(var k2=0;k2<N;k2++) if(zb[k2]>1e8){ var a=k2-1; while(a>=0&&zb[a]>1e8)a--; zb[k2]=a>=0?zb[a]:0; zt[k2]=a>=0?zt[a]:1; }
+  var lis=function(A0){ return A0.map(function(v,i){ var a=A0[Math.max(0,i-1)], c=A0[Math.min(N-1,i+1)]; return (a+2*v+c)/4; }); };
+  zb=lis(lis(zb)); zt=lis(lis(zt));
+  var interp=function(A0,x){ var f=Math.max(0,Math.min(N-1,(x/xm*0.5+0.5)*(N-1))), i0=Math.min(N-2,Math.floor(f)), w=f-i0; return A0[i0]*(1-w)+A0[i0+1]*w; };
+  L.forEach(function(v){ var p0=v.geo.userData.p0, pa=v.geo.attributes.position, d=pa.array;
+    for(var j=0;j<p0.length;j+=3){ var x=p0[j], z=p0[j+2], b0=interp(zb,x), b1=interp(zt,x), t=Math.max(0,Math.min(1,(z-b0)/Math.max(1e-4,b1-b0))), u=Math.min(1,Math.abs(x)/xm);
+      d[j]=x; d[j+2]=z; d[j+1]=p0[j+1]-A*u*u*Math.pow(t,0.85)-A*0.18*t*t; }
+    pa.needsUpdate=true; v.geo.computeVertexNormals(); v.geo.computeBoundingSphere(); });
 }
 function majSangle3D(){
   if(!window.THREE || !three || !three.matsVetement) return;
@@ -2004,6 +2025,8 @@ function blocCasquetteHTML(){
     + tissusDuVetement().map(function(t){ return bt(t.id,vignetteTissu(t),t.nom); }).join('')
     + MOTIFS.map(function(m){ return bt('motif:'+m.id,vignetteMotif(m.id),m.nom); }).join('') + '</div></div>'
     + (_motifDeMatiere(cur)?'':coul('vis','Couleur de la visière',(cur&&_tissu(cur)?_tissu(cur).coul:shirtColor)))
+    + '<div class="field"><label>Forme de la visière (3D)</label><div class="toggle">'
+    + Object.keys(COURBES_VISIERE).map(function(k){ return '<div class="chip '+((o.courbe||'courbee')===k?'on':'')+'" onclick="setOptCasquette(\'courbe\',\''+k+'\',true)">'+COURBES_VISIERE[k][1]+'</div>'; }).join('') + '</div></div>'
     + coul('lis','Liseré du bord de visière','#e8b4a0')
     + coul('bou','Bouton du dessus',shirtColor)
     + blocSangleHTML();
@@ -2762,7 +2785,7 @@ function atlasDesign(){
 
 /* Habille le modèle : matière coton, et injection de la projection. */
 function habillerModele(racine, tex, m){
-  three.matsVetement=[]; three.matsBoucle=[]; three.bbSangle={};
+  three.matsVetement=[]; three.matsBoucle=[]; three.bbSangle={}; three.geoVisiere=[];
   if(m && m.auto){
     var b0=new THREE.Box3().setFromObject(racine);
     three.autoZones=three.autoZones||{}; three.autoZones[m.id]=zonesAuto(b0.getSize(new THREE.Vector3()));
@@ -2805,6 +2828,7 @@ function habillerModele(racine, tex, m){
        texture (sur fond blanc) : elle se multiplie à la couleur choisie */
     mat.userData.part=_partCasquette(o.name||''); mat.userData.nom=o.name||'';
     if(mat.userData.part==='bcl'){ mat.metalness=0.85; mat.roughness=0.32; mat.envMapIntensity=1.0; mat.normalMap=null; }
+    if(mat.userData.part==='vis'||mat.userData.part==='lis'){ (three.geoVisiere=three.geoVisiere||[]).push({geo:o.geometry,nom:o.name}); }
     if(o.name==='Patte_arriere'){ o.geometry.computeBoundingBox(); three.bbSangle=three.bbSangle||{}; three.bbSangle.patte=o.geometry.boundingBox.clone(); }
     if(multi && ancien.map){ mat.map=ancien.map; if(THREE.sRGBEncoding) mat.map.encoding=THREE.sRGBEncoding; }
     if(multi && /Puffer|doudoune/i.test(racine.name||'')){ mat.roughness=0.62; mat.envMapIntensity=0.35; }
@@ -2887,7 +2911,7 @@ function habillerModele(racine, tex, m){
     o.material=mat;
     three.matVetement=mat; three.matsVetement.push(mat);
   });
-  appliquerDecals(); if(typeof majTissu3D==='function') majTissu3D(); if(typeof majSangle3D==='function') majSangle3D();
+  appliquerDecals(); if(typeof majTissu3D==='function') majTissu3D(); if(typeof majSangle3D==='function') majSangle3D(); if(typeof majCourbeVisiere==='function') majCourbeVisiere();
 }
 function appliquerDecals(){
   var L=three.decals||[];
@@ -3717,7 +3741,7 @@ verifierRole();
    si elle a changé, on vide les caches, on désinscrit le worker et on
    recharge une seule fois.                                               */
 window.VIRAL_VERSION = "v22";
-window.APP_VERSION_PUBLIEE = "51";   /* doit être égal à version.json */
+window.APP_VERSION_PUBLIEE = "52";   /* doit être égal à version.json */
 (function(){
   var cle = "viral-version", rechargee = "viral-rechargee";
   try {
